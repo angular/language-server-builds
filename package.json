@@ -1,7 +1,7 @@
 {
   "name": "@angular/language-server",
   "description": "LSP server for Angular Language Service",
-  "version": "21.0.0-next.7+sha-fc65107",
+  "version": "21.0.0-next.7+sha-3d1777b",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git",
@@ -17,7 +17,7 @@
     "ngserver": "./bin/ngserver"
   },
   "dependencies": {
-    "@angular/language-service": "github:angular/language-service-builds#21.0.0-next.7+sha-fc65107",
+    "@angular/language-service": "github:angular/language-service-builds#21.0.0-next.7+sha-3d1777b",
     "typescript": "5.9.3"
   },
   "devDependencies": {
