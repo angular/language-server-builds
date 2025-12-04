@@ -2461,10 +2461,10 @@ var init_main2 = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/htmlLanguageTypes.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/htmlLanguageTypes.js
 var TokenType, ScannerState, ClientCapabilities, FileType;
 var init_htmlLanguageTypes = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/htmlLanguageTypes.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/htmlLanguageTypes.js"() {
     init_main();
     init_main2();
     (function(TokenType2) {
@@ -2527,7 +2527,7 @@ var init_htmlLanguageTypes = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/parser/htmlScanner.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/parser/htmlScanner.js
 function createScanner(input, initialOffset = 0, initialState = ScannerState.WithinContent, emitPseudoCloseTags = false) {
   const stream = new MultiLineStream(input, initialOffset);
   let state = initialState;
@@ -2789,7 +2789,7 @@ function createScanner(input, initialOffset = 0, initialState = ScannerState.Wit
 }
 var l10n, MultiLineStream, _BNG, _MIN, _LAN, _RAN, _FSL, _EQS, _DQO, _SQO, _NWL, _CAR, _LFD, _WSP, _TAB, htmlScriptContents;
 var init_htmlScanner = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/parser/htmlScanner.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/parser/htmlScanner.js"() {
     l10n = __toESM(require_main());
     init_htmlLanguageTypes();
     MultiLineStream = class {
@@ -2922,7 +2922,7 @@ var init_htmlScanner = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/utils/arrays.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/utils/arrays.js
 function findFirst(array, p) {
   let low = 0, high = array.length;
   if (high === 0) {
@@ -2954,14 +2954,14 @@ function binarySearch(array, key, comparator) {
   return -(low + 1);
 }
 var init_arrays = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/utils/arrays.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/utils/arrays.js"() {
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/parser/htmlParser.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/parser/htmlParser.js
 var Node, HTMLParser;
 var init_htmlParser = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/parser/htmlParser.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/parser/htmlParser.js"() {
     init_htmlScanner();
     init_arrays();
     init_htmlLanguageTypes();
@@ -3124,10 +3124,10 @@ var init_htmlParser = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/parser/htmlEntities.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/parser/htmlEntities.js
 var entities;
 var init_htmlEntities = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/parser/htmlEntities.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/parser/htmlEntities.js"() {
     entities = {
       "Aacute;": "\xC1",
       "Aacute": "\xC1",
@@ -5364,7 +5364,7 @@ var init_htmlEntities = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/utils/strings.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/utils/strings.js
 function startsWith(haystack, needle) {
   if (haystack.length < needle.length) {
     return false;
@@ -5403,7 +5403,7 @@ function isLetterOrDigit(text, index) {
 }
 var _a, _z, _A, _Z, _0, _9;
 var init_strings = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/utils/strings.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/utils/strings.js"() {
     _a = "a".charCodeAt(0);
     _z = "z".charCodeAt(0);
     _A = "A".charCodeAt(0);
@@ -5413,16 +5413,16 @@ var init_strings = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/utils/object.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/utils/object.js
 function isDefined(obj) {
   return typeof obj !== "undefined";
 }
 var init_object = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/utils/object.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/utils/object.js"() {
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/utils/markup.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/utils/markup.js
 function normalizeMarkupContent(input) {
   if (!input) {
     return void 0;
@@ -5439,11 +5439,11 @@ function normalizeMarkupContent(input) {
   };
 }
 var init_markup = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/utils/markup.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/utils/markup.js"() {
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/languageFacts/dataProvider.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/languageFacts/dataProvider.js
 function getEntryBaselineImage(status) {
   if (!status) {
     return "";
@@ -5546,7 +5546,7 @@ function generateDocumentation(item, settings = {}, doesSupportMarkdown) {
 }
 var BaselineImages, browserNames, shortCompatPattern, missingBaselineBrowserFormatter, HTMLDataProvider;
 var init_dataProvider = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/languageFacts/dataProvider.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/languageFacts/dataProvider.js"() {
     init_markup();
     BaselineImages = {
       BASELINE_LIMITED: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTAiIHZpZXdCb3g9IjAgMCA1NDAgMzAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxzdHlsZT4KICAgIC5ncmF5LXNoYXBlIHsKICAgICAgZmlsbDogI0M2QzZDNjsgLyogTGlnaHQgbW9kZSAqLwogICAgfQoKICAgIEBtZWRpYSAocHJlZmVycy1jb2xvci1zY2hlbWU6IGRhcmspIHsKICAgICAgLmdyYXktc2hhcGUgewogICAgICAgIGZpbGw6ICM1NjU2NTY7IC8qIERhcmsgbW9kZSAqLwogICAgICB9CiAgICB9CiAgPC9zdHlsZT4KICA8cGF0aCBkPSJNMTUwIDBMMjQwIDkwTDIxMCAxMjBMMTIwIDMwTDE1MCAwWiIgZmlsbD0iI0YwOTQwOSIvPgogIDxwYXRoIGQ9Ik00MjAgMzBMNTQwIDE1MEw0MjAgMjcwTDM5MCAyNDBMNDgwIDE1MEwzOTAgNjBMNDIwIDMwWiIgY2xhc3M9ImdyYXktc2hhcGUiLz4KICA8cGF0aCBkPSJNMzMwIDE4MEwzMDAgMjEwTDM5MCAzMDBMNDIwIDI3MEwzMzAgMTgwWiIgZmlsbD0iI0YwOTQwOSIvPgogIDxwYXRoIGQ9Ik0xMjAgMzBMMTUwIDYwTDYwIDE1MEwxNTAgMjQwTDEyMCAyNzBMMCAxNTBMMTIwIDMwWiIgY2xhc3M9ImdyYXktc2hhcGUiLz4KICA8cGF0aCBkPSJNMzkwIDBMNDIwIDMwTDE1MCAzMDBMMTIwIDI3MEwzOTAgMFoiIGZpbGw9IiNGMDk0MDkiLz4KPC9zdmc+",
@@ -5663,7 +5663,7 @@ var init_dataProvider = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/pathCompletion.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/pathCompletion.js
 function stripQuotes(fullValue) {
   if (startsWith(fullValue, `'`) || startsWith(fullValue, `"`)) {
     return fullValue.slice(1, -1);
@@ -5726,7 +5726,7 @@ function shiftRange(range, startOffset, endOffset) {
 }
 var PathCompletionParticipant, CharCode_dot;
 var init_pathCompletion = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/pathCompletion.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/pathCompletion.js"() {
     init_htmlLanguageTypes();
     init_strings();
     PathCompletionParticipant = class {
@@ -5750,7 +5750,7 @@ var init_pathCompletion = __esm({
                 result.isIncomplete = true;
               } else {
                 const replaceRange = pathToReplaceRange(attributeCompletion.value, fullValue, attributeCompletion.range);
-                const suggestions = yield this.providePathSuggestions(attributeCompletion.value, replaceRange, document, documentContext);
+                const suggestions = yield this.providePathSuggestions(attributeCompletion.value, replaceRange, document, documentContext, attributeCompletion);
                 for (const item of suggestions) {
                   result.items.push(item);
                 }
@@ -5760,7 +5760,7 @@ var init_pathCompletion = __esm({
           return result;
         });
       }
-      providePathSuggestions(valueBeforeCursor, replaceRange, document, documentContext) {
+      providePathSuggestions(valueBeforeCursor, replaceRange, document, documentContext, context) {
         return __async(this, null, function* () {
           const valueBeforeLastSlash = valueBeforeCursor.substring(0, valueBeforeCursor.lastIndexOf("/") + 1);
           let parentDir = documentContext.resolveReference(valueBeforeLastSlash || ".", document.uri);
@@ -5768,9 +5768,26 @@ var init_pathCompletion = __esm({
             try {
               const result = [];
               const infos = yield this.readDirectory(parentDir);
+              const extensionFilter = this.getExtensionFilter(context);
               for (const [name, type] of infos) {
                 if (name.charCodeAt(0) !== CharCode_dot) {
-                  result.push(createCompletionItem(name, type === FileType.Directory, replaceRange));
+                  const item = createCompletionItem(name, type === FileType.Directory, replaceRange);
+                  if (extensionFilter) {
+                    if (type === FileType.Directory) {
+                      result.push(item);
+                    } else {
+                      const matchesFilter = extensionFilter.extensions.some((ext) => name.toLowerCase().endsWith(ext));
+                      if (matchesFilter) {
+                        item.sortText = "0_" + name;
+                        result.push(item);
+                      } else if (!extensionFilter.exclusive) {
+                        item.sortText = "1_" + name;
+                        result.push(item);
+                      }
+                    }
+                  } else {
+                    result.push(item);
+                  }
                 }
               }
               return result;
@@ -5780,12 +5797,42 @@ var init_pathCompletion = __esm({
           return [];
         });
       }
+      /**
+       * Determines which file extensions to filter/prioritize based on the HTML tag and attributes
+       */
+      getExtensionFilter(context) {
+        if (!context) {
+          return void 0;
+        }
+        if (context.tag === "link" && context.attribute === "href" && context.attributes) {
+          const rel = context.attributes["rel"];
+          if (rel === "stylesheet" || rel === '"stylesheet"' || rel === "'stylesheet'") {
+            return { extensions: [".css", ".scss", ".sass", ".less"], exclusive: false };
+          }
+          if (rel === "icon" || rel === '"icon"' || rel === "'icon'" || rel === "apple-touch-icon" || rel === '"apple-touch-icon"' || rel === "'apple-touch-icon'") {
+            return { extensions: [".ico", ".png", ".svg", ".jpg", ".jpeg", ".gif", ".webp"], exclusive: false };
+          }
+        }
+        if (context.tag === "script" && context.attribute === "src") {
+          return { extensions: [".js", ".mjs", ".cjs", ".ts", ".tsx", ".jsx"], exclusive: false };
+        }
+        if (context.tag === "img" && context.attribute === "src") {
+          return { extensions: [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".bmp", ".ico"], exclusive: false };
+        }
+        if (context.tag === "video" && context.attribute === "src") {
+          return { extensions: [".mp4", ".webm", ".ogg", ".mov", ".avi"], exclusive: false };
+        }
+        if (context.tag === "audio" && context.attribute === "src") {
+          return { extensions: [".mp3", ".wav", ".ogg", ".m4a", ".aac", ".flac"], exclusive: false };
+        }
+        return void 0;
+      }
     };
     CharCode_dot = ".".charCodeAt(0);
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlCompletion.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlCompletion.js
 function isQuote(s) {
   return /^["']*$/.test(s);
 }
@@ -5814,7 +5861,7 @@ function getWordEnd(s, offset, limit) {
 }
 var l10n2, HTMLCompletion;
 var init_htmlCompletion = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlCompletion.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlCompletion.js"() {
     init_htmlScanner();
     init_htmlLanguageTypes();
     init_htmlEntities();
@@ -6086,7 +6133,7 @@ var init_htmlCompletion = __esm({
             const fullRange = getReplaceRange(valueStart, valueEnd);
             for (const participant of completionParticipants) {
               if (participant.onHtmlAttributeValue) {
-                participant.onHtmlAttributeValue({ document, position, tag, attribute, value: valuePrefix, range: fullRange });
+                participant.onHtmlAttributeValue({ document, position, tag, attribute, value: valuePrefix, range: fullRange, attributes: node.attributes });
               }
             }
           }
@@ -6362,7 +6409,7 @@ var init_htmlCompletion = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlHover.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlHover.js
 function trimQuotes(s) {
   if (s.length <= 1) {
     return s.replace(/['"]/, "");
@@ -6377,7 +6424,7 @@ function trimQuotes(s) {
 }
 var l10n3, HTMLHover;
 var init_htmlHover = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlHover.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlHover.js"() {
     init_htmlScanner();
     init_htmlLanguageTypes();
     init_object();
@@ -6621,19 +6668,19 @@ var init_htmlHover = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/beautify/beautify.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/beautify/beautify.js
 function js_beautify(js_source_text, options2) {
   return js_source_text;
 }
 var init_beautify = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/beautify/beautify.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/beautify/beautify.js"() {
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/beautify/beautify-css.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/beautify/beautify-css.js
 var legacy_beautify_css, css_beautify;
 var init_beautify_css = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/beautify/beautify-css.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/beautify/beautify-css.js"() {
     (function() {
       "use strict";
       var __webpack_modules__ = [
@@ -7718,13 +7765,13 @@ var init_beautify_css = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/beautify/beautify-html.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/beautify/beautify-html.js
 function html_beautify(html_source, options2) {
   return legacy_beautify_html(html_source, options2, js_beautify, css_beautify);
 }
 var legacy_beautify_html;
 var init_beautify_html = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/beautify/beautify-html.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/beautify/beautify-html.js"() {
     init_beautify();
     init_beautify_css();
     (function() {
@@ -9863,7 +9910,7 @@ var init_beautify_html = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlFormatter.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlFormatter.js
 function format(document, range, options2) {
   let value = document.getText();
   let includesEnd = true;
@@ -9997,7 +10044,7 @@ function isWhitespace(text, offset) {
   return " 	".indexOf(text.charAt(offset)) !== -1;
 }
 var init_htmlFormatter = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlFormatter.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlFormatter.js"() {
     init_htmlLanguageTypes();
     init_beautify_html();
     init_strings();
@@ -10387,7 +10434,7 @@ var init_esm = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlLinks.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlLinks.js
 function normalizeRef(url) {
   const first = url[0];
   const last = url[url.length - 1];
@@ -10472,7 +10519,7 @@ function validateAndCleanURI(uriStr, document) {
 }
 var _hash, HTMLDocumentLinks;
 var init_htmlLinks = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlLinks.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlLinks.js"() {
     init_htmlScanner();
     init_strings();
     init_esm();
@@ -10546,7 +10593,7 @@ var init_htmlLinks = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlHighlighting.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlHighlighting.js
 function findDocumentHighlights(document, position, htmlDocument) {
   const offset = document.offsetAt(position);
   const node = htmlDocument.findNodeAt(offset);
@@ -10584,13 +10631,13 @@ function getTagNameRange(tokenType, document, startOffset) {
   return null;
 }
 var init_htmlHighlighting = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlHighlighting.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlHighlighting.js"() {
     init_htmlScanner();
     init_htmlLanguageTypes();
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlSymbolsProvider.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlSymbolsProvider.js
 function findDocumentSymbols(document, htmlDocument) {
   const symbols = [];
   const symbols2 = findDocumentSymbols2(document, htmlDocument);
@@ -10643,12 +10690,12 @@ function nodeToName(node) {
   return name || "?";
 }
 var init_htmlSymbolsProvider = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlSymbolsProvider.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlSymbolsProvider.js"() {
     init_htmlLanguageTypes();
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlRename.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlRename.js
 function doRename(document, position, newName, htmlDocument) {
   const offset = document.offsetAt(position);
   const node = htmlDocument.findNodeAt(offset);
@@ -10693,11 +10740,11 @@ function isWithinTagRange(node, offset, nodeTag) {
   return node.start + "<".length <= offset && offset <= node.start + "<".length + nodeTag.length;
 }
 var init_htmlRename = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlRename.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlRename.js"() {
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlMatchingTagPosition.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlMatchingTagPosition.js
 function findMatchingTagPosition(document, position, htmlDocument) {
   const offset = document.offsetAt(position);
   const node = htmlDocument.findNodeAt(offset);
@@ -10718,11 +10765,11 @@ function findMatchingTagPosition(document, position, htmlDocument) {
   return null;
 }
 var init_htmlMatchingTagPosition = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlMatchingTagPosition.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlMatchingTagPosition.js"() {
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlLinkedEditing.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlLinkedEditing.js
 function findLinkedEditingRanges(document, position, htmlDocument) {
   const offset = document.offsetAt(position);
   const node = htmlDocument.findNodeAt(offset);
@@ -10743,15 +10790,15 @@ function findLinkedEditingRanges(document, position, htmlDocument) {
   return null;
 }
 var init_htmlLinkedEditing = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlLinkedEditing.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlLinkedEditing.js"() {
     init_htmlLanguageTypes();
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlFolding.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlFolding.js
 var HTMLFolding;
 var init_htmlFolding = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlFolding.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlFolding.js"() {
     init_htmlLanguageTypes();
     init_htmlScanner();
     HTMLFolding = class {
@@ -10917,10 +10964,10 @@ var init_htmlFolding = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlSelectionRange.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlSelectionRange.js
 var HTMLSelectionRange;
 var init_htmlSelectionRange = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/services/htmlSelectionRange.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/services/htmlSelectionRange.js"() {
     init_htmlScanner();
     init_htmlLanguageTypes();
     HTMLSelectionRange = class {
@@ -11060,10 +11107,10 @@ var init_htmlSelectionRange = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/languageFacts/data/webCustomData.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/languageFacts/data/webCustomData.js
 var htmlData;
 var init_webCustomData = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/languageFacts/data/webCustomData.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/languageFacts/data/webCustomData.js"() {
     htmlData = {
       "version": 1.1,
       "tags": [
@@ -22948,10 +22995,10 @@ var init_webCustomData = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/languageFacts/dataManager.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/languageFacts/dataManager.js
 var HTMLDataManager, PATH_TAG_AND_ATTR;
 var init_dataManager = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/languageFacts/dataManager.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/languageFacts/dataManager.js"() {
     init_dataProvider();
     init_webCustomData();
     init_arrays();
@@ -23025,7 +23072,7 @@ var init_dataManager = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/htmlLanguageService.js
+// node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/htmlLanguageService.js
 var htmlLanguageService_exports = {};
 __export(htmlLanguageService_exports, {
   ClientCapabilities: () => ClientCapabilities,
@@ -23108,7 +23155,7 @@ function getDefaultHTMLDataProvider() {
 }
 var defaultLanguageServiceOptions;
 var init_htmlLanguageService = __esm({
-  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.0/node_modules/vscode-html-languageservice/lib/esm/htmlLanguageService.js"() {
+  "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/htmlLanguageService.js"() {
     init_htmlScanner();
     init_htmlParser();
     init_htmlCompletion();
