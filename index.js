@@ -31122,6 +31122,7 @@ var require_completion = __commonJS({
       CompletionKind2["reference"] = "reference";
       CompletionKind2["variable"] = "variable";
       CompletionKind2["entity"] = "entity";
+      CompletionKind2["enumMember"] = "enum member";
     })(CompletionKind || (CompletionKind = {}));
     function readNgCompletionData(item) {
       if (item.data === void 0) {
@@ -31156,6 +31157,8 @@ var require_completion = __commonJS({
           return lsp.CompletionItemKind.Variable;
         case CompletionKind.block:
           return lsp.CompletionItemKind.Keyword;
+        case CompletionKind.enumMember:
+          return lsp.CompletionItemKind.EnumMember;
         case CompletionKind.entity:
         default:
           return lsp.CompletionItemKind.Text;
