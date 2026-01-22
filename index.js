@@ -968,9 +968,9 @@ var require_api_bundle = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/utils/is.js
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/utils/is.js
 var require_is = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/utils/is.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/utils/is.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.thenable = exports2.typedArray = exports2.stringArray = exports2.array = exports2.func = exports2.error = exports2.number = exports2.string = exports2.boolean = void 0;
@@ -1013,359 +1013,9 @@ var require_is = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/ral.js
-var require_ral = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/ral.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var _ral;
-    function RAL() {
-      if (_ral === void 0) {
-        throw new Error(`No runtime abstraction layer installed`);
-      }
-      return _ral;
-    }
-    (function(RAL2) {
-      function install(ral) {
-        if (ral === void 0) {
-          throw new Error(`No runtime abstraction layer provided`);
-        }
-        _ral = ral;
-      }
-      RAL2.install = install;
-    })(RAL || (RAL = {}));
-    exports2.default = RAL;
-  }
-});
-
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/disposable.js
-var require_disposable = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/disposable.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.Disposable = void 0;
-    var Disposable;
-    (function(Disposable2) {
-      function create(func) {
-        return {
-          dispose: func
-        };
-      }
-      Disposable2.create = create;
-    })(Disposable = exports2.Disposable || (exports2.Disposable = {}));
-  }
-});
-
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/messageBuffer.js
-var require_messageBuffer = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/messageBuffer.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.AbstractMessageBuffer = void 0;
-    var CR = 13;
-    var LF = 10;
-    var CRLF = "\r\n";
-    var AbstractMessageBuffer = class {
-      constructor(encoding = "utf-8") {
-        this._encoding = encoding;
-        this._chunks = [];
-        this._totalLength = 0;
-      }
-      get encoding() {
-        return this._encoding;
-      }
-      append(chunk) {
-        const toAppend = typeof chunk === "string" ? this.fromString(chunk, this._encoding) : chunk;
-        this._chunks.push(toAppend);
-        this._totalLength += toAppend.byteLength;
-      }
-      tryReadHeaders() {
-        if (this._chunks.length === 0) {
-          return void 0;
-        }
-        let state = 0;
-        let chunkIndex = 0;
-        let offset = 0;
-        let chunkBytesRead = 0;
-        row:
-          while (chunkIndex < this._chunks.length) {
-            const chunk = this._chunks[chunkIndex];
-            offset = 0;
-            column:
-              while (offset < chunk.length) {
-                const value = chunk[offset];
-                switch (value) {
-                  case CR:
-                    switch (state) {
-                      case 0:
-                        state = 1;
-                        break;
-                      case 2:
-                        state = 3;
-                        break;
-                      default:
-                        state = 0;
-                    }
-                    break;
-                  case LF:
-                    switch (state) {
-                      case 1:
-                        state = 2;
-                        break;
-                      case 3:
-                        state = 4;
-                        offset++;
-                        break row;
-                      default:
-                        state = 0;
-                    }
-                    break;
-                  default:
-                    state = 0;
-                }
-                offset++;
-              }
-            chunkBytesRead += chunk.byteLength;
-            chunkIndex++;
-          }
-        if (state !== 4) {
-          return void 0;
-        }
-        const buffer = this._read(chunkBytesRead + offset);
-        const result = /* @__PURE__ */ new Map();
-        const headers = this.toString(buffer, "ascii").split(CRLF);
-        if (headers.length < 2) {
-          return result;
-        }
-        for (let i = 0; i < headers.length - 2; i++) {
-          const header = headers[i];
-          const index = header.indexOf(":");
-          if (index === -1) {
-            throw new Error("Message header must separate key and value using :");
-          }
-          const key = header.substr(0, index);
-          const value = header.substr(index + 1).trim();
-          result.set(key, value);
-        }
-        return result;
-      }
-      tryReadBody(length) {
-        if (this._totalLength < length) {
-          return void 0;
-        }
-        return this._read(length);
-      }
-      get numberOfBytes() {
-        return this._totalLength;
-      }
-      _read(byteCount) {
-        if (byteCount === 0) {
-          return this.emptyBuffer();
-        }
-        if (byteCount > this._totalLength) {
-          throw new Error(`Cannot read so many bytes!`);
-        }
-        if (this._chunks[0].byteLength === byteCount) {
-          const chunk = this._chunks[0];
-          this._chunks.shift();
-          this._totalLength -= byteCount;
-          return this.asNative(chunk);
-        }
-        if (this._chunks[0].byteLength > byteCount) {
-          const chunk = this._chunks[0];
-          const result2 = this.asNative(chunk, byteCount);
-          this._chunks[0] = chunk.slice(byteCount);
-          this._totalLength -= byteCount;
-          return result2;
-        }
-        const result = this.allocNative(byteCount);
-        let resultOffset = 0;
-        let chunkIndex = 0;
-        while (byteCount > 0) {
-          const chunk = this._chunks[chunkIndex];
-          if (chunk.byteLength > byteCount) {
-            const chunkPart = chunk.slice(0, byteCount);
-            result.set(chunkPart, resultOffset);
-            resultOffset += byteCount;
-            this._chunks[chunkIndex] = chunk.slice(byteCount);
-            this._totalLength -= byteCount;
-            byteCount -= byteCount;
-          } else {
-            result.set(chunk, resultOffset);
-            resultOffset += chunk.byteLength;
-            this._chunks.shift();
-            this._totalLength -= chunk.byteLength;
-            byteCount -= chunk.byteLength;
-          }
-        }
-        return result;
-      }
-    };
-    exports2.AbstractMessageBuffer = AbstractMessageBuffer;
-  }
-});
-
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/node/ril.js
-var require_ril = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/node/ril.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var ral_1 = require_ral();
-    var util_1 = require("util");
-    var disposable_1 = require_disposable();
-    var messageBuffer_1 = require_messageBuffer();
-    var MessageBuffer = class _MessageBuffer extends messageBuffer_1.AbstractMessageBuffer {
-      constructor(encoding = "utf-8") {
-        super(encoding);
-      }
-      emptyBuffer() {
-        return _MessageBuffer.emptyBuffer;
-      }
-      fromString(value, encoding) {
-        return Buffer.from(value, encoding);
-      }
-      toString(value, encoding) {
-        if (value instanceof Buffer) {
-          return value.toString(encoding);
-        } else {
-          return new util_1.TextDecoder(encoding).decode(value);
-        }
-      }
-      asNative(buffer, length) {
-        if (length === void 0) {
-          return buffer instanceof Buffer ? buffer : Buffer.from(buffer);
-        } else {
-          return buffer instanceof Buffer ? buffer.slice(0, length) : Buffer.from(buffer, 0, length);
-        }
-      }
-      allocNative(length) {
-        return Buffer.allocUnsafe(length);
-      }
-    };
-    MessageBuffer.emptyBuffer = Buffer.allocUnsafe(0);
-    var ReadableStreamWrapper = class {
-      constructor(stream) {
-        this.stream = stream;
-      }
-      onClose(listener) {
-        this.stream.on("close", listener);
-        return disposable_1.Disposable.create(() => this.stream.off("close", listener));
-      }
-      onError(listener) {
-        this.stream.on("error", listener);
-        return disposable_1.Disposable.create(() => this.stream.off("error", listener));
-      }
-      onEnd(listener) {
-        this.stream.on("end", listener);
-        return disposable_1.Disposable.create(() => this.stream.off("end", listener));
-      }
-      onData(listener) {
-        this.stream.on("data", listener);
-        return disposable_1.Disposable.create(() => this.stream.off("data", listener));
-      }
-    };
-    var WritableStreamWrapper = class {
-      constructor(stream) {
-        this.stream = stream;
-      }
-      onClose(listener) {
-        this.stream.on("close", listener);
-        return disposable_1.Disposable.create(() => this.stream.off("close", listener));
-      }
-      onError(listener) {
-        this.stream.on("error", listener);
-        return disposable_1.Disposable.create(() => this.stream.off("error", listener));
-      }
-      onEnd(listener) {
-        this.stream.on("end", listener);
-        return disposable_1.Disposable.create(() => this.stream.off("end", listener));
-      }
-      write(data, encoding) {
-        return new Promise((resolve, reject) => {
-          const callback = (error) => {
-            if (error === void 0 || error === null) {
-              resolve();
-            } else {
-              reject(error);
-            }
-          };
-          if (typeof data === "string") {
-            this.stream.write(data, encoding, callback);
-          } else {
-            this.stream.write(data, callback);
-          }
-        });
-      }
-      end() {
-        this.stream.end();
-      }
-    };
-    var _ril = Object.freeze({
-      messageBuffer: Object.freeze({
-        create: (encoding) => new MessageBuffer(encoding)
-      }),
-      applicationJson: Object.freeze({
-        encoder: Object.freeze({
-          name: "application/json",
-          encode: (msg, options2) => {
-            try {
-              return Promise.resolve(Buffer.from(JSON.stringify(msg, void 0, 0), options2.charset));
-            } catch (err) {
-              return Promise.reject(err);
-            }
-          }
-        }),
-        decoder: Object.freeze({
-          name: "application/json",
-          decode: (buffer, options2) => {
-            try {
-              if (buffer instanceof Buffer) {
-                return Promise.resolve(JSON.parse(buffer.toString(options2.charset)));
-              } else {
-                return Promise.resolve(JSON.parse(new util_1.TextDecoder(options2.charset).decode(buffer)));
-              }
-            } catch (err) {
-              return Promise.reject(err);
-            }
-          }
-        })
-      }),
-      stream: Object.freeze({
-        asReadableStream: (stream) => new ReadableStreamWrapper(stream),
-        asWritableStream: (stream) => new WritableStreamWrapper(stream)
-      }),
-      console,
-      timer: Object.freeze({
-        setTimeout(callback, ms, ...args) {
-          return setTimeout(callback, ms, ...args);
-        },
-        clearTimeout(handle) {
-          clearTimeout(handle);
-        },
-        setImmediate(callback, ...args) {
-          return setImmediate(callback, ...args);
-        },
-        clearImmediate(handle) {
-          clearImmediate(handle);
-        }
-      })
-    });
-    function RIL() {
-      return _ril;
-    }
-    (function(RIL2) {
-      function install() {
-        ral_1.default.install(_ril);
-      }
-      RIL2.install = install;
-    })(RIL || (RIL = {}));
-    exports2.default = RIL;
-  }
-});
-
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/is.js
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/is.js
 var require_is2 = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/is.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/is.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.stringArray = exports2.array = exports2.func = exports2.error = exports2.number = exports2.string = exports2.boolean = void 0;
@@ -1400,12 +1050,12 @@ var require_is2 = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/messages.js
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/messages.js
 var require_messages = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/messages.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/messages.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.isResponseMessage = exports2.isNotificationMessage = exports2.isRequestMessage = exports2.NotificationType9 = exports2.NotificationType8 = exports2.NotificationType7 = exports2.NotificationType6 = exports2.NotificationType5 = exports2.NotificationType4 = exports2.NotificationType3 = exports2.NotificationType2 = exports2.NotificationType1 = exports2.NotificationType0 = exports2.NotificationType = exports2.RequestType9 = exports2.RequestType8 = exports2.RequestType7 = exports2.RequestType6 = exports2.RequestType5 = exports2.RequestType4 = exports2.RequestType3 = exports2.RequestType2 = exports2.RequestType1 = exports2.RequestType = exports2.RequestType0 = exports2.AbstractMessageSignature = exports2.ParameterStructures = exports2.ResponseError = exports2.ErrorCodes = void 0;
+    exports2.Message = exports2.NotificationType9 = exports2.NotificationType8 = exports2.NotificationType7 = exports2.NotificationType6 = exports2.NotificationType5 = exports2.NotificationType4 = exports2.NotificationType3 = exports2.NotificationType2 = exports2.NotificationType1 = exports2.NotificationType0 = exports2.NotificationType = exports2.RequestType9 = exports2.RequestType8 = exports2.RequestType7 = exports2.RequestType6 = exports2.RequestType5 = exports2.RequestType4 = exports2.RequestType3 = exports2.RequestType2 = exports2.RequestType1 = exports2.RequestType = exports2.RequestType0 = exports2.AbstractMessageSignature = exports2.ParameterStructures = exports2.ResponseError = exports2.ErrorCodes = void 0;
     var is = require_is2();
     var ErrorCodes;
     (function(ErrorCodes2) {
@@ -1415,14 +1065,16 @@ var require_messages = __commonJS({
       ErrorCodes2.InvalidParams = -32602;
       ErrorCodes2.InternalError = -32603;
       ErrorCodes2.jsonrpcReservedErrorRangeStart = -32099;
-      ErrorCodes2.serverErrorStart = ErrorCodes2.jsonrpcReservedErrorRangeStart;
+      ErrorCodes2.serverErrorStart = -32099;
       ErrorCodes2.MessageWriteError = -32099;
       ErrorCodes2.MessageReadError = -32098;
+      ErrorCodes2.PendingResponseRejected = -32097;
+      ErrorCodes2.ConnectionInactive = -32096;
       ErrorCodes2.ServerNotInitialized = -32002;
       ErrorCodes2.UnknownErrorCode = -32001;
       ErrorCodes2.jsonrpcReservedErrorRangeEnd = -32e3;
-      ErrorCodes2.serverErrorEnd = ErrorCodes2.jsonrpcReservedErrorRangeEnd;
-    })(ErrorCodes = exports2.ErrorCodes || (exports2.ErrorCodes = {}));
+      ErrorCodes2.serverErrorEnd = -32e3;
+    })(ErrorCodes || (exports2.ErrorCodes = ErrorCodes = {}));
     var ResponseError = class _ResponseError extends Error {
       constructor(code, message, data) {
         super(message);
@@ -1431,11 +1083,14 @@ var require_messages = __commonJS({
         Object.setPrototypeOf(this, _ResponseError.prototype);
       }
       toJson() {
-        return {
+        const result = {
           code: this.code,
-          message: this.message,
-          data: this.data
+          message: this.message
         };
+        if (this.data !== void 0) {
+          result.data = this.data;
+        }
+        return result;
       }
     };
     exports2.ResponseError = ResponseError;
@@ -1612,620 +1267,32 @@ var require_messages = __commonJS({
       }
     };
     exports2.NotificationType9 = NotificationType9;
-    function isRequestMessage(message) {
-      const candidate = message;
-      return candidate && is.string(candidate.method) && (is.string(candidate.id) || is.number(candidate.id));
-    }
-    exports2.isRequestMessage = isRequestMessage;
-    function isNotificationMessage(message) {
-      const candidate = message;
-      return candidate && is.string(candidate.method) && message.id === void 0;
-    }
-    exports2.isNotificationMessage = isNotificationMessage;
-    function isResponseMessage(message) {
-      const candidate = message;
-      return candidate && (candidate.result !== void 0 || !!candidate.error) && (is.string(candidate.id) || is.number(candidate.id) || candidate.id === null);
-    }
-    exports2.isResponseMessage = isResponseMessage;
+    var Message;
+    (function(Message2) {
+      function isRequest(message) {
+        const candidate = message;
+        return candidate && is.string(candidate.method) && (is.string(candidate.id) || is.number(candidate.id));
+      }
+      Message2.isRequest = isRequest;
+      function isNotification(message) {
+        const candidate = message;
+        return candidate && is.string(candidate.method) && message.id === void 0;
+      }
+      Message2.isNotification = isNotification;
+      function isResponse(message) {
+        const candidate = message;
+        return candidate && (candidate.result !== void 0 || !!candidate.error) && (is.string(candidate.id) || is.number(candidate.id) || candidate.id === null);
+      }
+      Message2.isResponse = isResponse;
+    })(Message || (exports2.Message = Message = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/events.js
-var require_events = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/events.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.Emitter = exports2.Event = void 0;
-    var ral_1 = require_ral();
-    var Event;
-    (function(Event2) {
-      const _disposable = { dispose() {
-      } };
-      Event2.None = function() {
-        return _disposable;
-      };
-    })(Event = exports2.Event || (exports2.Event = {}));
-    var CallbackList = class {
-      add(callback, context = null, bucket) {
-        if (!this._callbacks) {
-          this._callbacks = [];
-          this._contexts = [];
-        }
-        this._callbacks.push(callback);
-        this._contexts.push(context);
-        if (Array.isArray(bucket)) {
-          bucket.push({ dispose: () => this.remove(callback, context) });
-        }
-      }
-      remove(callback, context = null) {
-        if (!this._callbacks) {
-          return;
-        }
-        let foundCallbackWithDifferentContext = false;
-        for (let i = 0, len = this._callbacks.length; i < len; i++) {
-          if (this._callbacks[i] === callback) {
-            if (this._contexts[i] === context) {
-              this._callbacks.splice(i, 1);
-              this._contexts.splice(i, 1);
-              return;
-            } else {
-              foundCallbackWithDifferentContext = true;
-            }
-          }
-        }
-        if (foundCallbackWithDifferentContext) {
-          throw new Error("When adding a listener with a context, you should remove it with the same context");
-        }
-      }
-      invoke(...args) {
-        if (!this._callbacks) {
-          return [];
-        }
-        const ret = [], callbacks = this._callbacks.slice(0), contexts = this._contexts.slice(0);
-        for (let i = 0, len = callbacks.length; i < len; i++) {
-          try {
-            ret.push(callbacks[i].apply(contexts[i], args));
-          } catch (e) {
-            ral_1.default().console.error(e);
-          }
-        }
-        return ret;
-      }
-      isEmpty() {
-        return !this._callbacks || this._callbacks.length === 0;
-      }
-      dispose() {
-        this._callbacks = void 0;
-        this._contexts = void 0;
-      }
-    };
-    var Emitter = class _Emitter {
-      constructor(_options) {
-        this._options = _options;
-      }
-      /**
-       * For the public to allow to subscribe
-       * to events from this Emitter
-       */
-      get event() {
-        if (!this._event) {
-          this._event = (listener, thisArgs, disposables) => {
-            if (!this._callbacks) {
-              this._callbacks = new CallbackList();
-            }
-            if (this._options && this._options.onFirstListenerAdd && this._callbacks.isEmpty()) {
-              this._options.onFirstListenerAdd(this);
-            }
-            this._callbacks.add(listener, thisArgs);
-            const result = {
-              dispose: () => {
-                if (!this._callbacks) {
-                  return;
-                }
-                this._callbacks.remove(listener, thisArgs);
-                result.dispose = _Emitter._noop;
-                if (this._options && this._options.onLastListenerRemove && this._callbacks.isEmpty()) {
-                  this._options.onLastListenerRemove(this);
-                }
-              }
-            };
-            if (Array.isArray(disposables)) {
-              disposables.push(result);
-            }
-            return result;
-          };
-        }
-        return this._event;
-      }
-      /**
-       * To be kept private to fire an event to
-       * subscribers
-       */
-      fire(event) {
-        if (this._callbacks) {
-          this._callbacks.invoke.call(this._callbacks, event);
-        }
-      }
-      dispose() {
-        if (this._callbacks) {
-          this._callbacks.dispose();
-          this._callbacks = void 0;
-        }
-      }
-    };
-    exports2.Emitter = Emitter;
-    Emitter._noop = function() {
-    };
-  }
-});
-
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/cancellation.js
-var require_cancellation = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/cancellation.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.CancellationTokenSource = exports2.CancellationToken = void 0;
-    var ral_1 = require_ral();
-    var Is3 = require_is2();
-    var events_1 = require_events();
-    var CancellationToken;
-    (function(CancellationToken2) {
-      CancellationToken2.None = Object.freeze({
-        isCancellationRequested: false,
-        onCancellationRequested: events_1.Event.None
-      });
-      CancellationToken2.Cancelled = Object.freeze({
-        isCancellationRequested: true,
-        onCancellationRequested: events_1.Event.None
-      });
-      function is(value) {
-        const candidate = value;
-        return candidate && (candidate === CancellationToken2.None || candidate === CancellationToken2.Cancelled || Is3.boolean(candidate.isCancellationRequested) && !!candidate.onCancellationRequested);
-      }
-      CancellationToken2.is = is;
-    })(CancellationToken = exports2.CancellationToken || (exports2.CancellationToken = {}));
-    var shortcutEvent = Object.freeze(function(callback, context) {
-      const handle = ral_1.default().timer.setTimeout(callback.bind(context), 0);
-      return { dispose() {
-        ral_1.default().timer.clearTimeout(handle);
-      } };
-    });
-    var MutableToken = class {
-      constructor() {
-        this._isCancelled = false;
-      }
-      cancel() {
-        if (!this._isCancelled) {
-          this._isCancelled = true;
-          if (this._emitter) {
-            this._emitter.fire(void 0);
-            this.dispose();
-          }
-        }
-      }
-      get isCancellationRequested() {
-        return this._isCancelled;
-      }
-      get onCancellationRequested() {
-        if (this._isCancelled) {
-          return shortcutEvent;
-        }
-        if (!this._emitter) {
-          this._emitter = new events_1.Emitter();
-        }
-        return this._emitter.event;
-      }
-      dispose() {
-        if (this._emitter) {
-          this._emitter.dispose();
-          this._emitter = void 0;
-        }
-      }
-    };
-    var CancellationTokenSource = class {
-      get token() {
-        if (!this._token) {
-          this._token = new MutableToken();
-        }
-        return this._token;
-      }
-      cancel() {
-        if (!this._token) {
-          this._token = CancellationToken.Cancelled;
-        } else {
-          this._token.cancel();
-        }
-      }
-      dispose() {
-        if (!this._token) {
-          this._token = CancellationToken.None;
-        } else if (this._token instanceof MutableToken) {
-          this._token.dispose();
-        }
-      }
-    };
-    exports2.CancellationTokenSource = CancellationTokenSource;
-  }
-});
-
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/messageReader.js
-var require_messageReader = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/messageReader.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.ReadableStreamMessageReader = exports2.AbstractMessageReader = exports2.MessageReader = void 0;
-    var ral_1 = require_ral();
-    var Is3 = require_is2();
-    var events_1 = require_events();
-    var MessageReader;
-    (function(MessageReader2) {
-      function is(value) {
-        let candidate = value;
-        return candidate && Is3.func(candidate.listen) && Is3.func(candidate.dispose) && Is3.func(candidate.onError) && Is3.func(candidate.onClose) && Is3.func(candidate.onPartialMessage);
-      }
-      MessageReader2.is = is;
-    })(MessageReader = exports2.MessageReader || (exports2.MessageReader = {}));
-    var AbstractMessageReader = class {
-      constructor() {
-        this.errorEmitter = new events_1.Emitter();
-        this.closeEmitter = new events_1.Emitter();
-        this.partialMessageEmitter = new events_1.Emitter();
-      }
-      dispose() {
-        this.errorEmitter.dispose();
-        this.closeEmitter.dispose();
-      }
-      get onError() {
-        return this.errorEmitter.event;
-      }
-      fireError(error) {
-        this.errorEmitter.fire(this.asError(error));
-      }
-      get onClose() {
-        return this.closeEmitter.event;
-      }
-      fireClose() {
-        this.closeEmitter.fire(void 0);
-      }
-      get onPartialMessage() {
-        return this.partialMessageEmitter.event;
-      }
-      firePartialMessage(info) {
-        this.partialMessageEmitter.fire(info);
-      }
-      asError(error) {
-        if (error instanceof Error) {
-          return error;
-        } else {
-          return new Error(`Reader received error. Reason: ${Is3.string(error.message) ? error.message : "unknown"}`);
-        }
-      }
-    };
-    exports2.AbstractMessageReader = AbstractMessageReader;
-    var ResolvedMessageReaderOptions;
-    (function(ResolvedMessageReaderOptions2) {
-      function fromOptions(options2) {
-        var _a3;
-        let charset;
-        let result;
-        let contentDecoder;
-        const contentDecoders = /* @__PURE__ */ new Map();
-        let contentTypeDecoder;
-        const contentTypeDecoders = /* @__PURE__ */ new Map();
-        if (options2 === void 0 || typeof options2 === "string") {
-          charset = options2 !== null && options2 !== void 0 ? options2 : "utf-8";
-        } else {
-          charset = (_a3 = options2.charset) !== null && _a3 !== void 0 ? _a3 : "utf-8";
-          if (options2.contentDecoder !== void 0) {
-            contentDecoder = options2.contentDecoder;
-            contentDecoders.set(contentDecoder.name, contentDecoder);
-          }
-          if (options2.contentDecoders !== void 0) {
-            for (const decoder of options2.contentDecoders) {
-              contentDecoders.set(decoder.name, decoder);
-            }
-          }
-          if (options2.contentTypeDecoder !== void 0) {
-            contentTypeDecoder = options2.contentTypeDecoder;
-            contentTypeDecoders.set(contentTypeDecoder.name, contentTypeDecoder);
-          }
-          if (options2.contentTypeDecoders !== void 0) {
-            for (const decoder of options2.contentTypeDecoders) {
-              contentTypeDecoders.set(decoder.name, decoder);
-            }
-          }
-        }
-        if (contentTypeDecoder === void 0) {
-          contentTypeDecoder = ral_1.default().applicationJson.decoder;
-          contentTypeDecoders.set(contentTypeDecoder.name, contentTypeDecoder);
-        }
-        return { charset, contentDecoder, contentDecoders, contentTypeDecoder, contentTypeDecoders };
-      }
-      ResolvedMessageReaderOptions2.fromOptions = fromOptions;
-    })(ResolvedMessageReaderOptions || (ResolvedMessageReaderOptions = {}));
-    var ReadableStreamMessageReader = class extends AbstractMessageReader {
-      constructor(readable, options2) {
-        super();
-        this.readable = readable;
-        this.options = ResolvedMessageReaderOptions.fromOptions(options2);
-        this.buffer = ral_1.default().messageBuffer.create(this.options.charset);
-        this._partialMessageTimeout = 1e4;
-        this.nextMessageLength = -1;
-        this.messageToken = 0;
-      }
-      set partialMessageTimeout(timeout) {
-        this._partialMessageTimeout = timeout;
-      }
-      get partialMessageTimeout() {
-        return this._partialMessageTimeout;
-      }
-      listen(callback) {
-        this.nextMessageLength = -1;
-        this.messageToken = 0;
-        this.partialMessageTimer = void 0;
-        this.callback = callback;
-        const result = this.readable.onData((data) => {
-          this.onData(data);
-        });
-        this.readable.onError((error) => this.fireError(error));
-        this.readable.onClose(() => this.fireClose());
-        return result;
-      }
-      onData(data) {
-        this.buffer.append(data);
-        while (true) {
-          if (this.nextMessageLength === -1) {
-            const headers = this.buffer.tryReadHeaders();
-            if (!headers) {
-              return;
-            }
-            const contentLength = headers.get("Content-Length");
-            if (!contentLength) {
-              throw new Error("Header must provide a Content-Length property.");
-            }
-            const length = parseInt(contentLength);
-            if (isNaN(length)) {
-              throw new Error("Content-Length value must be a number.");
-            }
-            this.nextMessageLength = length;
-          }
-          const body = this.buffer.tryReadBody(this.nextMessageLength);
-          if (body === void 0) {
-            this.setPartialMessageTimer();
-            return;
-          }
-          this.clearPartialMessageTimer();
-          this.nextMessageLength = -1;
-          let p;
-          if (this.options.contentDecoder !== void 0) {
-            p = this.options.contentDecoder.decode(body);
-          } else {
-            p = Promise.resolve(body);
-          }
-          p.then((value) => {
-            this.options.contentTypeDecoder.decode(value, this.options).then((msg) => {
-              this.callback(msg);
-            }, (error) => {
-              this.fireError(error);
-            });
-          }, (error) => {
-            this.fireError(error);
-          });
-        }
-      }
-      clearPartialMessageTimer() {
-        if (this.partialMessageTimer) {
-          ral_1.default().timer.clearTimeout(this.partialMessageTimer);
-          this.partialMessageTimer = void 0;
-        }
-      }
-      setPartialMessageTimer() {
-        this.clearPartialMessageTimer();
-        if (this._partialMessageTimeout <= 0) {
-          return;
-        }
-        this.partialMessageTimer = ral_1.default().timer.setTimeout((token, timeout) => {
-          this.partialMessageTimer = void 0;
-          if (token === this.messageToken) {
-            this.firePartialMessage({ messageToken: token, waitingTime: timeout });
-            this.setPartialMessageTimer();
-          }
-        }, this._partialMessageTimeout, this.messageToken, this._partialMessageTimeout);
-      }
-    };
-    exports2.ReadableStreamMessageReader = ReadableStreamMessageReader;
-  }
-});
-
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/semaphore.js
-var require_semaphore = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/semaphore.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.Semaphore = void 0;
-    var ral_1 = require_ral();
-    var Semaphore = class {
-      constructor(capacity = 1) {
-        if (capacity <= 0) {
-          throw new Error("Capacity must be greater than 0");
-        }
-        this._capacity = capacity;
-        this._active = 0;
-        this._waiting = [];
-      }
-      lock(thunk) {
-        return new Promise((resolve, reject) => {
-          this._waiting.push({ thunk, resolve, reject });
-          this.runNext();
-        });
-      }
-      get active() {
-        return this._active;
-      }
-      runNext() {
-        if (this._waiting.length === 0 || this._active === this._capacity) {
-          return;
-        }
-        ral_1.default().timer.setImmediate(() => this.doRunNext());
-      }
-      doRunNext() {
-        if (this._waiting.length === 0 || this._active === this._capacity) {
-          return;
-        }
-        const next = this._waiting.shift();
-        this._active++;
-        if (this._active > this._capacity) {
-          throw new Error(`To many thunks active`);
-        }
-        try {
-          const result = next.thunk();
-          if (result instanceof Promise) {
-            result.then((value) => {
-              this._active--;
-              next.resolve(value);
-              this.runNext();
-            }, (err) => {
-              this._active--;
-              next.reject(err);
-              this.runNext();
-            });
-          } else {
-            this._active--;
-            next.resolve(result);
-            this.runNext();
-          }
-        } catch (err) {
-          this._active--;
-          next.reject(err);
-          this.runNext();
-        }
-      }
-    };
-    exports2.Semaphore = Semaphore;
-  }
-});
-
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/messageWriter.js
-var require_messageWriter = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/messageWriter.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.WriteableStreamMessageWriter = exports2.AbstractMessageWriter = exports2.MessageWriter = void 0;
-    var ral_1 = require_ral();
-    var Is3 = require_is2();
-    var semaphore_1 = require_semaphore();
-    var events_1 = require_events();
-    var ContentLength = "Content-Length: ";
-    var CRLF = "\r\n";
-    var MessageWriter;
-    (function(MessageWriter2) {
-      function is(value) {
-        let candidate = value;
-        return candidate && Is3.func(candidate.dispose) && Is3.func(candidate.onClose) && Is3.func(candidate.onError) && Is3.func(candidate.write);
-      }
-      MessageWriter2.is = is;
-    })(MessageWriter = exports2.MessageWriter || (exports2.MessageWriter = {}));
-    var AbstractMessageWriter = class {
-      constructor() {
-        this.errorEmitter = new events_1.Emitter();
-        this.closeEmitter = new events_1.Emitter();
-      }
-      dispose() {
-        this.errorEmitter.dispose();
-        this.closeEmitter.dispose();
-      }
-      get onError() {
-        return this.errorEmitter.event;
-      }
-      fireError(error, message, count) {
-        this.errorEmitter.fire([this.asError(error), message, count]);
-      }
-      get onClose() {
-        return this.closeEmitter.event;
-      }
-      fireClose() {
-        this.closeEmitter.fire(void 0);
-      }
-      asError(error) {
-        if (error instanceof Error) {
-          return error;
-        } else {
-          return new Error(`Writer received error. Reason: ${Is3.string(error.message) ? error.message : "unknown"}`);
-        }
-      }
-    };
-    exports2.AbstractMessageWriter = AbstractMessageWriter;
-    var ResolvedMessageWriterOptions;
-    (function(ResolvedMessageWriterOptions2) {
-      function fromOptions(options2) {
-        var _a3, _b;
-        if (options2 === void 0 || typeof options2 === "string") {
-          return { charset: options2 !== null && options2 !== void 0 ? options2 : "utf-8", contentTypeEncoder: ral_1.default().applicationJson.encoder };
-        } else {
-          return { charset: (_a3 = options2.charset) !== null && _a3 !== void 0 ? _a3 : "utf-8", contentEncoder: options2.contentEncoder, contentTypeEncoder: (_b = options2.contentTypeEncoder) !== null && _b !== void 0 ? _b : ral_1.default().applicationJson.encoder };
-        }
-      }
-      ResolvedMessageWriterOptions2.fromOptions = fromOptions;
-    })(ResolvedMessageWriterOptions || (ResolvedMessageWriterOptions = {}));
-    var WriteableStreamMessageWriter = class extends AbstractMessageWriter {
-      constructor(writable, options2) {
-        super();
-        this.writable = writable;
-        this.options = ResolvedMessageWriterOptions.fromOptions(options2);
-        this.errorCount = 0;
-        this.writeSemaphore = new semaphore_1.Semaphore(1);
-        this.writable.onError((error) => this.fireError(error));
-        this.writable.onClose(() => this.fireClose());
-      }
-      write(msg) {
-        return __async(this, null, function* () {
-          return this.writeSemaphore.lock(() => __async(this, null, function* () {
-            const payload = this.options.contentTypeEncoder.encode(msg, this.options).then((buffer) => {
-              if (this.options.contentEncoder !== void 0) {
-                return this.options.contentEncoder.encode(buffer);
-              } else {
-                return buffer;
-              }
-            });
-            return payload.then((buffer) => {
-              const headers = [];
-              headers.push(ContentLength, buffer.byteLength.toString(), CRLF);
-              headers.push(CRLF);
-              return this.doWrite(msg, headers, buffer);
-            }, (error) => {
-              this.fireError(error);
-              throw error;
-            });
-          }));
-        });
-      }
-      doWrite(msg, headers, data) {
-        return __async(this, null, function* () {
-          try {
-            yield this.writable.write(headers.join(""), "ascii");
-            return this.writable.write(data);
-          } catch (error) {
-            this.handleError(error, msg);
-            return Promise.reject(error);
-          }
-        });
-      }
-      handleError(error, msg) {
-        this.errorCount++;
-        this.fireError(error, msg, this.errorCount);
-      }
-      end() {
-        this.writable.end();
-      }
-    };
-    exports2.WriteableStreamMessageWriter = WriteableStreamMessageWriter;
-  }
-});
-
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/linkedMap.js
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/linkedMap.js
 var require_linkedMap = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/linkedMap.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/linkedMap.js"(exports2) {
     "use strict";
+    var _a3;
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.LRUCache = exports2.LinkedMap = exports2.Touch = void 0;
     var Touch;
@@ -2235,10 +1302,10 @@ var require_linkedMap = __commonJS({
       Touch2.AsOld = Touch2.First;
       Touch2.Last = 2;
       Touch2.AsNew = Touch2.Last;
-    })(Touch = exports2.Touch || (exports2.Touch = {}));
+    })(Touch || (exports2.Touch = Touch = {}));
     var LinkedMap = class {
       constructor() {
-        this[Symbol.toStringTag] = "LinkedMap";
+        this[_a3] = "LinkedMap";
         this._map = /* @__PURE__ */ new Map();
         this._head = void 0;
         this._tail = void 0;
@@ -2259,12 +1326,12 @@ var require_linkedMap = __commonJS({
         return this._size;
       }
       get first() {
-        var _a3;
-        return (_a3 = this._head) === null || _a3 === void 0 ? void 0 : _a3.value;
+        var _a4;
+        return (_a4 = this._head) == null ? void 0 : _a4.value;
       }
       get last() {
-        var _a3;
-        return (_a3 = this._tail) === null || _a3 === void 0 ? void 0 : _a3.value;
+        var _a4;
+        return (_a4 = this._tail) == null ? void 0 : _a4.value;
       }
       has(key) {
         return this._map.has(key);
@@ -2349,15 +1416,14 @@ var require_linkedMap = __commonJS({
         }
       }
       keys() {
-        const map = this;
         const state = this._state;
         let current = this._head;
         const iterator = {
-          [Symbol.iterator]() {
+          [Symbol.iterator]: () => {
             return iterator;
           },
-          next() {
-            if (map._state !== state) {
+          next: () => {
+            if (this._state !== state) {
               throw new Error(`LinkedMap got modified during iteration.`);
             }
             if (current) {
@@ -2372,15 +1438,14 @@ var require_linkedMap = __commonJS({
         return iterator;
       }
       values() {
-        const map = this;
         const state = this._state;
         let current = this._head;
         const iterator = {
-          [Symbol.iterator]() {
+          [Symbol.iterator]: () => {
             return iterator;
           },
-          next() {
-            if (map._state !== state) {
+          next: () => {
+            if (this._state !== state) {
               throw new Error(`LinkedMap got modified during iteration.`);
             }
             if (current) {
@@ -2395,15 +1460,14 @@ var require_linkedMap = __commonJS({
         return iterator;
       }
       entries() {
-        const map = this;
         const state = this._state;
         let current = this._head;
         const iterator = {
-          [Symbol.iterator]() {
+          [Symbol.iterator]: () => {
             return iterator;
           },
-          next() {
-            if (map._state !== state) {
+          next: () => {
+            if (this._state !== state) {
               throw new Error(`LinkedMap got modified during iteration.`);
             }
             if (current) {
@@ -2417,7 +1481,7 @@ var require_linkedMap = __commonJS({
         };
         return iterator;
       }
-      [Symbol.iterator]() {
+      [(_a3 = Symbol.toStringTag, Symbol.iterator)]() {
         return this.entries();
       }
       trimOld(newSize) {
@@ -2596,14 +1660,880 @@ var require_linkedMap = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/connection.js
-var require_connection = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/connection.js"(exports2) {
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/disposable.js
+var require_disposable = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/disposable.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.createMessageConnection = exports2.ConnectionOptions = exports2.CancellationStrategy = exports2.CancellationSenderStrategy = exports2.CancellationReceiverStrategy = exports2.ConnectionStrategy = exports2.ConnectionError = exports2.ConnectionErrors = exports2.LogTraceNotification = exports2.SetTraceNotification = exports2.TraceFormat = exports2.Trace = exports2.NullLogger = exports2.ProgressType = void 0;
+    exports2.Disposable = void 0;
+    var Disposable;
+    (function(Disposable2) {
+      function create(func) {
+        return {
+          dispose: func
+        };
+      }
+      Disposable2.create = create;
+    })(Disposable || (exports2.Disposable = Disposable = {}));
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/ral.js
+var require_ral = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/ral.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var _ral;
+    function RAL() {
+      if (_ral === void 0) {
+        throw new Error(`No runtime abstraction layer installed`);
+      }
+      return _ral;
+    }
+    (function(RAL2) {
+      function install(ral) {
+        if (ral === void 0) {
+          throw new Error(`No runtime abstraction layer provided`);
+        }
+        _ral = ral;
+      }
+      RAL2.install = install;
+    })(RAL || (RAL = {}));
+    exports2.default = RAL;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/events.js
+var require_events = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/events.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.Emitter = exports2.Event = void 0;
     var ral_1 = require_ral();
-    var Is3 = require_is2();
+    var Event;
+    (function(Event2) {
+      const _disposable = { dispose() {
+      } };
+      Event2.None = function() {
+        return _disposable;
+      };
+    })(Event || (exports2.Event = Event = {}));
+    var CallbackList = class {
+      add(callback, context = null, bucket) {
+        if (!this._callbacks) {
+          this._callbacks = [];
+          this._contexts = [];
+        }
+        this._callbacks.push(callback);
+        this._contexts.push(context);
+        if (Array.isArray(bucket)) {
+          bucket.push({ dispose: () => this.remove(callback, context) });
+        }
+      }
+      remove(callback, context = null) {
+        if (!this._callbacks) {
+          return;
+        }
+        let foundCallbackWithDifferentContext = false;
+        for (let i = 0, len = this._callbacks.length; i < len; i++) {
+          if (this._callbacks[i] === callback) {
+            if (this._contexts[i] === context) {
+              this._callbacks.splice(i, 1);
+              this._contexts.splice(i, 1);
+              return;
+            } else {
+              foundCallbackWithDifferentContext = true;
+            }
+          }
+        }
+        if (foundCallbackWithDifferentContext) {
+          throw new Error("When adding a listener with a context, you should remove it with the same context");
+        }
+      }
+      invoke(...args) {
+        if (!this._callbacks) {
+          return [];
+        }
+        const ret = [], callbacks = this._callbacks.slice(0), contexts = this._contexts.slice(0);
+        for (let i = 0, len = callbacks.length; i < len; i++) {
+          try {
+            ret.push(callbacks[i].apply(contexts[i], args));
+          } catch (e) {
+            (0, ral_1.default)().console.error(e);
+          }
+        }
+        return ret;
+      }
+      isEmpty() {
+        return !this._callbacks || this._callbacks.length === 0;
+      }
+      dispose() {
+        this._callbacks = void 0;
+        this._contexts = void 0;
+      }
+    };
+    var Emitter = class _Emitter {
+      constructor(_options) {
+        this._options = _options;
+      }
+      /**
+       * For the public to allow to subscribe
+       * to events from this Emitter
+       */
+      get event() {
+        if (!this._event) {
+          this._event = (listener, thisArgs, disposables) => {
+            if (!this._callbacks) {
+              this._callbacks = new CallbackList();
+            }
+            if (this._options && this._options.onFirstListenerAdd && this._callbacks.isEmpty()) {
+              this._options.onFirstListenerAdd(this);
+            }
+            this._callbacks.add(listener, thisArgs);
+            const result = {
+              dispose: () => {
+                if (!this._callbacks) {
+                  return;
+                }
+                this._callbacks.remove(listener, thisArgs);
+                result.dispose = _Emitter._noop;
+                if (this._options && this._options.onLastListenerRemove && this._callbacks.isEmpty()) {
+                  this._options.onLastListenerRemove(this);
+                }
+              }
+            };
+            if (Array.isArray(disposables)) {
+              disposables.push(result);
+            }
+            return result;
+          };
+        }
+        return this._event;
+      }
+      /**
+       * To be kept private to fire an event to
+       * subscribers
+       */
+      fire(event) {
+        if (this._callbacks) {
+          this._callbacks.invoke.call(this._callbacks, event);
+        }
+      }
+      dispose() {
+        if (this._callbacks) {
+          this._callbacks.dispose();
+          this._callbacks = void 0;
+        }
+      }
+    };
+    exports2.Emitter = Emitter;
+    Emitter._noop = function() {
+    };
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/cancellation.js
+var require_cancellation = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/cancellation.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.CancellationTokenSource = exports2.CancellationToken = void 0;
+    var ral_1 = require_ral();
+    var Is2 = require_is2();
+    var events_1 = require_events();
+    var CancellationToken;
+    (function(CancellationToken2) {
+      CancellationToken2.None = Object.freeze({
+        isCancellationRequested: false,
+        onCancellationRequested: events_1.Event.None
+      });
+      CancellationToken2.Cancelled = Object.freeze({
+        isCancellationRequested: true,
+        onCancellationRequested: events_1.Event.None
+      });
+      function is(value) {
+        const candidate = value;
+        return candidate && (candidate === CancellationToken2.None || candidate === CancellationToken2.Cancelled || Is2.boolean(candidate.isCancellationRequested) && !!candidate.onCancellationRequested);
+      }
+      CancellationToken2.is = is;
+    })(CancellationToken || (exports2.CancellationToken = CancellationToken = {}));
+    var shortcutEvent = Object.freeze(function(callback, context) {
+      const handle = (0, ral_1.default)().timer.setTimeout(callback.bind(context), 0);
+      return { dispose() {
+        handle.dispose();
+      } };
+    });
+    var MutableToken = class {
+      constructor() {
+        this._isCancelled = false;
+      }
+      cancel() {
+        if (!this._isCancelled) {
+          this._isCancelled = true;
+          if (this._emitter) {
+            this._emitter.fire(void 0);
+            this.dispose();
+          }
+        }
+      }
+      get isCancellationRequested() {
+        return this._isCancelled;
+      }
+      get onCancellationRequested() {
+        if (this._isCancelled) {
+          return shortcutEvent;
+        }
+        if (!this._emitter) {
+          this._emitter = new events_1.Emitter();
+        }
+        return this._emitter.event;
+      }
+      dispose() {
+        if (this._emitter) {
+          this._emitter.dispose();
+          this._emitter = void 0;
+        }
+      }
+    };
+    var CancellationTokenSource = class {
+      get token() {
+        if (!this._token) {
+          this._token = new MutableToken();
+        }
+        return this._token;
+      }
+      cancel() {
+        if (!this._token) {
+          this._token = CancellationToken.Cancelled;
+        } else {
+          this._token.cancel();
+        }
+      }
+      dispose() {
+        if (!this._token) {
+          this._token = CancellationToken.None;
+        } else if (this._token instanceof MutableToken) {
+          this._token.dispose();
+        }
+      }
+    };
+    exports2.CancellationTokenSource = CancellationTokenSource;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/sharedArrayCancellation.js
+var require_sharedArrayCancellation = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/sharedArrayCancellation.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.SharedArrayReceiverStrategy = exports2.SharedArraySenderStrategy = void 0;
+    var cancellation_1 = require_cancellation();
+    var CancellationState;
+    (function(CancellationState2) {
+      CancellationState2.Continue = 0;
+      CancellationState2.Cancelled = 1;
+    })(CancellationState || (CancellationState = {}));
+    var SharedArraySenderStrategy = class {
+      constructor() {
+        this.buffers = /* @__PURE__ */ new Map();
+      }
+      enableCancellation(request) {
+        if (request.id === null) {
+          return;
+        }
+        const buffer = new SharedArrayBuffer(4);
+        const data = new Int32Array(buffer, 0, 1);
+        data[0] = CancellationState.Continue;
+        this.buffers.set(request.id, buffer);
+        request.$cancellationData = buffer;
+      }
+      sendCancellation(_conn, id) {
+        return __async(this, null, function* () {
+          const buffer = this.buffers.get(id);
+          if (buffer === void 0) {
+            return;
+          }
+          const data = new Int32Array(buffer, 0, 1);
+          Atomics.store(data, 0, CancellationState.Cancelled);
+        });
+      }
+      cleanup(id) {
+        this.buffers.delete(id);
+      }
+      dispose() {
+        this.buffers.clear();
+      }
+    };
+    exports2.SharedArraySenderStrategy = SharedArraySenderStrategy;
+    var SharedArrayBufferCancellationToken = class {
+      constructor(buffer) {
+        this.data = new Int32Array(buffer, 0, 1);
+      }
+      get isCancellationRequested() {
+        return Atomics.load(this.data, 0) === CancellationState.Cancelled;
+      }
+      get onCancellationRequested() {
+        throw new Error(`Cancellation over SharedArrayBuffer doesn't support cancellation events`);
+      }
+    };
+    var SharedArrayBufferCancellationTokenSource = class {
+      constructor(buffer) {
+        this.token = new SharedArrayBufferCancellationToken(buffer);
+      }
+      cancel() {
+      }
+      dispose() {
+      }
+    };
+    var SharedArrayReceiverStrategy = class {
+      constructor() {
+        this.kind = "request";
+      }
+      createCancellationTokenSource(request) {
+        const buffer = request.$cancellationData;
+        if (buffer === void 0) {
+          return new cancellation_1.CancellationTokenSource();
+        }
+        return new SharedArrayBufferCancellationTokenSource(buffer);
+      }
+    };
+    exports2.SharedArrayReceiverStrategy = SharedArrayReceiverStrategy;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/semaphore.js
+var require_semaphore = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/semaphore.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.Semaphore = void 0;
+    var ral_1 = require_ral();
+    var Semaphore = class {
+      constructor(capacity = 1) {
+        if (capacity <= 0) {
+          throw new Error("Capacity must be greater than 0");
+        }
+        this._capacity = capacity;
+        this._active = 0;
+        this._waiting = [];
+      }
+      lock(thunk) {
+        return new Promise((resolve, reject) => {
+          this._waiting.push({ thunk, resolve, reject });
+          this.runNext();
+        });
+      }
+      get active() {
+        return this._active;
+      }
+      runNext() {
+        if (this._waiting.length === 0 || this._active === this._capacity) {
+          return;
+        }
+        (0, ral_1.default)().timer.setImmediate(() => this.doRunNext());
+      }
+      doRunNext() {
+        if (this._waiting.length === 0 || this._active === this._capacity) {
+          return;
+        }
+        const next = this._waiting.shift();
+        this._active++;
+        if (this._active > this._capacity) {
+          throw new Error(`To many thunks active`);
+        }
+        try {
+          const result = next.thunk();
+          if (result instanceof Promise) {
+            result.then((value) => {
+              this._active--;
+              next.resolve(value);
+              this.runNext();
+            }, (err) => {
+              this._active--;
+              next.reject(err);
+              this.runNext();
+            });
+          } else {
+            this._active--;
+            next.resolve(result);
+            this.runNext();
+          }
+        } catch (err) {
+          this._active--;
+          next.reject(err);
+          this.runNext();
+        }
+      }
+    };
+    exports2.Semaphore = Semaphore;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/messageReader.js
+var require_messageReader = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/messageReader.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.ReadableStreamMessageReader = exports2.AbstractMessageReader = exports2.MessageReader = void 0;
+    var ral_1 = require_ral();
+    var Is2 = require_is2();
+    var events_1 = require_events();
+    var semaphore_1 = require_semaphore();
+    var MessageReader;
+    (function(MessageReader2) {
+      function is(value) {
+        let candidate = value;
+        return candidate && Is2.func(candidate.listen) && Is2.func(candidate.dispose) && Is2.func(candidate.onError) && Is2.func(candidate.onClose) && Is2.func(candidate.onPartialMessage);
+      }
+      MessageReader2.is = is;
+    })(MessageReader || (exports2.MessageReader = MessageReader = {}));
+    var AbstractMessageReader = class {
+      constructor() {
+        this.errorEmitter = new events_1.Emitter();
+        this.closeEmitter = new events_1.Emitter();
+        this.partialMessageEmitter = new events_1.Emitter();
+      }
+      dispose() {
+        this.errorEmitter.dispose();
+        this.closeEmitter.dispose();
+      }
+      get onError() {
+        return this.errorEmitter.event;
+      }
+      fireError(error) {
+        this.errorEmitter.fire(this.asError(error));
+      }
+      get onClose() {
+        return this.closeEmitter.event;
+      }
+      fireClose() {
+        this.closeEmitter.fire(void 0);
+      }
+      get onPartialMessage() {
+        return this.partialMessageEmitter.event;
+      }
+      firePartialMessage(info) {
+        this.partialMessageEmitter.fire(info);
+      }
+      asError(error) {
+        if (error instanceof Error) {
+          return error;
+        } else {
+          return new Error(`Reader received error. Reason: ${Is2.string(error.message) ? error.message : "unknown"}`);
+        }
+      }
+    };
+    exports2.AbstractMessageReader = AbstractMessageReader;
+    var ResolvedMessageReaderOptions;
+    (function(ResolvedMessageReaderOptions2) {
+      function fromOptions(options2) {
+        var _a3;
+        let charset;
+        let result;
+        let contentDecoder;
+        const contentDecoders = /* @__PURE__ */ new Map();
+        let contentTypeDecoder;
+        const contentTypeDecoders = /* @__PURE__ */ new Map();
+        if (options2 === void 0 || typeof options2 === "string") {
+          charset = options2 != null ? options2 : "utf-8";
+        } else {
+          charset = (_a3 = options2.charset) != null ? _a3 : "utf-8";
+          if (options2.contentDecoder !== void 0) {
+            contentDecoder = options2.contentDecoder;
+            contentDecoders.set(contentDecoder.name, contentDecoder);
+          }
+          if (options2.contentDecoders !== void 0) {
+            for (const decoder of options2.contentDecoders) {
+              contentDecoders.set(decoder.name, decoder);
+            }
+          }
+          if (options2.contentTypeDecoder !== void 0) {
+            contentTypeDecoder = options2.contentTypeDecoder;
+            contentTypeDecoders.set(contentTypeDecoder.name, contentTypeDecoder);
+          }
+          if (options2.contentTypeDecoders !== void 0) {
+            for (const decoder of options2.contentTypeDecoders) {
+              contentTypeDecoders.set(decoder.name, decoder);
+            }
+          }
+        }
+        if (contentTypeDecoder === void 0) {
+          contentTypeDecoder = (0, ral_1.default)().applicationJson.decoder;
+          contentTypeDecoders.set(contentTypeDecoder.name, contentTypeDecoder);
+        }
+        return { charset, contentDecoder, contentDecoders, contentTypeDecoder, contentTypeDecoders };
+      }
+      ResolvedMessageReaderOptions2.fromOptions = fromOptions;
+    })(ResolvedMessageReaderOptions || (ResolvedMessageReaderOptions = {}));
+    var ReadableStreamMessageReader = class extends AbstractMessageReader {
+      constructor(readable, options2) {
+        super();
+        this.readable = readable;
+        this.options = ResolvedMessageReaderOptions.fromOptions(options2);
+        this.buffer = (0, ral_1.default)().messageBuffer.create(this.options.charset);
+        this._partialMessageTimeout = 1e4;
+        this.nextMessageLength = -1;
+        this.messageToken = 0;
+        this.readSemaphore = new semaphore_1.Semaphore(1);
+      }
+      set partialMessageTimeout(timeout) {
+        this._partialMessageTimeout = timeout;
+      }
+      get partialMessageTimeout() {
+        return this._partialMessageTimeout;
+      }
+      listen(callback) {
+        this.nextMessageLength = -1;
+        this.messageToken = 0;
+        this.partialMessageTimer = void 0;
+        this.callback = callback;
+        const result = this.readable.onData((data) => {
+          this.onData(data);
+        });
+        this.readable.onError((error) => this.fireError(error));
+        this.readable.onClose(() => this.fireClose());
+        return result;
+      }
+      onData(data) {
+        try {
+          this.buffer.append(data);
+          while (true) {
+            if (this.nextMessageLength === -1) {
+              const headers = this.buffer.tryReadHeaders(true);
+              if (!headers) {
+                return;
+              }
+              const contentLength = headers.get("content-length");
+              if (!contentLength) {
+                this.fireError(new Error(`Header must provide a Content-Length property.
+${JSON.stringify(Object.fromEntries(headers))}`));
+                return;
+              }
+              const length = parseInt(contentLength);
+              if (isNaN(length)) {
+                this.fireError(new Error(`Content-Length value must be a number. Got ${contentLength}`));
+                return;
+              }
+              this.nextMessageLength = length;
+            }
+            const body = this.buffer.tryReadBody(this.nextMessageLength);
+            if (body === void 0) {
+              this.setPartialMessageTimer();
+              return;
+            }
+            this.clearPartialMessageTimer();
+            this.nextMessageLength = -1;
+            this.readSemaphore.lock(() => __async(this, null, function* () {
+              const bytes = this.options.contentDecoder !== void 0 ? yield this.options.contentDecoder.decode(body) : body;
+              const message = yield this.options.contentTypeDecoder.decode(bytes, this.options);
+              this.callback(message);
+            })).catch((error) => {
+              this.fireError(error);
+            });
+          }
+        } catch (error) {
+          this.fireError(error);
+        }
+      }
+      clearPartialMessageTimer() {
+        if (this.partialMessageTimer) {
+          this.partialMessageTimer.dispose();
+          this.partialMessageTimer = void 0;
+        }
+      }
+      setPartialMessageTimer() {
+        this.clearPartialMessageTimer();
+        if (this._partialMessageTimeout <= 0) {
+          return;
+        }
+        this.partialMessageTimer = (0, ral_1.default)().timer.setTimeout((token, timeout) => {
+          this.partialMessageTimer = void 0;
+          if (token === this.messageToken) {
+            this.firePartialMessage({ messageToken: token, waitingTime: timeout });
+            this.setPartialMessageTimer();
+          }
+        }, this._partialMessageTimeout, this.messageToken, this._partialMessageTimeout);
+      }
+    };
+    exports2.ReadableStreamMessageReader = ReadableStreamMessageReader;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/messageWriter.js
+var require_messageWriter = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/messageWriter.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.WriteableStreamMessageWriter = exports2.AbstractMessageWriter = exports2.MessageWriter = void 0;
+    var ral_1 = require_ral();
+    var Is2 = require_is2();
+    var semaphore_1 = require_semaphore();
+    var events_1 = require_events();
+    var ContentLength = "Content-Length: ";
+    var CRLF = "\r\n";
+    var MessageWriter;
+    (function(MessageWriter2) {
+      function is(value) {
+        let candidate = value;
+        return candidate && Is2.func(candidate.dispose) && Is2.func(candidate.onClose) && Is2.func(candidate.onError) && Is2.func(candidate.write);
+      }
+      MessageWriter2.is = is;
+    })(MessageWriter || (exports2.MessageWriter = MessageWriter = {}));
+    var AbstractMessageWriter = class {
+      constructor() {
+        this.errorEmitter = new events_1.Emitter();
+        this.closeEmitter = new events_1.Emitter();
+      }
+      dispose() {
+        this.errorEmitter.dispose();
+        this.closeEmitter.dispose();
+      }
+      get onError() {
+        return this.errorEmitter.event;
+      }
+      fireError(error, message, count) {
+        this.errorEmitter.fire([this.asError(error), message, count]);
+      }
+      get onClose() {
+        return this.closeEmitter.event;
+      }
+      fireClose() {
+        this.closeEmitter.fire(void 0);
+      }
+      asError(error) {
+        if (error instanceof Error) {
+          return error;
+        } else {
+          return new Error(`Writer received error. Reason: ${Is2.string(error.message) ? error.message : "unknown"}`);
+        }
+      }
+    };
+    exports2.AbstractMessageWriter = AbstractMessageWriter;
+    var ResolvedMessageWriterOptions;
+    (function(ResolvedMessageWriterOptions2) {
+      function fromOptions(options2) {
+        var _a3, _b;
+        if (options2 === void 0 || typeof options2 === "string") {
+          return { charset: options2 != null ? options2 : "utf-8", contentTypeEncoder: (0, ral_1.default)().applicationJson.encoder };
+        } else {
+          return { charset: (_a3 = options2.charset) != null ? _a3 : "utf-8", contentEncoder: options2.contentEncoder, contentTypeEncoder: (_b = options2.contentTypeEncoder) != null ? _b : (0, ral_1.default)().applicationJson.encoder };
+        }
+      }
+      ResolvedMessageWriterOptions2.fromOptions = fromOptions;
+    })(ResolvedMessageWriterOptions || (ResolvedMessageWriterOptions = {}));
+    var WriteableStreamMessageWriter = class extends AbstractMessageWriter {
+      constructor(writable, options2) {
+        super();
+        this.writable = writable;
+        this.options = ResolvedMessageWriterOptions.fromOptions(options2);
+        this.errorCount = 0;
+        this.writeSemaphore = new semaphore_1.Semaphore(1);
+        this.writable.onError((error) => this.fireError(error));
+        this.writable.onClose(() => this.fireClose());
+      }
+      write(msg) {
+        return __async(this, null, function* () {
+          return this.writeSemaphore.lock(() => __async(this, null, function* () {
+            const payload = this.options.contentTypeEncoder.encode(msg, this.options).then((buffer) => {
+              if (this.options.contentEncoder !== void 0) {
+                return this.options.contentEncoder.encode(buffer);
+              } else {
+                return buffer;
+              }
+            });
+            return payload.then((buffer) => {
+              const headers = [];
+              headers.push(ContentLength, buffer.byteLength.toString(), CRLF);
+              headers.push(CRLF);
+              return this.doWrite(msg, headers, buffer);
+            }, (error) => {
+              this.fireError(error);
+              throw error;
+            });
+          }));
+        });
+      }
+      doWrite(msg, headers, data) {
+        return __async(this, null, function* () {
+          try {
+            yield this.writable.write(headers.join(""), "ascii");
+            return this.writable.write(data);
+          } catch (error) {
+            this.handleError(error, msg);
+            return Promise.reject(error);
+          }
+        });
+      }
+      handleError(error, msg) {
+        this.errorCount++;
+        this.fireError(error, msg, this.errorCount);
+      }
+      end() {
+        this.writable.end();
+      }
+    };
+    exports2.WriteableStreamMessageWriter = WriteableStreamMessageWriter;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/messageBuffer.js
+var require_messageBuffer = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/messageBuffer.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.AbstractMessageBuffer = void 0;
+    var CR = 13;
+    var LF = 10;
+    var CRLF = "\r\n";
+    var AbstractMessageBuffer = class {
+      constructor(encoding = "utf-8") {
+        this._encoding = encoding;
+        this._chunks = [];
+        this._totalLength = 0;
+      }
+      get encoding() {
+        return this._encoding;
+      }
+      append(chunk) {
+        const toAppend = typeof chunk === "string" ? this.fromString(chunk, this._encoding) : chunk;
+        this._chunks.push(toAppend);
+        this._totalLength += toAppend.byteLength;
+      }
+      tryReadHeaders(lowerCaseKeys = false) {
+        if (this._chunks.length === 0) {
+          return void 0;
+        }
+        let state = 0;
+        let chunkIndex = 0;
+        let offset = 0;
+        let chunkBytesRead = 0;
+        row:
+          while (chunkIndex < this._chunks.length) {
+            const chunk = this._chunks[chunkIndex];
+            offset = 0;
+            column:
+              while (offset < chunk.length) {
+                const value = chunk[offset];
+                switch (value) {
+                  case CR:
+                    switch (state) {
+                      case 0:
+                        state = 1;
+                        break;
+                      case 2:
+                        state = 3;
+                        break;
+                      default:
+                        state = 0;
+                    }
+                    break;
+                  case LF:
+                    switch (state) {
+                      case 1:
+                        state = 2;
+                        break;
+                      case 3:
+                        state = 4;
+                        offset++;
+                        break row;
+                      default:
+                        state = 0;
+                    }
+                    break;
+                  default:
+                    state = 0;
+                }
+                offset++;
+              }
+            chunkBytesRead += chunk.byteLength;
+            chunkIndex++;
+          }
+        if (state !== 4) {
+          return void 0;
+        }
+        const buffer = this._read(chunkBytesRead + offset);
+        const result = /* @__PURE__ */ new Map();
+        const headers = this.toString(buffer, "ascii").split(CRLF);
+        if (headers.length < 2) {
+          return result;
+        }
+        for (let i = 0; i < headers.length - 2; i++) {
+          const header = headers[i];
+          const index = header.indexOf(":");
+          if (index === -1) {
+            throw new Error(`Message header must separate key and value using ':'
+${header}`);
+          }
+          const key = header.substr(0, index);
+          const value = header.substr(index + 1).trim();
+          result.set(lowerCaseKeys ? key.toLowerCase() : key, value);
+        }
+        return result;
+      }
+      tryReadBody(length) {
+        if (this._totalLength < length) {
+          return void 0;
+        }
+        return this._read(length);
+      }
+      get numberOfBytes() {
+        return this._totalLength;
+      }
+      _read(byteCount) {
+        if (byteCount === 0) {
+          return this.emptyBuffer();
+        }
+        if (byteCount > this._totalLength) {
+          throw new Error(`Cannot read so many bytes!`);
+        }
+        if (this._chunks[0].byteLength === byteCount) {
+          const chunk = this._chunks[0];
+          this._chunks.shift();
+          this._totalLength -= byteCount;
+          return this.asNative(chunk);
+        }
+        if (this._chunks[0].byteLength > byteCount) {
+          const chunk = this._chunks[0];
+          const result2 = this.asNative(chunk, byteCount);
+          this._chunks[0] = chunk.slice(byteCount);
+          this._totalLength -= byteCount;
+          return result2;
+        }
+        const result = this.allocNative(byteCount);
+        let resultOffset = 0;
+        let chunkIndex = 0;
+        while (byteCount > 0) {
+          const chunk = this._chunks[chunkIndex];
+          if (chunk.byteLength > byteCount) {
+            const chunkPart = chunk.slice(0, byteCount);
+            result.set(chunkPart, resultOffset);
+            resultOffset += byteCount;
+            this._chunks[chunkIndex] = chunk.slice(byteCount);
+            this._totalLength -= byteCount;
+            byteCount -= byteCount;
+          } else {
+            result.set(chunk, resultOffset);
+            resultOffset += chunk.byteLength;
+            this._chunks.shift();
+            this._totalLength -= chunk.byteLength;
+            byteCount -= chunk.byteLength;
+          }
+        }
+        return result;
+      }
+    };
+    exports2.AbstractMessageBuffer = AbstractMessageBuffer;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/connection.js
+var require_connection = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/connection.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.createMessageConnection = exports2.ConnectionOptions = exports2.MessageStrategy = exports2.CancellationStrategy = exports2.CancellationSenderStrategy = exports2.CancellationReceiverStrategy = exports2.RequestCancellationReceiverStrategy = exports2.IdCancellationReceiverStrategy = exports2.ConnectionStrategy = exports2.ConnectionError = exports2.ConnectionErrors = exports2.LogTraceNotification = exports2.SetTraceNotification = exports2.TraceFormat = exports2.TraceValues = exports2.Trace = exports2.NullLogger = exports2.ProgressType = exports2.ProgressToken = void 0;
+    var ral_1 = require_ral();
+    var Is2 = require_is2();
     var messages_1 = require_messages();
     var linkedMap_1 = require_linkedMap();
     var events_1 = require_events();
@@ -2612,6 +2542,13 @@ var require_connection = __commonJS({
     (function(CancelNotification2) {
       CancelNotification2.type = new messages_1.NotificationType("$/cancelRequest");
     })(CancelNotification || (CancelNotification = {}));
+    var ProgressToken;
+    (function(ProgressToken2) {
+      function is(value) {
+        return typeof value === "string" || typeof value === "number";
+      }
+      ProgressToken2.is = is;
+    })(ProgressToken || (exports2.ProgressToken = ProgressToken = {}));
     var ProgressNotification;
     (function(ProgressNotification2) {
       ProgressNotification2.type = new messages_1.NotificationType("$/progress");
@@ -2624,7 +2561,7 @@ var require_connection = __commonJS({
     var StarRequestHandler;
     (function(StarRequestHandler2) {
       function is(value) {
-        return Is3.func(value);
+        return Is2.func(value);
       }
       StarRequestHandler2.is = is;
     })(StarRequestHandler || (StarRequestHandler = {}));
@@ -2642,11 +2579,19 @@ var require_connection = __commonJS({
     (function(Trace2) {
       Trace2[Trace2["Off"] = 0] = "Off";
       Trace2[Trace2["Messages"] = 1] = "Messages";
-      Trace2[Trace2["Verbose"] = 2] = "Verbose";
-    })(Trace = exports2.Trace || (exports2.Trace = {}));
+      Trace2[Trace2["Compact"] = 2] = "Compact";
+      Trace2[Trace2["Verbose"] = 3] = "Verbose";
+    })(Trace || (exports2.Trace = Trace = {}));
+    var TraceValues;
+    (function(TraceValues2) {
+      TraceValues2.Off = "off";
+      TraceValues2.Messages = "messages";
+      TraceValues2.Compact = "compact";
+      TraceValues2.Verbose = "verbose";
+    })(TraceValues || (exports2.TraceValues = TraceValues = {}));
     (function(Trace2) {
       function fromString(value) {
-        if (!Is3.string(value)) {
+        if (!Is2.string(value)) {
           return Trace2.Off;
         }
         value = value.toLowerCase();
@@ -2655,6 +2600,8 @@ var require_connection = __commonJS({
             return Trace2.Off;
           case "messages":
             return Trace2.Messages;
+          case "compact":
+            return Trace2.Compact;
           case "verbose":
             return Trace2.Verbose;
           default:
@@ -2668,6 +2615,8 @@ var require_connection = __commonJS({
             return "off";
           case Trace2.Messages:
             return "messages";
+          case Trace2.Compact:
+            return "compact";
           case Trace2.Verbose:
             return "verbose";
           default:
@@ -2675,14 +2624,17 @@ var require_connection = __commonJS({
         }
       }
       Trace2.toString = toString;
-    })(Trace = exports2.Trace || (exports2.Trace = {}));
+    })(Trace || (exports2.Trace = Trace = {}));
     var TraceFormat;
     (function(TraceFormat2) {
       TraceFormat2["Text"] = "text";
       TraceFormat2["JSON"] = "json";
-    })(TraceFormat = exports2.TraceFormat || (exports2.TraceFormat = {}));
+    })(TraceFormat || (exports2.TraceFormat = TraceFormat = {}));
     (function(TraceFormat2) {
       function fromString(value) {
+        if (!Is2.string(value)) {
+          return TraceFormat2.Text;
+        }
         value = value.toLowerCase();
         if (value === "json") {
           return TraceFormat2.JSON;
@@ -2691,21 +2643,21 @@ var require_connection = __commonJS({
         }
       }
       TraceFormat2.fromString = fromString;
-    })(TraceFormat = exports2.TraceFormat || (exports2.TraceFormat = {}));
+    })(TraceFormat || (exports2.TraceFormat = TraceFormat = {}));
     var SetTraceNotification;
     (function(SetTraceNotification2) {
       SetTraceNotification2.type = new messages_1.NotificationType("$/setTrace");
-    })(SetTraceNotification = exports2.SetTraceNotification || (exports2.SetTraceNotification = {}));
+    })(SetTraceNotification || (exports2.SetTraceNotification = SetTraceNotification = {}));
     var LogTraceNotification;
     (function(LogTraceNotification2) {
       LogTraceNotification2.type = new messages_1.NotificationType("$/logTrace");
-    })(LogTraceNotification = exports2.LogTraceNotification || (exports2.LogTraceNotification = {}));
+    })(LogTraceNotification || (exports2.LogTraceNotification = LogTraceNotification = {}));
     var ConnectionErrors;
     (function(ConnectionErrors2) {
       ConnectionErrors2[ConnectionErrors2["Closed"] = 1] = "Closed";
       ConnectionErrors2[ConnectionErrors2["Disposed"] = 2] = "Disposed";
       ConnectionErrors2[ConnectionErrors2["AlreadyListening"] = 3] = "AlreadyListening";
-    })(ConnectionErrors = exports2.ConnectionErrors || (exports2.ConnectionErrors = {}));
+    })(ConnectionErrors || (exports2.ConnectionErrors = ConnectionErrors = {}));
     var ConnectionError = class _ConnectionError extends Error {
       constructor(code, message) {
         super(message);
@@ -2718,10 +2670,26 @@ var require_connection = __commonJS({
     (function(ConnectionStrategy2) {
       function is(value) {
         const candidate = value;
-        return candidate && Is3.func(candidate.cancelUndispatched);
+        return candidate && Is2.func(candidate.cancelUndispatched);
       }
       ConnectionStrategy2.is = is;
-    })(ConnectionStrategy = exports2.ConnectionStrategy || (exports2.ConnectionStrategy = {}));
+    })(ConnectionStrategy || (exports2.ConnectionStrategy = ConnectionStrategy = {}));
+    var IdCancellationReceiverStrategy;
+    (function(IdCancellationReceiverStrategy2) {
+      function is(value) {
+        const candidate = value;
+        return candidate && (candidate.kind === void 0 || candidate.kind === "id") && Is2.func(candidate.createCancellationTokenSource) && (candidate.dispose === void 0 || Is2.func(candidate.dispose));
+      }
+      IdCancellationReceiverStrategy2.is = is;
+    })(IdCancellationReceiverStrategy || (exports2.IdCancellationReceiverStrategy = IdCancellationReceiverStrategy = {}));
+    var RequestCancellationReceiverStrategy;
+    (function(RequestCancellationReceiverStrategy2) {
+      function is(value) {
+        const candidate = value;
+        return candidate && candidate.kind === "request" && Is2.func(candidate.createCancellationTokenSource) && (candidate.dispose === void 0 || Is2.func(candidate.dispose));
+      }
+      RequestCancellationReceiverStrategy2.is = is;
+    })(RequestCancellationReceiverStrategy || (exports2.RequestCancellationReceiverStrategy = RequestCancellationReceiverStrategy = {}));
     var CancellationReceiverStrategy;
     (function(CancellationReceiverStrategy2) {
       CancellationReceiverStrategy2.Message = Object.freeze({
@@ -2730,26 +2698,25 @@ var require_connection = __commonJS({
         }
       });
       function is(value) {
-        const candidate = value;
-        return candidate && Is3.func(candidate.createCancellationTokenSource);
+        return IdCancellationReceiverStrategy.is(value) || RequestCancellationReceiverStrategy.is(value);
       }
       CancellationReceiverStrategy2.is = is;
-    })(CancellationReceiverStrategy = exports2.CancellationReceiverStrategy || (exports2.CancellationReceiverStrategy = {}));
+    })(CancellationReceiverStrategy || (exports2.CancellationReceiverStrategy = CancellationReceiverStrategy = {}));
     var CancellationSenderStrategy;
     (function(CancellationSenderStrategy2) {
       CancellationSenderStrategy2.Message = Object.freeze({
         sendCancellation(conn, id) {
-          conn.sendNotification(CancelNotification.type, { id });
+          return conn.sendNotification(CancelNotification.type, { id });
         },
         cleanup(_) {
         }
       });
       function is(value) {
         const candidate = value;
-        return candidate && Is3.func(candidate.sendCancellation) && Is3.func(candidate.cleanup);
+        return candidate && Is2.func(candidate.sendCancellation) && Is2.func(candidate.cleanup);
       }
       CancellationSenderStrategy2.is = is;
-    })(CancellationSenderStrategy = exports2.CancellationSenderStrategy || (exports2.CancellationSenderStrategy = {}));
+    })(CancellationSenderStrategy || (exports2.CancellationSenderStrategy = CancellationSenderStrategy = {}));
     var CancellationStrategy;
     (function(CancellationStrategy2) {
       CancellationStrategy2.Message = Object.freeze({
@@ -2761,15 +2728,23 @@ var require_connection = __commonJS({
         return candidate && CancellationReceiverStrategy.is(candidate.receiver) && CancellationSenderStrategy.is(candidate.sender);
       }
       CancellationStrategy2.is = is;
-    })(CancellationStrategy = exports2.CancellationStrategy || (exports2.CancellationStrategy = {}));
+    })(CancellationStrategy || (exports2.CancellationStrategy = CancellationStrategy = {}));
+    var MessageStrategy;
+    (function(MessageStrategy2) {
+      function is(value) {
+        const candidate = value;
+        return candidate && Is2.func(candidate.handleMessage);
+      }
+      MessageStrategy2.is = is;
+    })(MessageStrategy || (exports2.MessageStrategy = MessageStrategy = {}));
     var ConnectionOptions;
     (function(ConnectionOptions2) {
       function is(value) {
         const candidate = value;
-        return candidate && (CancellationStrategy.is(candidate.cancellationStrategy) || ConnectionStrategy.is(candidate.connectionStrategy));
+        return candidate && (CancellationStrategy.is(candidate.cancellationStrategy) || ConnectionStrategy.is(candidate.connectionStrategy) || MessageStrategy.is(candidate.messageStrategy));
       }
       ConnectionOptions2.is = is;
-    })(ConnectionOptions = exports2.ConnectionOptions || (exports2.ConnectionOptions = {}));
+    })(ConnectionOptions || (exports2.ConnectionOptions = ConnectionOptions = {}));
     var ConnectionState;
     (function(ConnectionState2) {
       ConnectionState2[ConnectionState2["New"] = 1] = "New";
@@ -2780,18 +2755,19 @@ var require_connection = __commonJS({
     function createMessageConnection(messageReader, messageWriter, _logger, options2) {
       const logger = _logger !== void 0 ? _logger : exports2.NullLogger;
       let sequenceNumber = 0;
-      let notificationSquenceNumber = 0;
-      let unknownResponseSquenceNumber = 0;
+      let notificationSequenceNumber = 0;
+      let unknownResponseSequenceNumber = 0;
       const version = "2.0";
       let starRequestHandler = void 0;
-      const requestHandlers = /* @__PURE__ */ Object.create(null);
+      const requestHandlers = /* @__PURE__ */ new Map();
       let starNotificationHandler = void 0;
-      const notificationHandlers = /* @__PURE__ */ Object.create(null);
+      const notificationHandlers = /* @__PURE__ */ new Map();
       const progressHandlers = /* @__PURE__ */ new Map();
       let timer;
       let messageQueue = new linkedMap_1.LinkedMap();
-      let responsePromises = /* @__PURE__ */ Object.create(null);
-      let requestTokens = /* @__PURE__ */ Object.create(null);
+      let responsePromises = /* @__PURE__ */ new Map();
+      let knownCanceledRequests = /* @__PURE__ */ new Set();
+      let requestTokens = /* @__PURE__ */ new Map();
       let trace = Trace.Off;
       let traceFormat = TraceFormat.Text;
       let tracer;
@@ -2810,18 +2786,18 @@ var require_connection = __commonJS({
       }
       function createResponseQueueKey(id) {
         if (id === null) {
-          return "res-unknown-" + (++unknownResponseSquenceNumber).toString();
+          return "res-unknown-" + (++unknownResponseSequenceNumber).toString();
         } else {
           return "res-" + id.toString();
         }
       }
       function createNotificationQueueKey() {
-        return "not-" + (++notificationSquenceNumber).toString();
+        return "not-" + (++notificationSequenceNumber).toString();
       }
       function addMessageToQueue(queue, message) {
-        if (messages_1.isRequestMessage(message)) {
+        if (messages_1.Message.isRequest(message)) {
           queue.set(createRequestQueueKey(message.id), message);
-        } else if (messages_1.isResponseMessage(message)) {
+        } else if (messages_1.Message.isResponse(message)) {
           queue.set(createResponseQueueKey(message.id), message);
         } else {
           queue.set(createNotificationQueueKey(), message);
@@ -2859,10 +2835,21 @@ var require_connection = __commonJS({
         if (timer || messageQueue.size === 0) {
           return;
         }
-        timer = ral_1.default().timer.setImmediate(() => {
+        timer = (0, ral_1.default)().timer.setImmediate(() => {
           timer = void 0;
           processMessageQueue();
         });
+      }
+      function handleMessage(message) {
+        if (messages_1.Message.isRequest(message)) {
+          handleRequest(message);
+        } else if (messages_1.Message.isNotification(message)) {
+          handleNotification(message);
+        } else if (messages_1.Message.isResponse(message)) {
+          handleResponse(message);
+        } else {
+          handleInvalidMessage(message);
+        }
       }
       function processMessageQueue() {
         if (messageQueue.size === 0) {
@@ -2870,14 +2857,11 @@ var require_connection = __commonJS({
         }
         const message = messageQueue.shift();
         try {
-          if (messages_1.isRequestMessage(message)) {
-            handleRequest(message);
-          } else if (messages_1.isNotificationMessage(message)) {
-            handleNotification(message);
-          } else if (messages_1.isResponseMessage(message)) {
-            handleResponse(message);
+          const messageStrategy = options2 == null ? void 0 : options2.messageStrategy;
+          if (MessageStrategy.is(messageStrategy)) {
+            messageStrategy.handleMessage(message, handleMessage);
           } else {
-            handleInvalidMessage(message);
+            handleMessage(message);
           }
         } finally {
           triggerMessageQueue();
@@ -2885,19 +2869,29 @@ var require_connection = __commonJS({
       }
       const callback = (message) => {
         try {
-          if (messages_1.isNotificationMessage(message) && message.method === CancelNotification.type.method) {
-            const key = createRequestQueueKey(message.params.id);
+          if (messages_1.Message.isNotification(message) && message.method === CancelNotification.type.method) {
+            const cancelId = message.params.id;
+            const key = createRequestQueueKey(cancelId);
             const toCancel = messageQueue.get(key);
-            if (messages_1.isRequestMessage(toCancel)) {
-              const strategy = options2 === null || options2 === void 0 ? void 0 : options2.connectionStrategy;
+            if (messages_1.Message.isRequest(toCancel)) {
+              const strategy = options2 == null ? void 0 : options2.connectionStrategy;
               const response = strategy && strategy.cancelUndispatched ? strategy.cancelUndispatched(toCancel, cancelUndispatched) : cancelUndispatched(toCancel);
               if (response && (response.error !== void 0 || response.result !== void 0)) {
                 messageQueue.delete(key);
+                requestTokens.delete(cancelId);
                 response.id = toCancel.id;
                 traceSendingResponse(response, message.method, Date.now());
-                messageWriter.write(response);
+                messageWriter.write(response).catch(() => logger.error(`Sending response for canceled message failed.`));
                 return;
               }
+            }
+            const cancellationToken = requestTokens.get(cancelId);
+            if (cancellationToken !== void 0) {
+              cancellationToken.cancel();
+              traceReceivedNotification(message);
+              return;
+            } else {
+              knownCanceledRequests.add(cancelId);
             }
           }
           addMessageToQueue(messageQueue, message);
@@ -2906,6 +2900,7 @@ var require_connection = __commonJS({
         }
       };
       function handleRequest(requestMessage) {
+        var _a3;
         if (isDisposed()) {
           return;
         }
@@ -2920,7 +2915,7 @@ var require_connection = __commonJS({
             message.result = resultOrError === void 0 ? null : resultOrError;
           }
           traceSendingResponse(message, method, startTime2);
-          messageWriter.write(message);
+          messageWriter.write(message).catch(() => logger.error(`Sending response failed.`));
         }
         function replyError(error, method, startTime2) {
           const message = {
@@ -2929,7 +2924,7 @@ var require_connection = __commonJS({
             error: error.toJson()
           };
           traceSendingResponse(message, method, startTime2);
-          messageWriter.write(message);
+          messageWriter.write(message).catch(() => logger.error(`Sending response failed.`));
         }
         function replySuccess(result, method, startTime2) {
           if (result === void 0) {
@@ -2941,10 +2936,10 @@ var require_connection = __commonJS({
             result
           };
           traceSendingResponse(message, method, startTime2);
-          messageWriter.write(message);
+          messageWriter.write(message).catch(() => logger.error(`Sending response failed.`));
         }
         traceReceivedRequest(requestMessage);
-        const element = requestHandlers[requestMessage.method];
+        const element = requestHandlers.get(requestMessage.method);
         let type;
         let requestHandler;
         if (element) {
@@ -2953,15 +2948,20 @@ var require_connection = __commonJS({
         }
         const startTime = Date.now();
         if (requestHandler || starRequestHandler) {
-          const tokenKey = String(requestMessage.id);
-          const cancellationSource = cancellationStrategy.receiver.createCancellationTokenSource(tokenKey);
-          requestTokens[tokenKey] = cancellationSource;
+          const tokenKey = (_a3 = requestMessage.id) != null ? _a3 : String(Date.now());
+          const cancellationSource = IdCancellationReceiverStrategy.is(cancellationStrategy.receiver) ? cancellationStrategy.receiver.createCancellationTokenSource(tokenKey) : cancellationStrategy.receiver.createCancellationTokenSource(requestMessage);
+          if (requestMessage.id !== null && knownCanceledRequests.has(requestMessage.id)) {
+            cancellationSource.cancel();
+          }
+          if (requestMessage.id !== null) {
+            requestTokens.set(tokenKey, cancellationSource);
+          }
           try {
             let handlerResult;
             if (requestHandler) {
               if (requestMessage.params === void 0) {
                 if (type !== void 0 && type.numberOfParams !== 0) {
-                  replyError(new messages_1.ResponseError(messages_1.ErrorCodes.InvalidParams, `Request ${requestMessage.method} defines ${type.numberOfParams} params but recevied none.`), requestMessage.method, startTime);
+                  replyError(new messages_1.ResponseError(messages_1.ErrorCodes.InvalidParams, `Request ${requestMessage.method} defines ${type.numberOfParams} params but received none.`), requestMessage.method, startTime);
                   return;
                 }
                 handlerResult = requestHandler(cancellationSource.token);
@@ -2983,31 +2983,31 @@ var require_connection = __commonJS({
             }
             const promise = handlerResult;
             if (!handlerResult) {
-              delete requestTokens[tokenKey];
+              requestTokens.delete(tokenKey);
               replySuccess(handlerResult, requestMessage.method, startTime);
             } else if (promise.then) {
               promise.then((resultOrError) => {
-                delete requestTokens[tokenKey];
+                requestTokens.delete(tokenKey);
                 reply(resultOrError, requestMessage.method, startTime);
               }, (error) => {
-                delete requestTokens[tokenKey];
+                requestTokens.delete(tokenKey);
                 if (error instanceof messages_1.ResponseError) {
                   replyError(error, requestMessage.method, startTime);
-                } else if (error && Is3.string(error.message)) {
+                } else if (error && Is2.string(error.message)) {
                   replyError(new messages_1.ResponseError(messages_1.ErrorCodes.InternalError, `Request ${requestMessage.method} failed with message: ${error.message}`), requestMessage.method, startTime);
                 } else {
                   replyError(new messages_1.ResponseError(messages_1.ErrorCodes.InternalError, `Request ${requestMessage.method} failed unexpectedly without providing any details.`), requestMessage.method, startTime);
                 }
               });
             } else {
-              delete requestTokens[tokenKey];
+              requestTokens.delete(tokenKey);
               reply(handlerResult, requestMessage.method, startTime);
             }
           } catch (error) {
-            delete requestTokens[tokenKey];
+            requestTokens.delete(tokenKey);
             if (error instanceof messages_1.ResponseError) {
               reply(error, requestMessage.method, startTime);
-            } else if (error && Is3.string(error.message)) {
+            } else if (error && Is2.string(error.message)) {
               replyError(new messages_1.ResponseError(messages_1.ErrorCodes.InternalError, `Request ${requestMessage.method} failed with message: ${error.message}`), requestMessage.method, startTime);
             } else {
               replyError(new messages_1.ResponseError(messages_1.ErrorCodes.InternalError, `Request ${requestMessage.method} failed unexpectedly without providing any details.`), requestMessage.method, startTime);
@@ -3029,11 +3029,11 @@ ${JSON.stringify(responseMessage.error, void 0, 4)}`);
             logger.error(`Received response message without id. No further error information provided.`);
           }
         } else {
-          const key = String(responseMessage.id);
-          const responsePromise = responsePromises[key];
+          const key = responseMessage.id;
+          const responsePromise = responsePromises.get(key);
           traceReceivedResponse(responseMessage, responsePromise);
-          if (responsePromise) {
-            delete responsePromises[key];
+          if (responsePromise !== void 0) {
+            responsePromises.delete(key);
             try {
               if (responseMessage.error) {
                 const error = responseMessage.error;
@@ -3060,15 +3060,12 @@ ${JSON.stringify(responseMessage.error, void 0, 4)}`);
         let type = void 0;
         let notificationHandler;
         if (message.method === CancelNotification.type.method) {
-          notificationHandler = (params) => {
-            const id = params.id;
-            const source = requestTokens[String(id)];
-            if (source) {
-              source.cancel();
-            }
-          };
+          const cancelId = message.params.id;
+          knownCanceledRequests.delete(cancelId);
+          traceReceivedNotification(message);
+          return;
         } else {
-          const element = notificationHandlers[message.method];
+          const element = notificationHandlers.get(message.method);
           if (element) {
             notificationHandler = element.handler;
             type = element.type;
@@ -3081,20 +3078,25 @@ ${JSON.stringify(responseMessage.error, void 0, 4)}`);
               if (message.params === void 0) {
                 if (type !== void 0) {
                   if (type.numberOfParams !== 0 && type.parameterStructures !== messages_1.ParameterStructures.byName) {
-                    logger.error(`Notification ${message.method} defines ${type.numberOfParams} params but recevied none.`);
+                    logger.error(`Notification ${message.method} defines ${type.numberOfParams} params but received none.`);
                   }
                 }
                 notificationHandler();
               } else if (Array.isArray(message.params)) {
-                if (type !== void 0) {
-                  if (type.parameterStructures === messages_1.ParameterStructures.byName) {
-                    logger.error(`Notification ${message.method} defines parameters by name but received parameters by position`);
+                const params = message.params;
+                if (message.method === ProgressNotification.type.method && params.length === 2 && ProgressToken.is(params[0])) {
+                  notificationHandler({ token: params[0], value: params[1] });
+                } else {
+                  if (type !== void 0) {
+                    if (type.parameterStructures === messages_1.ParameterStructures.byName) {
+                      logger.error(`Notification ${message.method} defines parameters by name but received parameters by position`);
+                    }
+                    if (type.numberOfParams !== message.params.length) {
+                      logger.error(`Notification ${message.method} defines ${type.numberOfParams} params but received ${params.length} arguments`);
+                    }
                   }
-                  if (type.numberOfParams !== message.params.length) {
-                    logger.error(`Notification ${message.method} defines ${type.numberOfParams} params but received ${message.params.length} argumennts`);
-                  }
+                  notificationHandler(...params);
                 }
-                notificationHandler(...message.params);
               } else {
                 if (type !== void 0 && type.parameterStructures === messages_1.ParameterStructures.byPosition) {
                   logger.error(`Notification ${message.method} defines parameters by position but received parameters by name`);
@@ -3123,12 +3125,25 @@ ${JSON.stringify(responseMessage.error, void 0, 4)}`);
         logger.error(`Received message which is neither a response nor a notification message:
 ${JSON.stringify(message, null, 4)}`);
         const responseMessage = message;
-        if (Is3.string(responseMessage.id) || Is3.number(responseMessage.id)) {
-          const key = String(responseMessage.id);
-          const responseHandler = responsePromises[key];
+        if (Is2.string(responseMessage.id) || Is2.number(responseMessage.id)) {
+          const key = responseMessage.id;
+          const responseHandler = responsePromises.get(key);
           if (responseHandler) {
             responseHandler.reject(new Error("The received response has neither a result nor an error property."));
           }
+        }
+      }
+      function stringifyTrace(params) {
+        if (params === void 0 || params === null) {
+          return void 0;
+        }
+        switch (trace) {
+          case Trace.Verbose:
+            return JSON.stringify(params, null, 4);
+          case Trace.Compact:
+            return JSON.stringify(params);
+          default:
+            return void 0;
         }
       }
       function traceSendingRequest(message) {
@@ -3137,8 +3152,8 @@ ${JSON.stringify(message, null, 4)}`);
         }
         if (traceFormat === TraceFormat.Text) {
           let data = void 0;
-          if (trace === Trace.Verbose && message.params) {
-            data = `Params: ${JSON.stringify(message.params, null, 4)}
+          if ((trace === Trace.Verbose || trace === Trace.Compact) && message.params) {
+            data = `Params: ${stringifyTrace(message.params)}
 
 `;
           }
@@ -3153,9 +3168,9 @@ ${JSON.stringify(message, null, 4)}`);
         }
         if (traceFormat === TraceFormat.Text) {
           let data = void 0;
-          if (trace === Trace.Verbose) {
+          if (trace === Trace.Verbose || trace === Trace.Compact) {
             if (message.params) {
-              data = `Params: ${JSON.stringify(message.params, null, 4)}
+              data = `Params: ${stringifyTrace(message.params)}
 
 `;
             } else {
@@ -3173,14 +3188,14 @@ ${JSON.stringify(message, null, 4)}`);
         }
         if (traceFormat === TraceFormat.Text) {
           let data = void 0;
-          if (trace === Trace.Verbose) {
+          if (trace === Trace.Verbose || trace === Trace.Compact) {
             if (message.error && message.error.data) {
-              data = `Error data: ${JSON.stringify(message.error.data, null, 4)}
+              data = `Error data: ${stringifyTrace(message.error.data)}
 
 `;
             } else {
               if (message.result) {
-                data = `Result: ${JSON.stringify(message.result, null, 4)}
+                data = `Result: ${stringifyTrace(message.result)}
 
 `;
               } else if (message.error === void 0) {
@@ -3199,8 +3214,8 @@ ${JSON.stringify(message, null, 4)}`);
         }
         if (traceFormat === TraceFormat.Text) {
           let data = void 0;
-          if (trace === Trace.Verbose && message.params) {
-            data = `Params: ${JSON.stringify(message.params, null, 4)}
+          if ((trace === Trace.Verbose || trace === Trace.Compact) && message.params) {
+            data = `Params: ${stringifyTrace(message.params)}
 
 `;
           }
@@ -3215,9 +3230,9 @@ ${JSON.stringify(message, null, 4)}`);
         }
         if (traceFormat === TraceFormat.Text) {
           let data = void 0;
-          if (trace === Trace.Verbose) {
+          if (trace === Trace.Verbose || trace === Trace.Compact) {
             if (message.params) {
-              data = `Params: ${JSON.stringify(message.params, null, 4)}
+              data = `Params: ${stringifyTrace(message.params)}
 
 `;
             } else {
@@ -3235,14 +3250,14 @@ ${JSON.stringify(message, null, 4)}`);
         }
         if (traceFormat === TraceFormat.Text) {
           let data = void 0;
-          if (trace === Trace.Verbose) {
+          if (trace === Trace.Verbose || trace === Trace.Compact) {
             if (message.error && message.error.data) {
-              data = `Error data: ${JSON.stringify(message.error.data, null, 4)}
+              data = `Error data: ${stringifyTrace(message.error.data)}
 
 `;
             } else {
               if (message.result) {
-                data = `Result: ${JSON.stringify(message.result, null, 4)}
+                data = `Result: ${stringifyTrace(message.result)}
 
 `;
               } else if (message.error === void 0) {
@@ -3315,10 +3330,9 @@ ${JSON.stringify(message, null, 4)}`);
             } else {
               return [undefinedToNull(param)];
             }
-            break;
           case messages_1.ParameterStructures.byName:
             if (!isNamedParam(param)) {
-              throw new Error(`Recevied parameters by name but param is not an object literal.`);
+              throw new Error(`Received parameters by name but param is not an object literal.`);
             }
             return nullToUndefined(param);
           case messages_1.ParameterStructures.byPosition:
@@ -3356,7 +3370,7 @@ ${JSON.stringify(message, null, 4)}`);
           throwIfClosedOrDisposed();
           let method;
           let messageParams;
-          if (Is3.string(type)) {
+          if (Is2.string(type)) {
             method = type;
             const first = args[0];
             let paramStart = 0;
@@ -3376,7 +3390,7 @@ ${JSON.stringify(message, null, 4)}`);
                 break;
               default:
                 if (parameterStructures === messages_1.ParameterStructures.byName) {
-                  throw new Error(`Recevied ${numberOfParams} parameters for 'by Name' notification parameter structure.`);
+                  throw new Error(`Received ${numberOfParams} parameters for 'by Name' notification parameter structure.`);
                 }
                 messageParams = args.slice(paramStart, paramEnd).map((value) => undefinedToNull(value));
                 break;
@@ -3392,26 +3406,29 @@ ${JSON.stringify(message, null, 4)}`);
             params: messageParams
           };
           traceSendingNotification(notificationMessage);
-          messageWriter.write(notificationMessage);
+          return messageWriter.write(notificationMessage).catch((error) => {
+            logger.error(`Sending notification failed.`);
+            throw error;
+          });
         },
         onNotification: (type, handler) => {
           throwIfClosedOrDisposed();
           let method;
-          if (Is3.func(type)) {
+          if (Is2.func(type)) {
             starNotificationHandler = type;
           } else if (handler) {
-            if (Is3.string(type)) {
+            if (Is2.string(type)) {
               method = type;
-              notificationHandlers[type] = { type: void 0, handler };
+              notificationHandlers.set(type, { type: void 0, handler });
             } else {
               method = type.method;
-              notificationHandlers[type.method] = { type, handler };
+              notificationHandlers.set(type.method, { type, handler });
             }
           }
           return {
             dispose: () => {
               if (method !== void 0) {
-                delete notificationHandlers[method];
+                notificationHandlers.delete(method);
               } else {
                 starNotificationHandler = void 0;
               }
@@ -3430,7 +3447,7 @@ ${JSON.stringify(message, null, 4)}`);
           };
         },
         sendProgress: (_type, token, value) => {
-          connection.sendNotification(ProgressNotification.type, { token, value });
+          return connection.sendNotification(ProgressNotification.type, { token, value });
         },
         onUnhandledProgress: unhandledProgressEmitter.event,
         sendRequest: (type, ...args) => {
@@ -3439,7 +3456,7 @@ ${JSON.stringify(message, null, 4)}`);
           let method;
           let messageParams;
           let token = void 0;
-          if (Is3.string(type)) {
+          if (Is2.string(type)) {
             method = type;
             const first = args[0];
             const last = args[args.length - 1];
@@ -3464,7 +3481,7 @@ ${JSON.stringify(message, null, 4)}`);
                 break;
               default:
                 if (parameterStructures === messages_1.ParameterStructures.byName) {
-                  throw new Error(`Recevied ${numberOfParams} parameters for 'by Name' request parameter structure.`);
+                  throw new Error(`Received ${numberOfParams} parameters for 'by Name' request parameter structure.`);
                 }
                 messageParams = args.slice(paramStart, paramEnd).map((value) => undefinedToNull(value));
                 break;
@@ -3480,39 +3497,48 @@ ${JSON.stringify(message, null, 4)}`);
           let disposable;
           if (token) {
             disposable = token.onCancellationRequested(() => {
-              cancellationStrategy.sender.sendCancellation(connection, id);
+              const p = cancellationStrategy.sender.sendCancellation(connection, id);
+              if (p === void 0) {
+                logger.log(`Received no promise from cancellation strategy when cancelling id ${id}`);
+                return Promise.resolve();
+              } else {
+                return p.catch(() => {
+                  logger.log(`Sending cancellation messages for id ${id} failed`);
+                });
+              }
             });
           }
-          const result = new Promise((resolve, reject) => {
-            const requestMessage = {
-              jsonrpc: version,
-              id,
-              method,
-              params: messageParams
-            };
+          const requestMessage = {
+            jsonrpc: version,
+            id,
+            method,
+            params: messageParams
+          };
+          traceSendingRequest(requestMessage);
+          if (typeof cancellationStrategy.sender.enableCancellation === "function") {
+            cancellationStrategy.sender.enableCancellation(requestMessage);
+          }
+          return new Promise((resolve, reject) => __async(this, null, function* () {
             const resolveWithCleanup = (r) => {
               resolve(r);
               cancellationStrategy.sender.cleanup(id);
-              disposable === null || disposable === void 0 ? void 0 : disposable.dispose();
+              disposable == null ? void 0 : disposable.dispose();
             };
             const rejectWithCleanup = (r) => {
               reject(r);
               cancellationStrategy.sender.cleanup(id);
-              disposable === null || disposable === void 0 ? void 0 : disposable.dispose();
+              disposable == null ? void 0 : disposable.dispose();
             };
-            let responsePromise = { method, timerStart: Date.now(), resolve: resolveWithCleanup, reject: rejectWithCleanup };
-            traceSendingRequest(requestMessage);
+            const responsePromise = { method, timerStart: Date.now(), resolve: resolveWithCleanup, reject: rejectWithCleanup };
             try {
-              messageWriter.write(requestMessage);
-            } catch (e) {
-              responsePromise.reject(new messages_1.ResponseError(messages_1.ErrorCodes.MessageWriteError, e.message ? e.message : "Unknown reason"));
-              responsePromise = null;
+              yield messageWriter.write(requestMessage);
+              responsePromises.set(id, responsePromise);
+            } catch (error) {
+              logger.error(`Sending request failed.`);
+              responsePromise.reject(new messages_1.ResponseError(messages_1.ErrorCodes.MessageWriteError, error.message ? error.message : "Unknown reason"));
+              throw error;
             }
-            if (responsePromise) {
-              responsePromises[String(id)] = responsePromise;
-            }
-          });
-          return result;
+          }));
         },
         onRequest: (type, handler) => {
           throwIfClosedOrDisposed();
@@ -3520,16 +3546,16 @@ ${JSON.stringify(message, null, 4)}`);
           if (StarRequestHandler.is(type)) {
             method = void 0;
             starRequestHandler = type;
-          } else if (Is3.string(type)) {
+          } else if (Is2.string(type)) {
             method = null;
             if (handler !== void 0) {
               method = type;
-              requestHandlers[type] = { handler, type: void 0 };
+              requestHandlers.set(type, { handler, type: void 0 });
             }
           } else {
             if (handler !== void 0) {
               method = type.method;
-              requestHandlers[type.method] = { type, handler };
+              requestHandlers.set(type.method, { type, handler });
             }
           }
           return {
@@ -3538,18 +3564,21 @@ ${JSON.stringify(message, null, 4)}`);
                 return;
               }
               if (method !== void 0) {
-                delete requestHandlers[method];
+                requestHandlers.delete(method);
               } else {
                 starRequestHandler = void 0;
               }
             }
           };
         },
-        trace: (_value, _tracer, sendNotificationOrTraceOptions) => {
+        hasPendingResponse: () => {
+          return responsePromises.size > 0;
+        },
+        trace: (_value, _tracer, sendNotificationOrTraceOptions) => __async(this, null, function* () {
           let _sendNotification = false;
           let _traceFormat = TraceFormat.Text;
           if (sendNotificationOrTraceOptions !== void 0) {
-            if (Is3.boolean(sendNotificationOrTraceOptions)) {
+            if (Is2.boolean(sendNotificationOrTraceOptions)) {
               _sendNotification = sendNotificationOrTraceOptions;
             } else {
               _sendNotification = sendNotificationOrTraceOptions.sendNotification || false;
@@ -3564,9 +3593,9 @@ ${JSON.stringify(message, null, 4)}`);
             tracer = _tracer;
           }
           if (_sendNotification && !isClosed() && !isDisposed()) {
-            connection.sendNotification(SetTraceNotification.type, { value: Trace.toString(_value) });
+            yield connection.sendNotification(SetTraceNotification.type, { value: Trace.toString(_value) });
           }
-        },
+        }),
         onError: errorEmitter.event,
         onClose: closeEmitter.event,
         onUnhandledNotification: unhandledNotificationEmitter.event,
@@ -3580,17 +3609,18 @@ ${JSON.stringify(message, null, 4)}`);
           }
           state = ConnectionState.Disposed;
           disposeEmitter.fire(void 0);
-          const error = new Error("Connection got disposed.");
-          Object.keys(responsePromises).forEach((key) => {
-            responsePromises[key].reject(error);
-          });
-          responsePromises = /* @__PURE__ */ Object.create(null);
-          requestTokens = /* @__PURE__ */ Object.create(null);
+          const error = new messages_1.ResponseError(messages_1.ErrorCodes.PendingResponseRejected, "Pending response rejected since connection got disposed");
+          for (const promise of responsePromises.values()) {
+            promise.reject(error);
+          }
+          responsePromises = /* @__PURE__ */ new Map();
+          requestTokens = /* @__PURE__ */ new Map();
+          knownCanceledRequests = /* @__PURE__ */ new Set();
           messageQueue = new linkedMap_1.LinkedMap();
-          if (Is3.func(messageWriter.dispose)) {
+          if (Is2.func(messageWriter.dispose)) {
             messageWriter.dispose();
           }
-          if (Is3.func(messageReader.dispose)) {
+          if (Is2.func(messageReader.dispose)) {
             messageReader.dispose();
           }
         },
@@ -3601,14 +3631,15 @@ ${JSON.stringify(message, null, 4)}`);
           messageReader.listen(callback);
         },
         inspect: () => {
-          ral_1.default().console.log("inspect");
+          (0, ral_1.default)().console.log("inspect");
         }
       };
       connection.onNotification(LogTraceNotification.type, (params) => {
         if (trace === Trace.Off || !tracer) {
           return;
         }
-        tracer.log(params.message, trace === Trace.Verbose ? params.verbose : void 0);
+        const verbose = trace === Trace.Verbose || trace === Trace.Compact;
+        tracer.log(params.message, verbose ? params.verbose : void 0);
       });
       connection.onNotification(ProgressNotification.type, (params) => {
         const handler = progressHandlers.get(params.token);
@@ -3624,14 +3655,17 @@ ${JSON.stringify(message, null, 4)}`);
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/api.js
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/api.js
 var require_api = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/common/api.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/common/api.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.CancellationSenderStrategy = exports2.CancellationReceiverStrategy = exports2.ConnectionError = exports2.ConnectionErrors = exports2.LogTraceNotification = exports2.SetTraceNotification = exports2.TraceFormat = exports2.Trace = exports2.ProgressType = exports2.createMessageConnection = exports2.NullLogger = exports2.ConnectionOptions = exports2.ConnectionStrategy = exports2.WriteableStreamMessageWriter = exports2.AbstractMessageWriter = exports2.MessageWriter = exports2.ReadableStreamMessageReader = exports2.AbstractMessageReader = exports2.MessageReader = exports2.CancellationToken = exports2.CancellationTokenSource = exports2.Emitter = exports2.Event = exports2.Disposable = exports2.ParameterStructures = exports2.NotificationType9 = exports2.NotificationType8 = exports2.NotificationType7 = exports2.NotificationType6 = exports2.NotificationType5 = exports2.NotificationType4 = exports2.NotificationType3 = exports2.NotificationType2 = exports2.NotificationType1 = exports2.NotificationType0 = exports2.NotificationType = exports2.ErrorCodes = exports2.ResponseError = exports2.RequestType9 = exports2.RequestType8 = exports2.RequestType7 = exports2.RequestType6 = exports2.RequestType5 = exports2.RequestType4 = exports2.RequestType3 = exports2.RequestType2 = exports2.RequestType1 = exports2.RequestType0 = exports2.RequestType = exports2.RAL = void 0;
-    exports2.CancellationStrategy = void 0;
+    exports2.ProgressType = exports2.ProgressToken = exports2.createMessageConnection = exports2.NullLogger = exports2.ConnectionOptions = exports2.ConnectionStrategy = exports2.AbstractMessageBuffer = exports2.WriteableStreamMessageWriter = exports2.AbstractMessageWriter = exports2.MessageWriter = exports2.ReadableStreamMessageReader = exports2.AbstractMessageReader = exports2.MessageReader = exports2.SharedArrayReceiverStrategy = exports2.SharedArraySenderStrategy = exports2.CancellationToken = exports2.CancellationTokenSource = exports2.Emitter = exports2.Event = exports2.Disposable = exports2.LRUCache = exports2.Touch = exports2.LinkedMap = exports2.ParameterStructures = exports2.NotificationType9 = exports2.NotificationType8 = exports2.NotificationType7 = exports2.NotificationType6 = exports2.NotificationType5 = exports2.NotificationType4 = exports2.NotificationType3 = exports2.NotificationType2 = exports2.NotificationType1 = exports2.NotificationType0 = exports2.NotificationType = exports2.ErrorCodes = exports2.ResponseError = exports2.RequestType9 = exports2.RequestType8 = exports2.RequestType7 = exports2.RequestType6 = exports2.RequestType5 = exports2.RequestType4 = exports2.RequestType3 = exports2.RequestType2 = exports2.RequestType1 = exports2.RequestType0 = exports2.RequestType = exports2.Message = exports2.RAL = void 0;
+    exports2.MessageStrategy = exports2.CancellationStrategy = exports2.CancellationSenderStrategy = exports2.CancellationReceiverStrategy = exports2.ConnectionError = exports2.ConnectionErrors = exports2.LogTraceNotification = exports2.SetTraceNotification = exports2.TraceFormat = exports2.TraceValues = exports2.Trace = void 0;
     var messages_1 = require_messages();
+    Object.defineProperty(exports2, "Message", { enumerable: true, get: function() {
+      return messages_1.Message;
+    } });
     Object.defineProperty(exports2, "RequestType", { enumerable: true, get: function() {
       return messages_1.RequestType;
     } });
@@ -3707,6 +3741,16 @@ var require_api = __commonJS({
     Object.defineProperty(exports2, "ParameterStructures", { enumerable: true, get: function() {
       return messages_1.ParameterStructures;
     } });
+    var linkedMap_1 = require_linkedMap();
+    Object.defineProperty(exports2, "LinkedMap", { enumerable: true, get: function() {
+      return linkedMap_1.LinkedMap;
+    } });
+    Object.defineProperty(exports2, "LRUCache", { enumerable: true, get: function() {
+      return linkedMap_1.LRUCache;
+    } });
+    Object.defineProperty(exports2, "Touch", { enumerable: true, get: function() {
+      return linkedMap_1.Touch;
+    } });
     var disposable_1 = require_disposable();
     Object.defineProperty(exports2, "Disposable", { enumerable: true, get: function() {
       return disposable_1.Disposable;
@@ -3724,6 +3768,13 @@ var require_api = __commonJS({
     } });
     Object.defineProperty(exports2, "CancellationToken", { enumerable: true, get: function() {
       return cancellation_1.CancellationToken;
+    } });
+    var sharedArrayCancellation_1 = require_sharedArrayCancellation();
+    Object.defineProperty(exports2, "SharedArraySenderStrategy", { enumerable: true, get: function() {
+      return sharedArrayCancellation_1.SharedArraySenderStrategy;
+    } });
+    Object.defineProperty(exports2, "SharedArrayReceiverStrategy", { enumerable: true, get: function() {
+      return sharedArrayCancellation_1.SharedArrayReceiverStrategy;
     } });
     var messageReader_1 = require_messageReader();
     Object.defineProperty(exports2, "MessageReader", { enumerable: true, get: function() {
@@ -3745,6 +3796,10 @@ var require_api = __commonJS({
     Object.defineProperty(exports2, "WriteableStreamMessageWriter", { enumerable: true, get: function() {
       return messageWriter_1.WriteableStreamMessageWriter;
     } });
+    var messageBuffer_1 = require_messageBuffer();
+    Object.defineProperty(exports2, "AbstractMessageBuffer", { enumerable: true, get: function() {
+      return messageBuffer_1.AbstractMessageBuffer;
+    } });
     var connection_1 = require_connection();
     Object.defineProperty(exports2, "ConnectionStrategy", { enumerable: true, get: function() {
       return connection_1.ConnectionStrategy;
@@ -3758,11 +3813,17 @@ var require_api = __commonJS({
     Object.defineProperty(exports2, "createMessageConnection", { enumerable: true, get: function() {
       return connection_1.createMessageConnection;
     } });
+    Object.defineProperty(exports2, "ProgressToken", { enumerable: true, get: function() {
+      return connection_1.ProgressToken;
+    } });
     Object.defineProperty(exports2, "ProgressType", { enumerable: true, get: function() {
       return connection_1.ProgressType;
     } });
     Object.defineProperty(exports2, "Trace", { enumerable: true, get: function() {
       return connection_1.Trace;
+    } });
+    Object.defineProperty(exports2, "TraceValues", { enumerable: true, get: function() {
+      return connection_1.TraceValues;
     } });
     Object.defineProperty(exports2, "TraceFormat", { enumerable: true, get: function() {
       return connection_1.TraceFormat;
@@ -3788,21 +3849,184 @@ var require_api = __commonJS({
     Object.defineProperty(exports2, "CancellationStrategy", { enumerable: true, get: function() {
       return connection_1.CancellationStrategy;
     } });
+    Object.defineProperty(exports2, "MessageStrategy", { enumerable: true, get: function() {
+      return connection_1.MessageStrategy;
+    } });
     var ral_1 = require_ral();
     exports2.RAL = ral_1.default;
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/node/main.js
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/node/ril.js
+var require_ril = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/node/ril.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var util_1 = require("util");
+    var api_1 = require_api();
+    var MessageBuffer = class _MessageBuffer extends api_1.AbstractMessageBuffer {
+      constructor(encoding = "utf-8") {
+        super(encoding);
+      }
+      emptyBuffer() {
+        return _MessageBuffer.emptyBuffer;
+      }
+      fromString(value, encoding) {
+        return Buffer.from(value, encoding);
+      }
+      toString(value, encoding) {
+        if (value instanceof Buffer) {
+          return value.toString(encoding);
+        } else {
+          return new util_1.TextDecoder(encoding).decode(value);
+        }
+      }
+      asNative(buffer, length) {
+        if (length === void 0) {
+          return buffer instanceof Buffer ? buffer : Buffer.from(buffer);
+        } else {
+          return buffer instanceof Buffer ? buffer.slice(0, length) : Buffer.from(buffer, 0, length);
+        }
+      }
+      allocNative(length) {
+        return Buffer.allocUnsafe(length);
+      }
+    };
+    MessageBuffer.emptyBuffer = Buffer.allocUnsafe(0);
+    var ReadableStreamWrapper = class {
+      constructor(stream) {
+        this.stream = stream;
+      }
+      onClose(listener) {
+        this.stream.on("close", listener);
+        return api_1.Disposable.create(() => this.stream.off("close", listener));
+      }
+      onError(listener) {
+        this.stream.on("error", listener);
+        return api_1.Disposable.create(() => this.stream.off("error", listener));
+      }
+      onEnd(listener) {
+        this.stream.on("end", listener);
+        return api_1.Disposable.create(() => this.stream.off("end", listener));
+      }
+      onData(listener) {
+        this.stream.on("data", listener);
+        return api_1.Disposable.create(() => this.stream.off("data", listener));
+      }
+    };
+    var WritableStreamWrapper = class {
+      constructor(stream) {
+        this.stream = stream;
+      }
+      onClose(listener) {
+        this.stream.on("close", listener);
+        return api_1.Disposable.create(() => this.stream.off("close", listener));
+      }
+      onError(listener) {
+        this.stream.on("error", listener);
+        return api_1.Disposable.create(() => this.stream.off("error", listener));
+      }
+      onEnd(listener) {
+        this.stream.on("end", listener);
+        return api_1.Disposable.create(() => this.stream.off("end", listener));
+      }
+      write(data, encoding) {
+        return new Promise((resolve, reject) => {
+          const callback = (error) => {
+            if (error === void 0 || error === null) {
+              resolve();
+            } else {
+              reject(error);
+            }
+          };
+          if (typeof data === "string") {
+            this.stream.write(data, encoding, callback);
+          } else {
+            this.stream.write(data, callback);
+          }
+        });
+      }
+      end() {
+        this.stream.end();
+      }
+    };
+    var _ril = Object.freeze({
+      messageBuffer: Object.freeze({
+        create: (encoding) => new MessageBuffer(encoding)
+      }),
+      applicationJson: Object.freeze({
+        encoder: Object.freeze({
+          name: "application/json",
+          encode: (msg, options2) => {
+            try {
+              return Promise.resolve(Buffer.from(JSON.stringify(msg, void 0, 0), options2.charset));
+            } catch (err) {
+              return Promise.reject(err);
+            }
+          }
+        }),
+        decoder: Object.freeze({
+          name: "application/json",
+          decode: (buffer, options2) => {
+            try {
+              if (buffer instanceof Buffer) {
+                return Promise.resolve(JSON.parse(buffer.toString(options2.charset)));
+              } else {
+                return Promise.resolve(JSON.parse(new util_1.TextDecoder(options2.charset).decode(buffer)));
+              }
+            } catch (err) {
+              return Promise.reject(err);
+            }
+          }
+        })
+      }),
+      stream: Object.freeze({
+        asReadableStream: (stream) => new ReadableStreamWrapper(stream),
+        asWritableStream: (stream) => new WritableStreamWrapper(stream)
+      }),
+      console,
+      timer: Object.freeze({
+        setTimeout(callback, ms, ...args) {
+          const handle = setTimeout(callback, ms, ...args);
+          return { dispose: () => clearTimeout(handle) };
+        },
+        setImmediate(callback, ...args) {
+          const handle = setImmediate(callback, ...args);
+          return { dispose: () => clearImmediate(handle) };
+        },
+        setInterval(callback, ms, ...args) {
+          const handle = setInterval(callback, ms, ...args);
+          return { dispose: () => clearInterval(handle) };
+        }
+      })
+    });
+    function RIL() {
+      return _ril;
+    }
+    (function(RIL2) {
+      function install() {
+        api_1.RAL.install(_ril);
+      }
+      RIL2.install = install;
+    })(RIL || (RIL = {}));
+    exports2.default = RIL;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/node/main.js
 var require_main = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/lib/node/main.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/lib/node/main.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
@@ -3814,14 +4038,14 @@ var require_main = __commonJS({
           __createBinding(exports3, m, p);
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.createMessageConnection = exports2.createServerSocketTransport = exports2.createClientSocketTransport = exports2.createServerPipeTransport = exports2.createClientPipeTransport = exports2.generateRandomPipeName = exports2.StreamMessageWriter = exports2.StreamMessageReader = exports2.SocketMessageWriter = exports2.SocketMessageReader = exports2.IPCMessageWriter = exports2.IPCMessageReader = void 0;
+    exports2.createMessageConnection = exports2.createServerSocketTransport = exports2.createClientSocketTransport = exports2.createServerPipeTransport = exports2.createClientPipeTransport = exports2.generateRandomPipeName = exports2.StreamMessageWriter = exports2.StreamMessageReader = exports2.SocketMessageWriter = exports2.SocketMessageReader = exports2.PortMessageWriter = exports2.PortMessageReader = exports2.IPCMessageWriter = exports2.IPCMessageReader = void 0;
     var ril_1 = require_ril();
     ril_1.default.install();
-    var api_1 = require_api();
     var path = require("path");
     var os = require("os");
     var crypto_1 = require("crypto");
     var net_1 = require("net");
+    var api_1 = require_api();
     __exportStar(require_api(), exports2);
     var IPCMessageReader = class extends api_1.AbstractMessageReader {
       constructor(process2) {
@@ -3842,7 +4066,7 @@ var require_main = __commonJS({
         super();
         this.process = process2;
         this.errorCount = 0;
-        let eventEmitter = this.process;
+        const eventEmitter = this.process;
         eventEmitter.on("error", (error) => this.fireError(error));
         eventEmitter.on("close", () => this.fireClose);
       }
@@ -3872,15 +4096,55 @@ var require_main = __commonJS({
       }
     };
     exports2.IPCMessageWriter = IPCMessageWriter;
+    var PortMessageReader = class extends api_1.AbstractMessageReader {
+      constructor(port) {
+        super();
+        this.onData = new api_1.Emitter();
+        port.on("close", () => this.fireClose);
+        port.on("error", (error) => this.fireError(error));
+        port.on("message", (message) => {
+          this.onData.fire(message);
+        });
+      }
+      listen(callback) {
+        return this.onData.event(callback);
+      }
+    };
+    exports2.PortMessageReader = PortMessageReader;
+    var PortMessageWriter = class extends api_1.AbstractMessageWriter {
+      constructor(port) {
+        super();
+        this.port = port;
+        this.errorCount = 0;
+        port.on("close", () => this.fireClose());
+        port.on("error", (error) => this.fireError(error));
+      }
+      write(msg) {
+        try {
+          this.port.postMessage(msg);
+          return Promise.resolve();
+        } catch (error) {
+          this.handleError(error, msg);
+          return Promise.reject(error);
+        }
+      }
+      handleError(error, msg) {
+        this.errorCount++;
+        this.fireError(error, msg, this.errorCount);
+      }
+      end() {
+      }
+    };
+    exports2.PortMessageWriter = PortMessageWriter;
     var SocketMessageReader = class extends api_1.ReadableStreamMessageReader {
       constructor(socket, encoding = "utf-8") {
-        super(ril_1.default().stream.asReadableStream(socket), encoding);
+        super((0, ril_1.default)().stream.asReadableStream(socket), encoding);
       }
     };
     exports2.SocketMessageReader = SocketMessageReader;
     var SocketMessageWriter = class extends api_1.WriteableStreamMessageWriter {
       constructor(socket, options2) {
-        super(ril_1.default().stream.asWritableStream(socket), options2);
+        super((0, ril_1.default)().stream.asWritableStream(socket), options2);
         this.socket = socket;
       }
       dispose() {
@@ -3890,14 +4154,14 @@ var require_main = __commonJS({
     };
     exports2.SocketMessageWriter = SocketMessageWriter;
     var StreamMessageReader = class extends api_1.ReadableStreamMessageReader {
-      constructor(readble, encoding) {
-        super(ril_1.default().stream.asReadableStream(readble), encoding);
+      constructor(readable, encoding) {
+        super((0, ril_1.default)().stream.asReadableStream(readable), encoding);
       }
     };
     exports2.StreamMessageReader = StreamMessageReader;
     var StreamMessageWriter = class extends api_1.WriteableStreamMessageWriter {
       constructor(writable, options2) {
-        super(ril_1.default().stream.asWritableStream(writable), options2);
+        super((0, ril_1.default)().stream.asWritableStream(writable), options2);
       }
     };
     exports2.StreamMessageWriter = StreamMessageWriter;
@@ -3907,7 +4171,7 @@ var require_main = __commonJS({
       ["darwin", 103]
     ]);
     function generateRandomPipeName() {
-      const randomSuffix = crypto_1.randomBytes(21).toString("hex");
+      const randomSuffix = (0, crypto_1.randomBytes)(21).toString("hex");
       if (process.platform === "win32") {
         return `\\\\.\\pipe\\vscode-jsonrpc-${randomSuffix}-sock`;
       }
@@ -3918,8 +4182,8 @@ var require_main = __commonJS({
         result = path.join(os.tmpdir(), `vscode-${randomSuffix}.sock`);
       }
       const limit = safeIpcPathLengths.get(process.platform);
-      if (limit !== void 0 && result.length >= limit) {
-        ril_1.default().console.warn(`WARNING: IPC handle "${result}" is longer than ${limit} characters.`);
+      if (limit !== void 0 && result.length > limit) {
+        (0, ril_1.default)().console.warn(`WARNING: IPC handle "${result}" is longer than ${limit} characters.`);
       }
       return result;
     }
@@ -3930,7 +4194,7 @@ var require_main = __commonJS({
         connectResolve = resolve;
       });
       return new Promise((resolve, reject) => {
-        let server2 = net_1.createServer((socket) => {
+        let server2 = (0, net_1.createServer)((socket) => {
           server2.close();
           connectResolve([
             new SocketMessageReader(socket, encoding),
@@ -3950,7 +4214,7 @@ var require_main = __commonJS({
     }
     exports2.createClientPipeTransport = createClientPipeTransport;
     function createServerPipeTransport(pipeName, encoding = "utf-8") {
-      const socket = net_1.createConnection(pipeName);
+      const socket = (0, net_1.createConnection)(pipeName);
       return [
         new SocketMessageReader(socket, encoding),
         new SocketMessageWriter(socket, encoding)
@@ -3963,7 +4227,7 @@ var require_main = __commonJS({
         connectResolve = resolve;
       });
       return new Promise((resolve, reject) => {
-        const server2 = net_1.createServer((socket) => {
+        const server2 = (0, net_1.createServer)((socket) => {
           server2.close();
           connectResolve([
             new SocketMessageReader(socket, encoding),
@@ -3983,7 +4247,7 @@ var require_main = __commonJS({
     }
     exports2.createClientSocketTransport = createClientSocketTransport;
     function createServerSocketTransport(port, encoding = "utf-8") {
-      const socket = net_1.createConnection(port, "127.0.0.1");
+      const socket = (0, net_1.createConnection)(port, "127.0.0.1");
       return [
         new SocketMessageReader(socket, encoding),
         new SocketMessageWriter(socket, encoding)
@@ -4007,1303 +4271,1551 @@ var require_main = __commonJS({
       if (api_1.ConnectionStrategy.is(options2)) {
         options2 = { connectionStrategy: options2 };
       }
-      return api_1.createMessageConnection(reader, writer, logger, options2);
+      return (0, api_1.createMessageConnection)(reader, writer, logger, options2);
     }
     exports2.createMessageConnection = createMessageConnection;
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/node.js
+// node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/node.js
 var require_node = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-jsonrpc@6.0.0/node_modules/vscode-jsonrpc/node.js"(exports2, module2) {
+  "node_modules/.aspect_rules_js/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc/node.js"(exports2, module2) {
     "use strict";
     module2.exports = require_main();
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-types@3.16.0/node_modules/vscode-languageserver-types/lib/esm/main.js
-var main_exports = {};
-__export(main_exports, {
-  AnnotatedTextEdit: () => AnnotatedTextEdit,
-  ChangeAnnotation: () => ChangeAnnotation,
-  ChangeAnnotationIdentifier: () => ChangeAnnotationIdentifier,
-  CodeAction: () => CodeAction,
-  CodeActionContext: () => CodeActionContext,
-  CodeActionKind: () => CodeActionKind,
-  CodeDescription: () => CodeDescription,
-  CodeLens: () => CodeLens,
-  Color: () => Color,
-  ColorInformation: () => ColorInformation,
-  ColorPresentation: () => ColorPresentation,
-  Command: () => Command,
-  CompletionItem: () => CompletionItem,
-  CompletionItemKind: () => CompletionItemKind,
-  CompletionItemTag: () => CompletionItemTag,
-  CompletionList: () => CompletionList,
-  CreateFile: () => CreateFile,
-  DeleteFile: () => DeleteFile,
-  Diagnostic: () => Diagnostic,
-  DiagnosticRelatedInformation: () => DiagnosticRelatedInformation,
-  DiagnosticSeverity: () => DiagnosticSeverity,
-  DiagnosticTag: () => DiagnosticTag,
-  DocumentHighlight: () => DocumentHighlight,
-  DocumentHighlightKind: () => DocumentHighlightKind,
-  DocumentLink: () => DocumentLink,
-  DocumentSymbol: () => DocumentSymbol,
-  EOL: () => EOL,
-  FoldingRange: () => FoldingRange,
-  FoldingRangeKind: () => FoldingRangeKind,
-  FormattingOptions: () => FormattingOptions,
-  Hover: () => Hover,
-  InsertReplaceEdit: () => InsertReplaceEdit,
-  InsertTextFormat: () => InsertTextFormat,
-  InsertTextMode: () => InsertTextMode,
-  Location: () => Location,
-  LocationLink: () => LocationLink,
-  MarkedString: () => MarkedString,
-  MarkupContent: () => MarkupContent,
-  MarkupKind: () => MarkupKind,
-  OptionalVersionedTextDocumentIdentifier: () => OptionalVersionedTextDocumentIdentifier,
-  ParameterInformation: () => ParameterInformation,
-  Position: () => Position,
-  Range: () => Range,
-  RenameFile: () => RenameFile,
-  SelectionRange: () => SelectionRange,
-  SignatureInformation: () => SignatureInformation,
-  SymbolInformation: () => SymbolInformation,
-  SymbolKind: () => SymbolKind,
-  SymbolTag: () => SymbolTag,
-  TextDocument: () => TextDocument,
-  TextDocumentEdit: () => TextDocumentEdit,
-  TextDocumentIdentifier: () => TextDocumentIdentifier,
-  TextDocumentItem: () => TextDocumentItem,
-  TextEdit: () => TextEdit,
-  VersionedTextDocumentIdentifier: () => VersionedTextDocumentIdentifier,
-  WorkspaceChange: () => WorkspaceChange,
-  WorkspaceEdit: () => WorkspaceEdit,
-  integer: () => integer,
-  uinteger: () => uinteger
-});
-var integer, uinteger, Position, Range, Location, LocationLink, Color, ColorInformation, ColorPresentation, FoldingRangeKind, FoldingRange, DiagnosticRelatedInformation, DiagnosticSeverity, DiagnosticTag, CodeDescription, Diagnostic, Command, TextEdit, ChangeAnnotation, ChangeAnnotationIdentifier, AnnotatedTextEdit, TextDocumentEdit, CreateFile, RenameFile, DeleteFile, WorkspaceEdit, TextEditChangeImpl, ChangeAnnotations, WorkspaceChange, TextDocumentIdentifier, VersionedTextDocumentIdentifier, OptionalVersionedTextDocumentIdentifier, TextDocumentItem, MarkupKind, MarkupContent, CompletionItemKind, InsertTextFormat, CompletionItemTag, InsertReplaceEdit, InsertTextMode, CompletionItem, CompletionList, MarkedString, Hover, ParameterInformation, SignatureInformation, DocumentHighlightKind, DocumentHighlight, SymbolKind, SymbolTag, SymbolInformation, DocumentSymbol, CodeActionKind, CodeActionContext, CodeAction, CodeLens, FormattingOptions, DocumentLink, SelectionRange, EOL, TextDocument, FullTextDocument, Is;
-var init_main = __esm({
-  "node_modules/.aspect_rules_js/vscode-languageserver-types@3.16.0/node_modules/vscode-languageserver-types/lib/esm/main.js"() {
-    "use strict";
-    (function(integer3) {
-      integer3.MIN_VALUE = -2147483648;
-      integer3.MAX_VALUE = 2147483647;
-    })(integer || (integer = {}));
-    (function(uinteger3) {
-      uinteger3.MIN_VALUE = 0;
-      uinteger3.MAX_VALUE = 2147483647;
-    })(uinteger || (uinteger = {}));
-    (function(Position3) {
-      function create(line, character) {
-        if (line === Number.MAX_VALUE) {
-          line = uinteger.MAX_VALUE;
+// node_modules/.aspect_rules_js/vscode-languageserver-types@3.17.5/node_modules/vscode-languageserver-types/lib/umd/main.js
+var require_main2 = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver-types@3.17.5/node_modules/vscode-languageserver-types/lib/umd/main.js"(exports2, module2) {
+    (function(factory) {
+      if (typeof module2 === "object" && typeof module2.exports === "object") {
+        var v = factory(require, exports2);
+        if (v !== void 0)
+          module2.exports = v;
+      } else if (typeof define === "function" && define.amd) {
+        define(["require", "exports"], factory);
+      }
+    })(function(require2, exports3) {
+      "use strict";
+      Object.defineProperty(exports3, "__esModule", { value: true });
+      exports3.TextDocument = exports3.EOL = exports3.WorkspaceFolder = exports3.InlineCompletionContext = exports3.SelectedCompletionInfo = exports3.InlineCompletionTriggerKind = exports3.InlineCompletionList = exports3.InlineCompletionItem = exports3.StringValue = exports3.InlayHint = exports3.InlayHintLabelPart = exports3.InlayHintKind = exports3.InlineValueContext = exports3.InlineValueEvaluatableExpression = exports3.InlineValueVariableLookup = exports3.InlineValueText = exports3.SemanticTokens = exports3.SemanticTokenModifiers = exports3.SemanticTokenTypes = exports3.SelectionRange = exports3.DocumentLink = exports3.FormattingOptions = exports3.CodeLens = exports3.CodeAction = exports3.CodeActionContext = exports3.CodeActionTriggerKind = exports3.CodeActionKind = exports3.DocumentSymbol = exports3.WorkspaceSymbol = exports3.SymbolInformation = exports3.SymbolTag = exports3.SymbolKind = exports3.DocumentHighlight = exports3.DocumentHighlightKind = exports3.SignatureInformation = exports3.ParameterInformation = exports3.Hover = exports3.MarkedString = exports3.CompletionList = exports3.CompletionItem = exports3.CompletionItemLabelDetails = exports3.InsertTextMode = exports3.InsertReplaceEdit = exports3.CompletionItemTag = exports3.InsertTextFormat = exports3.CompletionItemKind = exports3.MarkupContent = exports3.MarkupKind = exports3.TextDocumentItem = exports3.OptionalVersionedTextDocumentIdentifier = exports3.VersionedTextDocumentIdentifier = exports3.TextDocumentIdentifier = exports3.WorkspaceChange = exports3.WorkspaceEdit = exports3.DeleteFile = exports3.RenameFile = exports3.CreateFile = exports3.TextDocumentEdit = exports3.AnnotatedTextEdit = exports3.ChangeAnnotationIdentifier = exports3.ChangeAnnotation = exports3.TextEdit = exports3.Command = exports3.Diagnostic = exports3.CodeDescription = exports3.DiagnosticTag = exports3.DiagnosticSeverity = exports3.DiagnosticRelatedInformation = exports3.FoldingRange = exports3.FoldingRangeKind = exports3.ColorPresentation = exports3.ColorInformation = exports3.Color = exports3.LocationLink = exports3.Location = exports3.Range = exports3.Position = exports3.uinteger = exports3.integer = exports3.URI = exports3.DocumentUri = void 0;
+      var DocumentUri2;
+      (function(DocumentUri3) {
+        function is(value) {
+          return typeof value === "string";
         }
-        if (character === Number.MAX_VALUE) {
-          character = uinteger.MAX_VALUE;
+        DocumentUri3.is = is;
+      })(DocumentUri2 || (exports3.DocumentUri = DocumentUri2 = {}));
+      var URI3;
+      (function(URI4) {
+        function is(value) {
+          return typeof value === "string";
         }
-        return { line, character };
-      }
-      Position3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.objectLiteral(candidate) && Is.uinteger(candidate.line) && Is.uinteger(candidate.character);
-      }
-      Position3.is = is;
-    })(Position || (Position = {}));
-    (function(Range3) {
-      function create(one, two, three, four) {
-        if (Is.uinteger(one) && Is.uinteger(two) && Is.uinteger(three) && Is.uinteger(four)) {
-          return { start: Position.create(one, two), end: Position.create(three, four) };
-        } else if (Position.is(one) && Position.is(two)) {
-          return { start: one, end: two };
-        } else {
-          throw new Error("Range#create called with invalid arguments[" + one + ", " + two + ", " + three + ", " + four + "]");
+        URI4.is = is;
+      })(URI3 || (exports3.URI = URI3 = {}));
+      var integer2;
+      (function(integer3) {
+        integer3.MIN_VALUE = -2147483648;
+        integer3.MAX_VALUE = 2147483647;
+        function is(value) {
+          return typeof value === "number" && integer3.MIN_VALUE <= value && value <= integer3.MAX_VALUE;
         }
-      }
-      Range3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.objectLiteral(candidate) && Position.is(candidate.start) && Position.is(candidate.end);
-      }
-      Range3.is = is;
-    })(Range || (Range = {}));
-    (function(Location3) {
-      function create(uri, range) {
-        return { uri, range };
-      }
-      Location3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.defined(candidate) && Range.is(candidate.range) && (Is.string(candidate.uri) || Is.undefined(candidate.uri));
-      }
-      Location3.is = is;
-    })(Location || (Location = {}));
-    (function(LocationLink3) {
-      function create(targetUri, targetRange, targetSelectionRange, originSelectionRange) {
-        return { targetUri, targetRange, targetSelectionRange, originSelectionRange };
-      }
-      LocationLink3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.defined(candidate) && Range.is(candidate.targetRange) && Is.string(candidate.targetUri) && (Range.is(candidate.targetSelectionRange) || Is.undefined(candidate.targetSelectionRange)) && (Range.is(candidate.originSelectionRange) || Is.undefined(candidate.originSelectionRange));
-      }
-      LocationLink3.is = is;
-    })(LocationLink || (LocationLink = {}));
-    (function(Color3) {
-      function create(red, green, blue, alpha) {
-        return {
-          red,
-          green,
-          blue,
-          alpha
-        };
-      }
-      Color3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.numberRange(candidate.red, 0, 1) && Is.numberRange(candidate.green, 0, 1) && Is.numberRange(candidate.blue, 0, 1) && Is.numberRange(candidate.alpha, 0, 1);
-      }
-      Color3.is = is;
-    })(Color || (Color = {}));
-    (function(ColorInformation3) {
-      function create(range, color) {
-        return {
-          range,
-          color
-        };
-      }
-      ColorInformation3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Range.is(candidate.range) && Color.is(candidate.color);
-      }
-      ColorInformation3.is = is;
-    })(ColorInformation || (ColorInformation = {}));
-    (function(ColorPresentation3) {
-      function create(label, textEdit, additionalTextEdits) {
-        return {
-          label,
-          textEdit,
-          additionalTextEdits
-        };
-      }
-      ColorPresentation3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.string(candidate.label) && (Is.undefined(candidate.textEdit) || TextEdit.is(candidate)) && (Is.undefined(candidate.additionalTextEdits) || Is.typedArray(candidate.additionalTextEdits, TextEdit.is));
-      }
-      ColorPresentation3.is = is;
-    })(ColorPresentation || (ColorPresentation = {}));
-    (function(FoldingRangeKind3) {
-      FoldingRangeKind3["Comment"] = "comment";
-      FoldingRangeKind3["Imports"] = "imports";
-      FoldingRangeKind3["Region"] = "region";
-    })(FoldingRangeKind || (FoldingRangeKind = {}));
-    (function(FoldingRange3) {
-      function create(startLine, endLine, startCharacter, endCharacter, kind) {
-        var result = {
-          startLine,
-          endLine
-        };
-        if (Is.defined(startCharacter)) {
-          result.startCharacter = startCharacter;
+        integer3.is = is;
+      })(integer2 || (exports3.integer = integer2 = {}));
+      var uinteger2;
+      (function(uinteger3) {
+        uinteger3.MIN_VALUE = 0;
+        uinteger3.MAX_VALUE = 2147483647;
+        function is(value) {
+          return typeof value === "number" && uinteger3.MIN_VALUE <= value && value <= uinteger3.MAX_VALUE;
         }
-        if (Is.defined(endCharacter)) {
-          result.endCharacter = endCharacter;
+        uinteger3.is = is;
+      })(uinteger2 || (exports3.uinteger = uinteger2 = {}));
+      var Position2;
+      (function(Position3) {
+        function create(line, character) {
+          if (line === Number.MAX_VALUE) {
+            line = uinteger2.MAX_VALUE;
+          }
+          if (character === Number.MAX_VALUE) {
+            character = uinteger2.MAX_VALUE;
+          }
+          return { line, character };
         }
-        if (Is.defined(kind)) {
-          result.kind = kind;
+        Position3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && Is2.uinteger(candidate.line) && Is2.uinteger(candidate.character);
         }
-        return result;
-      }
-      FoldingRange3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.uinteger(candidate.startLine) && Is.uinteger(candidate.startLine) && (Is.undefined(candidate.startCharacter) || Is.uinteger(candidate.startCharacter)) && (Is.undefined(candidate.endCharacter) || Is.uinteger(candidate.endCharacter)) && (Is.undefined(candidate.kind) || Is.string(candidate.kind));
-      }
-      FoldingRange3.is = is;
-    })(FoldingRange || (FoldingRange = {}));
-    (function(DiagnosticRelatedInformation3) {
-      function create(location, message) {
-        return {
-          location,
-          message
-        };
-      }
-      DiagnosticRelatedInformation3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.defined(candidate) && Location.is(candidate.location) && Is.string(candidate.message);
-      }
-      DiagnosticRelatedInformation3.is = is;
-    })(DiagnosticRelatedInformation || (DiagnosticRelatedInformation = {}));
-    (function(DiagnosticSeverity3) {
-      DiagnosticSeverity3.Error = 1;
-      DiagnosticSeverity3.Warning = 2;
-      DiagnosticSeverity3.Information = 3;
-      DiagnosticSeverity3.Hint = 4;
-    })(DiagnosticSeverity || (DiagnosticSeverity = {}));
-    (function(DiagnosticTag3) {
-      DiagnosticTag3.Unnecessary = 1;
-      DiagnosticTag3.Deprecated = 2;
-    })(DiagnosticTag || (DiagnosticTag = {}));
-    (function(CodeDescription3) {
-      function is(value) {
-        var candidate = value;
-        return candidate !== void 0 && candidate !== null && Is.string(candidate.href);
-      }
-      CodeDescription3.is = is;
-    })(CodeDescription || (CodeDescription = {}));
-    (function(Diagnostic3) {
-      function create(range, message, severity, code, source, relatedInformation) {
-        var result = { range, message };
-        if (Is.defined(severity)) {
-          result.severity = severity;
-        }
-        if (Is.defined(code)) {
-          result.code = code;
-        }
-        if (Is.defined(source)) {
-          result.source = source;
-        }
-        if (Is.defined(relatedInformation)) {
-          result.relatedInformation = relatedInformation;
-        }
-        return result;
-      }
-      Diagnostic3.create = create;
-      function is(value) {
-        var _a3;
-        var candidate = value;
-        return Is.defined(candidate) && Range.is(candidate.range) && Is.string(candidate.message) && (Is.number(candidate.severity) || Is.undefined(candidate.severity)) && (Is.integer(candidate.code) || Is.string(candidate.code) || Is.undefined(candidate.code)) && (Is.undefined(candidate.codeDescription) || Is.string((_a3 = candidate.codeDescription) === null || _a3 === void 0 ? void 0 : _a3.href)) && (Is.string(candidate.source) || Is.undefined(candidate.source)) && (Is.undefined(candidate.relatedInformation) || Is.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation.is));
-      }
-      Diagnostic3.is = is;
-    })(Diagnostic || (Diagnostic = {}));
-    (function(Command3) {
-      function create(title, command) {
-        var args = [];
-        for (var _i = 2; _i < arguments.length; _i++) {
-          args[_i - 2] = arguments[_i];
-        }
-        var result = { title, command };
-        if (Is.defined(args) && args.length > 0) {
-          result.arguments = args;
-        }
-        return result;
-      }
-      Command3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.defined(candidate) && Is.string(candidate.title) && Is.string(candidate.command);
-      }
-      Command3.is = is;
-    })(Command || (Command = {}));
-    (function(TextEdit3) {
-      function replace(range, newText) {
-        return { range, newText };
-      }
-      TextEdit3.replace = replace;
-      function insert(position, newText) {
-        return { range: { start: position, end: position }, newText };
-      }
-      TextEdit3.insert = insert;
-      function del(range) {
-        return { range, newText: "" };
-      }
-      TextEdit3.del = del;
-      function is(value) {
-        var candidate = value;
-        return Is.objectLiteral(candidate) && Is.string(candidate.newText) && Range.is(candidate.range);
-      }
-      TextEdit3.is = is;
-    })(TextEdit || (TextEdit = {}));
-    (function(ChangeAnnotation3) {
-      function create(label, needsConfirmation, description) {
-        var result = { label };
-        if (needsConfirmation !== void 0) {
-          result.needsConfirmation = needsConfirmation;
-        }
-        if (description !== void 0) {
-          result.description = description;
-        }
-        return result;
-      }
-      ChangeAnnotation3.create = create;
-      function is(value) {
-        var candidate = value;
-        return candidate !== void 0 && Is.objectLiteral(candidate) && Is.string(candidate.label) && (Is.boolean(candidate.needsConfirmation) || candidate.needsConfirmation === void 0) && (Is.string(candidate.description) || candidate.description === void 0);
-      }
-      ChangeAnnotation3.is = is;
-    })(ChangeAnnotation || (ChangeAnnotation = {}));
-    (function(ChangeAnnotationIdentifier3) {
-      function is(value) {
-        var candidate = value;
-        return typeof candidate === "string";
-      }
-      ChangeAnnotationIdentifier3.is = is;
-    })(ChangeAnnotationIdentifier || (ChangeAnnotationIdentifier = {}));
-    (function(AnnotatedTextEdit3) {
-      function replace(range, newText, annotation) {
-        return { range, newText, annotationId: annotation };
-      }
-      AnnotatedTextEdit3.replace = replace;
-      function insert(position, newText, annotation) {
-        return { range: { start: position, end: position }, newText, annotationId: annotation };
-      }
-      AnnotatedTextEdit3.insert = insert;
-      function del(range, annotation) {
-        return { range, newText: "", annotationId: annotation };
-      }
-      AnnotatedTextEdit3.del = del;
-      function is(value) {
-        var candidate = value;
-        return TextEdit.is(candidate) && (ChangeAnnotation.is(candidate.annotationId) || ChangeAnnotationIdentifier.is(candidate.annotationId));
-      }
-      AnnotatedTextEdit3.is = is;
-    })(AnnotatedTextEdit || (AnnotatedTextEdit = {}));
-    (function(TextDocumentEdit3) {
-      function create(textDocument, edits) {
-        return { textDocument, edits };
-      }
-      TextDocumentEdit3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.defined(candidate) && OptionalVersionedTextDocumentIdentifier.is(candidate.textDocument) && Array.isArray(candidate.edits);
-      }
-      TextDocumentEdit3.is = is;
-    })(TextDocumentEdit || (TextDocumentEdit = {}));
-    (function(CreateFile3) {
-      function create(uri, options2, annotation) {
-        var result = {
-          kind: "create",
-          uri
-        };
-        if (options2 !== void 0 && (options2.overwrite !== void 0 || options2.ignoreIfExists !== void 0)) {
-          result.options = options2;
-        }
-        if (annotation !== void 0) {
-          result.annotationId = annotation;
-        }
-        return result;
-      }
-      CreateFile3.create = create;
-      function is(value) {
-        var candidate = value;
-        return candidate && candidate.kind === "create" && Is.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier.is(candidate.annotationId));
-      }
-      CreateFile3.is = is;
-    })(CreateFile || (CreateFile = {}));
-    (function(RenameFile3) {
-      function create(oldUri, newUri, options2, annotation) {
-        var result = {
-          kind: "rename",
-          oldUri,
-          newUri
-        };
-        if (options2 !== void 0 && (options2.overwrite !== void 0 || options2.ignoreIfExists !== void 0)) {
-          result.options = options2;
-        }
-        if (annotation !== void 0) {
-          result.annotationId = annotation;
-        }
-        return result;
-      }
-      RenameFile3.create = create;
-      function is(value) {
-        var candidate = value;
-        return candidate && candidate.kind === "rename" && Is.string(candidate.oldUri) && Is.string(candidate.newUri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier.is(candidate.annotationId));
-      }
-      RenameFile3.is = is;
-    })(RenameFile || (RenameFile = {}));
-    (function(DeleteFile3) {
-      function create(uri, options2, annotation) {
-        var result = {
-          kind: "delete",
-          uri
-        };
-        if (options2 !== void 0 && (options2.recursive !== void 0 || options2.ignoreIfNotExists !== void 0)) {
-          result.options = options2;
-        }
-        if (annotation !== void 0) {
-          result.annotationId = annotation;
-        }
-        return result;
-      }
-      DeleteFile3.create = create;
-      function is(value) {
-        var candidate = value;
-        return candidate && candidate.kind === "delete" && Is.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.recursive === void 0 || Is.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === void 0 || Is.boolean(candidate.options.ignoreIfNotExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier.is(candidate.annotationId));
-      }
-      DeleteFile3.is = is;
-    })(DeleteFile || (DeleteFile = {}));
-    (function(WorkspaceEdit3) {
-      function is(value) {
-        var candidate = value;
-        return candidate && (candidate.changes !== void 0 || candidate.documentChanges !== void 0) && (candidate.documentChanges === void 0 || candidate.documentChanges.every(function(change) {
-          if (Is.string(change.kind)) {
-            return CreateFile.is(change) || RenameFile.is(change) || DeleteFile.is(change);
+        Position3.is = is;
+      })(Position2 || (exports3.Position = Position2 = {}));
+      var Range2;
+      (function(Range3) {
+        function create(one, two, three, four) {
+          if (Is2.uinteger(one) && Is2.uinteger(two) && Is2.uinteger(three) && Is2.uinteger(four)) {
+            return { start: Position2.create(one, two), end: Position2.create(three, four) };
+          } else if (Position2.is(one) && Position2.is(two)) {
+            return { start: one, end: two };
           } else {
-            return TextDocumentEdit.is(change);
+            throw new Error("Range#create called with invalid arguments[".concat(one, ", ").concat(two, ", ").concat(three, ", ").concat(four, "]"));
           }
-        }));
-      }
-      WorkspaceEdit3.is = is;
-    })(WorkspaceEdit || (WorkspaceEdit = {}));
-    TextEditChangeImpl = /** @class */
-    function() {
-      function TextEditChangeImpl2(edits, changeAnnotations) {
-        this.edits = edits;
-        this.changeAnnotations = changeAnnotations;
-      }
-      TextEditChangeImpl2.prototype.insert = function(position, newText, annotation) {
-        var edit;
-        var id;
-        if (annotation === void 0) {
-          edit = TextEdit.insert(position, newText);
-        } else if (ChangeAnnotationIdentifier.is(annotation)) {
-          id = annotation;
-          edit = AnnotatedTextEdit.insert(position, newText, annotation);
-        } else {
-          this.assertChangeAnnotations(this.changeAnnotations);
-          id = this.changeAnnotations.manage(annotation);
-          edit = AnnotatedTextEdit.insert(position, newText, id);
         }
-        this.edits.push(edit);
-        if (id !== void 0) {
-          return id;
+        Range3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && Position2.is(candidate.start) && Position2.is(candidate.end);
         }
-      };
-      TextEditChangeImpl2.prototype.replace = function(range, newText, annotation) {
-        var edit;
-        var id;
-        if (annotation === void 0) {
-          edit = TextEdit.replace(range, newText);
-        } else if (ChangeAnnotationIdentifier.is(annotation)) {
-          id = annotation;
-          edit = AnnotatedTextEdit.replace(range, newText, annotation);
-        } else {
-          this.assertChangeAnnotations(this.changeAnnotations);
-          id = this.changeAnnotations.manage(annotation);
-          edit = AnnotatedTextEdit.replace(range, newText, id);
+        Range3.is = is;
+      })(Range2 || (exports3.Range = Range2 = {}));
+      var Location2;
+      (function(Location3) {
+        function create(uri, range) {
+          return { uri, range };
         }
-        this.edits.push(edit);
-        if (id !== void 0) {
-          return id;
+        Location3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && (Is2.string(candidate.uri) || Is2.undefined(candidate.uri));
         }
-      };
-      TextEditChangeImpl2.prototype.delete = function(range, annotation) {
-        var edit;
-        var id;
-        if (annotation === void 0) {
-          edit = TextEdit.del(range);
-        } else if (ChangeAnnotationIdentifier.is(annotation)) {
-          id = annotation;
-          edit = AnnotatedTextEdit.del(range, annotation);
-        } else {
-          this.assertChangeAnnotations(this.changeAnnotations);
-          id = this.changeAnnotations.manage(annotation);
-          edit = AnnotatedTextEdit.del(range, id);
+        Location3.is = is;
+      })(Location2 || (exports3.Location = Location2 = {}));
+      var LocationLink2;
+      (function(LocationLink3) {
+        function create(targetUri, targetRange, targetSelectionRange, originSelectionRange) {
+          return { targetUri, targetRange, targetSelectionRange, originSelectionRange };
         }
-        this.edits.push(edit);
-        if (id !== void 0) {
-          return id;
+        LocationLink3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && Range2.is(candidate.targetRange) && Is2.string(candidate.targetUri) && Range2.is(candidate.targetSelectionRange) && (Range2.is(candidate.originSelectionRange) || Is2.undefined(candidate.originSelectionRange));
         }
-      };
-      TextEditChangeImpl2.prototype.add = function(edit) {
-        this.edits.push(edit);
-      };
-      TextEditChangeImpl2.prototype.all = function() {
-        return this.edits;
-      };
-      TextEditChangeImpl2.prototype.clear = function() {
-        this.edits.splice(0, this.edits.length);
-      };
-      TextEditChangeImpl2.prototype.assertChangeAnnotations = function(value) {
-        if (value === void 0) {
-          throw new Error("Text edit change is not configured to manage change annotations.");
+        LocationLink3.is = is;
+      })(LocationLink2 || (exports3.LocationLink = LocationLink2 = {}));
+      var Color2;
+      (function(Color3) {
+        function create(red, green, blue, alpha) {
+          return {
+            red,
+            green,
+            blue,
+            alpha
+          };
         }
-      };
-      return TextEditChangeImpl2;
-    }();
-    ChangeAnnotations = /** @class */
-    function() {
-      function ChangeAnnotations2(annotations) {
-        this._annotations = annotations === void 0 ? /* @__PURE__ */ Object.create(null) : annotations;
-        this._counter = 0;
-        this._size = 0;
-      }
-      ChangeAnnotations2.prototype.all = function() {
-        return this._annotations;
-      };
-      Object.defineProperty(ChangeAnnotations2.prototype, "size", {
-        get: function() {
-          return this._size;
-        },
-        enumerable: false,
-        configurable: true
-      });
-      ChangeAnnotations2.prototype.manage = function(idOrAnnotation, annotation) {
-        var id;
-        if (ChangeAnnotationIdentifier.is(idOrAnnotation)) {
-          id = idOrAnnotation;
-        } else {
-          id = this.nextId();
-          annotation = idOrAnnotation;
+        Color3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && Is2.numberRange(candidate.red, 0, 1) && Is2.numberRange(candidate.green, 0, 1) && Is2.numberRange(candidate.blue, 0, 1) && Is2.numberRange(candidate.alpha, 0, 1);
         }
-        if (this._annotations[id] !== void 0) {
-          throw new Error("Id " + id + " is already in use.");
+        Color3.is = is;
+      })(Color2 || (exports3.Color = Color2 = {}));
+      var ColorInformation2;
+      (function(ColorInformation3) {
+        function create(range, color) {
+          return {
+            range,
+            color
+          };
         }
-        if (annotation === void 0) {
-          throw new Error("No annotation provided for id " + id);
+        ColorInformation3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && Color2.is(candidate.color);
         }
-        this._annotations[id] = annotation;
-        this._size++;
-        return id;
-      };
-      ChangeAnnotations2.prototype.nextId = function() {
-        this._counter++;
-        return this._counter.toString();
-      };
-      return ChangeAnnotations2;
-    }();
-    WorkspaceChange = /** @class */
-    function() {
-      function WorkspaceChange2(workspaceEdit) {
-        var _this = this;
-        this._textEditChanges = /* @__PURE__ */ Object.create(null);
-        if (workspaceEdit !== void 0) {
-          this._workspaceEdit = workspaceEdit;
-          if (workspaceEdit.documentChanges) {
-            this._changeAnnotations = new ChangeAnnotations(workspaceEdit.changeAnnotations);
-            workspaceEdit.changeAnnotations = this._changeAnnotations.all();
-            workspaceEdit.documentChanges.forEach(function(change) {
-              if (TextDocumentEdit.is(change)) {
-                var textEditChange = new TextEditChangeImpl(change.edits, _this._changeAnnotations);
-                _this._textEditChanges[change.textDocument.uri] = textEditChange;
-              }
-            });
-          } else if (workspaceEdit.changes) {
-            Object.keys(workspaceEdit.changes).forEach(function(key) {
-              var textEditChange = new TextEditChangeImpl(workspaceEdit.changes[key]);
-              _this._textEditChanges[key] = textEditChange;
-            });
+        ColorInformation3.is = is;
+      })(ColorInformation2 || (exports3.ColorInformation = ColorInformation2 = {}));
+      var ColorPresentation2;
+      (function(ColorPresentation3) {
+        function create(label, textEdit, additionalTextEdits) {
+          return {
+            label,
+            textEdit,
+            additionalTextEdits
+          };
+        }
+        ColorPresentation3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && Is2.string(candidate.label) && (Is2.undefined(candidate.textEdit) || TextEdit2.is(candidate)) && (Is2.undefined(candidate.additionalTextEdits) || Is2.typedArray(candidate.additionalTextEdits, TextEdit2.is));
+        }
+        ColorPresentation3.is = is;
+      })(ColorPresentation2 || (exports3.ColorPresentation = ColorPresentation2 = {}));
+      var FoldingRangeKind2;
+      (function(FoldingRangeKind3) {
+        FoldingRangeKind3.Comment = "comment";
+        FoldingRangeKind3.Imports = "imports";
+        FoldingRangeKind3.Region = "region";
+      })(FoldingRangeKind2 || (exports3.FoldingRangeKind = FoldingRangeKind2 = {}));
+      var FoldingRange2;
+      (function(FoldingRange3) {
+        function create(startLine, endLine, startCharacter, endCharacter, kind, collapsedText) {
+          var result = {
+            startLine,
+            endLine
+          };
+          if (Is2.defined(startCharacter)) {
+            result.startCharacter = startCharacter;
           }
-        } else {
-          this._workspaceEdit = {};
+          if (Is2.defined(endCharacter)) {
+            result.endCharacter = endCharacter;
+          }
+          if (Is2.defined(kind)) {
+            result.kind = kind;
+          }
+          if (Is2.defined(collapsedText)) {
+            result.collapsedText = collapsedText;
+          }
+          return result;
         }
-      }
-      Object.defineProperty(WorkspaceChange2.prototype, "edit", {
-        /**
-         * Returns the underlying [WorkspaceEdit](#WorkspaceEdit) literal
-         * use to be returned from a workspace edit operation like rename.
-         */
-        get: function() {
-          this.initDocumentChanges();
-          if (this._changeAnnotations !== void 0) {
-            if (this._changeAnnotations.size === 0) {
-              this._workspaceEdit.changeAnnotations = void 0;
+        FoldingRange3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && Is2.uinteger(candidate.startLine) && Is2.uinteger(candidate.startLine) && (Is2.undefined(candidate.startCharacter) || Is2.uinteger(candidate.startCharacter)) && (Is2.undefined(candidate.endCharacter) || Is2.uinteger(candidate.endCharacter)) && (Is2.undefined(candidate.kind) || Is2.string(candidate.kind));
+        }
+        FoldingRange3.is = is;
+      })(FoldingRange2 || (exports3.FoldingRange = FoldingRange2 = {}));
+      var DiagnosticRelatedInformation2;
+      (function(DiagnosticRelatedInformation3) {
+        function create(location, message) {
+          return {
+            location,
+            message
+          };
+        }
+        DiagnosticRelatedInformation3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.defined(candidate) && Location2.is(candidate.location) && Is2.string(candidate.message);
+        }
+        DiagnosticRelatedInformation3.is = is;
+      })(DiagnosticRelatedInformation2 || (exports3.DiagnosticRelatedInformation = DiagnosticRelatedInformation2 = {}));
+      var DiagnosticSeverity2;
+      (function(DiagnosticSeverity3) {
+        DiagnosticSeverity3.Error = 1;
+        DiagnosticSeverity3.Warning = 2;
+        DiagnosticSeverity3.Information = 3;
+        DiagnosticSeverity3.Hint = 4;
+      })(DiagnosticSeverity2 || (exports3.DiagnosticSeverity = DiagnosticSeverity2 = {}));
+      var DiagnosticTag2;
+      (function(DiagnosticTag3) {
+        DiagnosticTag3.Unnecessary = 1;
+        DiagnosticTag3.Deprecated = 2;
+      })(DiagnosticTag2 || (exports3.DiagnosticTag = DiagnosticTag2 = {}));
+      var CodeDescription2;
+      (function(CodeDescription3) {
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && Is2.string(candidate.href);
+        }
+        CodeDescription3.is = is;
+      })(CodeDescription2 || (exports3.CodeDescription = CodeDescription2 = {}));
+      var Diagnostic2;
+      (function(Diagnostic3) {
+        function create(range, message, severity, code, source, relatedInformation) {
+          var result = { range, message };
+          if (Is2.defined(severity)) {
+            result.severity = severity;
+          }
+          if (Is2.defined(code)) {
+            result.code = code;
+          }
+          if (Is2.defined(source)) {
+            result.source = source;
+          }
+          if (Is2.defined(relatedInformation)) {
+            result.relatedInformation = relatedInformation;
+          }
+          return result;
+        }
+        Diagnostic3.create = create;
+        function is(value) {
+          var _a3;
+          var candidate = value;
+          return Is2.defined(candidate) && Range2.is(candidate.range) && Is2.string(candidate.message) && (Is2.number(candidate.severity) || Is2.undefined(candidate.severity)) && (Is2.integer(candidate.code) || Is2.string(candidate.code) || Is2.undefined(candidate.code)) && (Is2.undefined(candidate.codeDescription) || Is2.string((_a3 = candidate.codeDescription) === null || _a3 === void 0 ? void 0 : _a3.href)) && (Is2.string(candidate.source) || Is2.undefined(candidate.source)) && (Is2.undefined(candidate.relatedInformation) || Is2.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation2.is));
+        }
+        Diagnostic3.is = is;
+      })(Diagnostic2 || (exports3.Diagnostic = Diagnostic2 = {}));
+      var Command2;
+      (function(Command3) {
+        function create(title, command) {
+          var args = [];
+          for (var _i = 2; _i < arguments.length; _i++) {
+            args[_i - 2] = arguments[_i];
+          }
+          var result = { title, command };
+          if (Is2.defined(args) && args.length > 0) {
+            result.arguments = args;
+          }
+          return result;
+        }
+        Command3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.defined(candidate) && Is2.string(candidate.title) && Is2.string(candidate.command);
+        }
+        Command3.is = is;
+      })(Command2 || (exports3.Command = Command2 = {}));
+      var TextEdit2;
+      (function(TextEdit3) {
+        function replace(range, newText) {
+          return { range, newText };
+        }
+        TextEdit3.replace = replace;
+        function insert(position, newText) {
+          return { range: { start: position, end: position }, newText };
+        }
+        TextEdit3.insert = insert;
+        function del(range) {
+          return { range, newText: "" };
+        }
+        TextEdit3.del = del;
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && Is2.string(candidate.newText) && Range2.is(candidate.range);
+        }
+        TextEdit3.is = is;
+      })(TextEdit2 || (exports3.TextEdit = TextEdit2 = {}));
+      var ChangeAnnotation2;
+      (function(ChangeAnnotation3) {
+        function create(label, needsConfirmation, description) {
+          var result = { label };
+          if (needsConfirmation !== void 0) {
+            result.needsConfirmation = needsConfirmation;
+          }
+          if (description !== void 0) {
+            result.description = description;
+          }
+          return result;
+        }
+        ChangeAnnotation3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && Is2.string(candidate.label) && (Is2.boolean(candidate.needsConfirmation) || candidate.needsConfirmation === void 0) && (Is2.string(candidate.description) || candidate.description === void 0);
+        }
+        ChangeAnnotation3.is = is;
+      })(ChangeAnnotation2 || (exports3.ChangeAnnotation = ChangeAnnotation2 = {}));
+      var ChangeAnnotationIdentifier2;
+      (function(ChangeAnnotationIdentifier3) {
+        function is(value) {
+          var candidate = value;
+          return Is2.string(candidate);
+        }
+        ChangeAnnotationIdentifier3.is = is;
+      })(ChangeAnnotationIdentifier2 || (exports3.ChangeAnnotationIdentifier = ChangeAnnotationIdentifier2 = {}));
+      var AnnotatedTextEdit2;
+      (function(AnnotatedTextEdit3) {
+        function replace(range, newText, annotation) {
+          return { range, newText, annotationId: annotation };
+        }
+        AnnotatedTextEdit3.replace = replace;
+        function insert(position, newText, annotation) {
+          return { range: { start: position, end: position }, newText, annotationId: annotation };
+        }
+        AnnotatedTextEdit3.insert = insert;
+        function del(range, annotation) {
+          return { range, newText: "", annotationId: annotation };
+        }
+        AnnotatedTextEdit3.del = del;
+        function is(value) {
+          var candidate = value;
+          return TextEdit2.is(candidate) && (ChangeAnnotation2.is(candidate.annotationId) || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+        }
+        AnnotatedTextEdit3.is = is;
+      })(AnnotatedTextEdit2 || (exports3.AnnotatedTextEdit = AnnotatedTextEdit2 = {}));
+      var TextDocumentEdit2;
+      (function(TextDocumentEdit3) {
+        function create(textDocument, edits) {
+          return { textDocument, edits };
+        }
+        TextDocumentEdit3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.defined(candidate) && OptionalVersionedTextDocumentIdentifier2.is(candidate.textDocument) && Array.isArray(candidate.edits);
+        }
+        TextDocumentEdit3.is = is;
+      })(TextDocumentEdit2 || (exports3.TextDocumentEdit = TextDocumentEdit2 = {}));
+      var CreateFile2;
+      (function(CreateFile3) {
+        function create(uri, options2, annotation) {
+          var result = {
+            kind: "create",
+            uri
+          };
+          if (options2 !== void 0 && (options2.overwrite !== void 0 || options2.ignoreIfExists !== void 0)) {
+            result.options = options2;
+          }
+          if (annotation !== void 0) {
+            result.annotationId = annotation;
+          }
+          return result;
+        }
+        CreateFile3.create = create;
+        function is(value) {
+          var candidate = value;
+          return candidate && candidate.kind === "create" && Is2.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is2.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is2.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+        }
+        CreateFile3.is = is;
+      })(CreateFile2 || (exports3.CreateFile = CreateFile2 = {}));
+      var RenameFile2;
+      (function(RenameFile3) {
+        function create(oldUri, newUri, options2, annotation) {
+          var result = {
+            kind: "rename",
+            oldUri,
+            newUri
+          };
+          if (options2 !== void 0 && (options2.overwrite !== void 0 || options2.ignoreIfExists !== void 0)) {
+            result.options = options2;
+          }
+          if (annotation !== void 0) {
+            result.annotationId = annotation;
+          }
+          return result;
+        }
+        RenameFile3.create = create;
+        function is(value) {
+          var candidate = value;
+          return candidate && candidate.kind === "rename" && Is2.string(candidate.oldUri) && Is2.string(candidate.newUri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is2.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is2.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+        }
+        RenameFile3.is = is;
+      })(RenameFile2 || (exports3.RenameFile = RenameFile2 = {}));
+      var DeleteFile2;
+      (function(DeleteFile3) {
+        function create(uri, options2, annotation) {
+          var result = {
+            kind: "delete",
+            uri
+          };
+          if (options2 !== void 0 && (options2.recursive !== void 0 || options2.ignoreIfNotExists !== void 0)) {
+            result.options = options2;
+          }
+          if (annotation !== void 0) {
+            result.annotationId = annotation;
+          }
+          return result;
+        }
+        DeleteFile3.create = create;
+        function is(value) {
+          var candidate = value;
+          return candidate && candidate.kind === "delete" && Is2.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.recursive === void 0 || Is2.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === void 0 || Is2.boolean(candidate.options.ignoreIfNotExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+        }
+        DeleteFile3.is = is;
+      })(DeleteFile2 || (exports3.DeleteFile = DeleteFile2 = {}));
+      var WorkspaceEdit2;
+      (function(WorkspaceEdit3) {
+        function is(value) {
+          var candidate = value;
+          return candidate && (candidate.changes !== void 0 || candidate.documentChanges !== void 0) && (candidate.documentChanges === void 0 || candidate.documentChanges.every(function(change) {
+            if (Is2.string(change.kind)) {
+              return CreateFile2.is(change) || RenameFile2.is(change) || DeleteFile2.is(change);
             } else {
+              return TextDocumentEdit2.is(change);
+            }
+          }));
+        }
+        WorkspaceEdit3.is = is;
+      })(WorkspaceEdit2 || (exports3.WorkspaceEdit = WorkspaceEdit2 = {}));
+      var TextEditChangeImpl = (
+        /** @class */
+        function() {
+          function TextEditChangeImpl2(edits, changeAnnotations) {
+            this.edits = edits;
+            this.changeAnnotations = changeAnnotations;
+          }
+          TextEditChangeImpl2.prototype.insert = function(position, newText, annotation) {
+            var edit;
+            var id;
+            if (annotation === void 0) {
+              edit = TextEdit2.insert(position, newText);
+            } else if (ChangeAnnotationIdentifier2.is(annotation)) {
+              id = annotation;
+              edit = AnnotatedTextEdit2.insert(position, newText, annotation);
+            } else {
+              this.assertChangeAnnotations(this.changeAnnotations);
+              id = this.changeAnnotations.manage(annotation);
+              edit = AnnotatedTextEdit2.insert(position, newText, id);
+            }
+            this.edits.push(edit);
+            if (id !== void 0) {
+              return id;
+            }
+          };
+          TextEditChangeImpl2.prototype.replace = function(range, newText, annotation) {
+            var edit;
+            var id;
+            if (annotation === void 0) {
+              edit = TextEdit2.replace(range, newText);
+            } else if (ChangeAnnotationIdentifier2.is(annotation)) {
+              id = annotation;
+              edit = AnnotatedTextEdit2.replace(range, newText, annotation);
+            } else {
+              this.assertChangeAnnotations(this.changeAnnotations);
+              id = this.changeAnnotations.manage(annotation);
+              edit = AnnotatedTextEdit2.replace(range, newText, id);
+            }
+            this.edits.push(edit);
+            if (id !== void 0) {
+              return id;
+            }
+          };
+          TextEditChangeImpl2.prototype.delete = function(range, annotation) {
+            var edit;
+            var id;
+            if (annotation === void 0) {
+              edit = TextEdit2.del(range);
+            } else if (ChangeAnnotationIdentifier2.is(annotation)) {
+              id = annotation;
+              edit = AnnotatedTextEdit2.del(range, annotation);
+            } else {
+              this.assertChangeAnnotations(this.changeAnnotations);
+              id = this.changeAnnotations.manage(annotation);
+              edit = AnnotatedTextEdit2.del(range, id);
+            }
+            this.edits.push(edit);
+            if (id !== void 0) {
+              return id;
+            }
+          };
+          TextEditChangeImpl2.prototype.add = function(edit) {
+            this.edits.push(edit);
+          };
+          TextEditChangeImpl2.prototype.all = function() {
+            return this.edits;
+          };
+          TextEditChangeImpl2.prototype.clear = function() {
+            this.edits.splice(0, this.edits.length);
+          };
+          TextEditChangeImpl2.prototype.assertChangeAnnotations = function(value) {
+            if (value === void 0) {
+              throw new Error("Text edit change is not configured to manage change annotations.");
+            }
+          };
+          return TextEditChangeImpl2;
+        }()
+      );
+      var ChangeAnnotations = (
+        /** @class */
+        function() {
+          function ChangeAnnotations2(annotations) {
+            this._annotations = annotations === void 0 ? /* @__PURE__ */ Object.create(null) : annotations;
+            this._counter = 0;
+            this._size = 0;
+          }
+          ChangeAnnotations2.prototype.all = function() {
+            return this._annotations;
+          };
+          Object.defineProperty(ChangeAnnotations2.prototype, "size", {
+            get: function() {
+              return this._size;
+            },
+            enumerable: false,
+            configurable: true
+          });
+          ChangeAnnotations2.prototype.manage = function(idOrAnnotation, annotation) {
+            var id;
+            if (ChangeAnnotationIdentifier2.is(idOrAnnotation)) {
+              id = idOrAnnotation;
+            } else {
+              id = this.nextId();
+              annotation = idOrAnnotation;
+            }
+            if (this._annotations[id] !== void 0) {
+              throw new Error("Id ".concat(id, " is already in use."));
+            }
+            if (annotation === void 0) {
+              throw new Error("No annotation provided for id ".concat(id));
+            }
+            this._annotations[id] = annotation;
+            this._size++;
+            return id;
+          };
+          ChangeAnnotations2.prototype.nextId = function() {
+            this._counter++;
+            return this._counter.toString();
+          };
+          return ChangeAnnotations2;
+        }()
+      );
+      var WorkspaceChange = (
+        /** @class */
+        function() {
+          function WorkspaceChange2(workspaceEdit) {
+            var _this = this;
+            this._textEditChanges = /* @__PURE__ */ Object.create(null);
+            if (workspaceEdit !== void 0) {
+              this._workspaceEdit = workspaceEdit;
+              if (workspaceEdit.documentChanges) {
+                this._changeAnnotations = new ChangeAnnotations(workspaceEdit.changeAnnotations);
+                workspaceEdit.changeAnnotations = this._changeAnnotations.all();
+                workspaceEdit.documentChanges.forEach(function(change) {
+                  if (TextDocumentEdit2.is(change)) {
+                    var textEditChange = new TextEditChangeImpl(change.edits, _this._changeAnnotations);
+                    _this._textEditChanges[change.textDocument.uri] = textEditChange;
+                  }
+                });
+              } else if (workspaceEdit.changes) {
+                Object.keys(workspaceEdit.changes).forEach(function(key) {
+                  var textEditChange = new TextEditChangeImpl(workspaceEdit.changes[key]);
+                  _this._textEditChanges[key] = textEditChange;
+                });
+              }
+            } else {
+              this._workspaceEdit = {};
+            }
+          }
+          Object.defineProperty(WorkspaceChange2.prototype, "edit", {
+            /**
+             * Returns the underlying {@link WorkspaceEdit} literal
+             * use to be returned from a workspace edit operation like rename.
+             */
+            get: function() {
+              this.initDocumentChanges();
+              if (this._changeAnnotations !== void 0) {
+                if (this._changeAnnotations.size === 0) {
+                  this._workspaceEdit.changeAnnotations = void 0;
+                } else {
+                  this._workspaceEdit.changeAnnotations = this._changeAnnotations.all();
+                }
+              }
+              return this._workspaceEdit;
+            },
+            enumerable: false,
+            configurable: true
+          });
+          WorkspaceChange2.prototype.getTextEditChange = function(key) {
+            if (OptionalVersionedTextDocumentIdentifier2.is(key)) {
+              this.initDocumentChanges();
+              if (this._workspaceEdit.documentChanges === void 0) {
+                throw new Error("Workspace edit is not configured for document changes.");
+              }
+              var textDocument = { uri: key.uri, version: key.version };
+              var result = this._textEditChanges[textDocument.uri];
+              if (!result) {
+                var edits = [];
+                var textDocumentEdit = {
+                  textDocument,
+                  edits
+                };
+                this._workspaceEdit.documentChanges.push(textDocumentEdit);
+                result = new TextEditChangeImpl(edits, this._changeAnnotations);
+                this._textEditChanges[textDocument.uri] = result;
+              }
+              return result;
+            } else {
+              this.initChanges();
+              if (this._workspaceEdit.changes === void 0) {
+                throw new Error("Workspace edit is not configured for normal text edit changes.");
+              }
+              var result = this._textEditChanges[key];
+              if (!result) {
+                var edits = [];
+                this._workspaceEdit.changes[key] = edits;
+                result = new TextEditChangeImpl(edits);
+                this._textEditChanges[key] = result;
+              }
+              return result;
+            }
+          };
+          WorkspaceChange2.prototype.initDocumentChanges = function() {
+            if (this._workspaceEdit.documentChanges === void 0 && this._workspaceEdit.changes === void 0) {
+              this._changeAnnotations = new ChangeAnnotations();
+              this._workspaceEdit.documentChanges = [];
               this._workspaceEdit.changeAnnotations = this._changeAnnotations.all();
             }
+          };
+          WorkspaceChange2.prototype.initChanges = function() {
+            if (this._workspaceEdit.documentChanges === void 0 && this._workspaceEdit.changes === void 0) {
+              this._workspaceEdit.changes = /* @__PURE__ */ Object.create(null);
+            }
+          };
+          WorkspaceChange2.prototype.createFile = function(uri, optionsOrAnnotation, options2) {
+            this.initDocumentChanges();
+            if (this._workspaceEdit.documentChanges === void 0) {
+              throw new Error("Workspace edit is not configured for document changes.");
+            }
+            var annotation;
+            if (ChangeAnnotation2.is(optionsOrAnnotation) || ChangeAnnotationIdentifier2.is(optionsOrAnnotation)) {
+              annotation = optionsOrAnnotation;
+            } else {
+              options2 = optionsOrAnnotation;
+            }
+            var operation;
+            var id;
+            if (annotation === void 0) {
+              operation = CreateFile2.create(uri, options2);
+            } else {
+              id = ChangeAnnotationIdentifier2.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+              operation = CreateFile2.create(uri, options2, id);
+            }
+            this._workspaceEdit.documentChanges.push(operation);
+            if (id !== void 0) {
+              return id;
+            }
+          };
+          WorkspaceChange2.prototype.renameFile = function(oldUri, newUri, optionsOrAnnotation, options2) {
+            this.initDocumentChanges();
+            if (this._workspaceEdit.documentChanges === void 0) {
+              throw new Error("Workspace edit is not configured for document changes.");
+            }
+            var annotation;
+            if (ChangeAnnotation2.is(optionsOrAnnotation) || ChangeAnnotationIdentifier2.is(optionsOrAnnotation)) {
+              annotation = optionsOrAnnotation;
+            } else {
+              options2 = optionsOrAnnotation;
+            }
+            var operation;
+            var id;
+            if (annotation === void 0) {
+              operation = RenameFile2.create(oldUri, newUri, options2);
+            } else {
+              id = ChangeAnnotationIdentifier2.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+              operation = RenameFile2.create(oldUri, newUri, options2, id);
+            }
+            this._workspaceEdit.documentChanges.push(operation);
+            if (id !== void 0) {
+              return id;
+            }
+          };
+          WorkspaceChange2.prototype.deleteFile = function(uri, optionsOrAnnotation, options2) {
+            this.initDocumentChanges();
+            if (this._workspaceEdit.documentChanges === void 0) {
+              throw new Error("Workspace edit is not configured for document changes.");
+            }
+            var annotation;
+            if (ChangeAnnotation2.is(optionsOrAnnotation) || ChangeAnnotationIdentifier2.is(optionsOrAnnotation)) {
+              annotation = optionsOrAnnotation;
+            } else {
+              options2 = optionsOrAnnotation;
+            }
+            var operation;
+            var id;
+            if (annotation === void 0) {
+              operation = DeleteFile2.create(uri, options2);
+            } else {
+              id = ChangeAnnotationIdentifier2.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+              operation = DeleteFile2.create(uri, options2, id);
+            }
+            this._workspaceEdit.documentChanges.push(operation);
+            if (id !== void 0) {
+              return id;
+            }
+          };
+          return WorkspaceChange2;
+        }()
+      );
+      exports3.WorkspaceChange = WorkspaceChange;
+      var TextDocumentIdentifier2;
+      (function(TextDocumentIdentifier3) {
+        function create(uri) {
+          return { uri };
+        }
+        TextDocumentIdentifier3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.defined(candidate) && Is2.string(candidate.uri);
+        }
+        TextDocumentIdentifier3.is = is;
+      })(TextDocumentIdentifier2 || (exports3.TextDocumentIdentifier = TextDocumentIdentifier2 = {}));
+      var VersionedTextDocumentIdentifier2;
+      (function(VersionedTextDocumentIdentifier3) {
+        function create(uri, version) {
+          return { uri, version };
+        }
+        VersionedTextDocumentIdentifier3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.defined(candidate) && Is2.string(candidate.uri) && Is2.integer(candidate.version);
+        }
+        VersionedTextDocumentIdentifier3.is = is;
+      })(VersionedTextDocumentIdentifier2 || (exports3.VersionedTextDocumentIdentifier = VersionedTextDocumentIdentifier2 = {}));
+      var OptionalVersionedTextDocumentIdentifier2;
+      (function(OptionalVersionedTextDocumentIdentifier3) {
+        function create(uri, version) {
+          return { uri, version };
+        }
+        OptionalVersionedTextDocumentIdentifier3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.defined(candidate) && Is2.string(candidate.uri) && (candidate.version === null || Is2.integer(candidate.version));
+        }
+        OptionalVersionedTextDocumentIdentifier3.is = is;
+      })(OptionalVersionedTextDocumentIdentifier2 || (exports3.OptionalVersionedTextDocumentIdentifier = OptionalVersionedTextDocumentIdentifier2 = {}));
+      var TextDocumentItem2;
+      (function(TextDocumentItem3) {
+        function create(uri, languageId, version, text) {
+          return { uri, languageId, version, text };
+        }
+        TextDocumentItem3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.defined(candidate) && Is2.string(candidate.uri) && Is2.string(candidate.languageId) && Is2.integer(candidate.version) && Is2.string(candidate.text);
+        }
+        TextDocumentItem3.is = is;
+      })(TextDocumentItem2 || (exports3.TextDocumentItem = TextDocumentItem2 = {}));
+      var MarkupKind2;
+      (function(MarkupKind3) {
+        MarkupKind3.PlainText = "plaintext";
+        MarkupKind3.Markdown = "markdown";
+        function is(value) {
+          var candidate = value;
+          return candidate === MarkupKind3.PlainText || candidate === MarkupKind3.Markdown;
+        }
+        MarkupKind3.is = is;
+      })(MarkupKind2 || (exports3.MarkupKind = MarkupKind2 = {}));
+      var MarkupContent2;
+      (function(MarkupContent3) {
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(value) && MarkupKind2.is(candidate.kind) && Is2.string(candidate.value);
+        }
+        MarkupContent3.is = is;
+      })(MarkupContent2 || (exports3.MarkupContent = MarkupContent2 = {}));
+      var CompletionItemKind2;
+      (function(CompletionItemKind3) {
+        CompletionItemKind3.Text = 1;
+        CompletionItemKind3.Method = 2;
+        CompletionItemKind3.Function = 3;
+        CompletionItemKind3.Constructor = 4;
+        CompletionItemKind3.Field = 5;
+        CompletionItemKind3.Variable = 6;
+        CompletionItemKind3.Class = 7;
+        CompletionItemKind3.Interface = 8;
+        CompletionItemKind3.Module = 9;
+        CompletionItemKind3.Property = 10;
+        CompletionItemKind3.Unit = 11;
+        CompletionItemKind3.Value = 12;
+        CompletionItemKind3.Enum = 13;
+        CompletionItemKind3.Keyword = 14;
+        CompletionItemKind3.Snippet = 15;
+        CompletionItemKind3.Color = 16;
+        CompletionItemKind3.File = 17;
+        CompletionItemKind3.Reference = 18;
+        CompletionItemKind3.Folder = 19;
+        CompletionItemKind3.EnumMember = 20;
+        CompletionItemKind3.Constant = 21;
+        CompletionItemKind3.Struct = 22;
+        CompletionItemKind3.Event = 23;
+        CompletionItemKind3.Operator = 24;
+        CompletionItemKind3.TypeParameter = 25;
+      })(CompletionItemKind2 || (exports3.CompletionItemKind = CompletionItemKind2 = {}));
+      var InsertTextFormat2;
+      (function(InsertTextFormat3) {
+        InsertTextFormat3.PlainText = 1;
+        InsertTextFormat3.Snippet = 2;
+      })(InsertTextFormat2 || (exports3.InsertTextFormat = InsertTextFormat2 = {}));
+      var CompletionItemTag2;
+      (function(CompletionItemTag3) {
+        CompletionItemTag3.Deprecated = 1;
+      })(CompletionItemTag2 || (exports3.CompletionItemTag = CompletionItemTag2 = {}));
+      var InsertReplaceEdit2;
+      (function(InsertReplaceEdit3) {
+        function create(newText, insert, replace) {
+          return { newText, insert, replace };
+        }
+        InsertReplaceEdit3.create = create;
+        function is(value) {
+          var candidate = value;
+          return candidate && Is2.string(candidate.newText) && Range2.is(candidate.insert) && Range2.is(candidate.replace);
+        }
+        InsertReplaceEdit3.is = is;
+      })(InsertReplaceEdit2 || (exports3.InsertReplaceEdit = InsertReplaceEdit2 = {}));
+      var InsertTextMode2;
+      (function(InsertTextMode3) {
+        InsertTextMode3.asIs = 1;
+        InsertTextMode3.adjustIndentation = 2;
+      })(InsertTextMode2 || (exports3.InsertTextMode = InsertTextMode2 = {}));
+      var CompletionItemLabelDetails2;
+      (function(CompletionItemLabelDetails3) {
+        function is(value) {
+          var candidate = value;
+          return candidate && (Is2.string(candidate.detail) || candidate.detail === void 0) && (Is2.string(candidate.description) || candidate.description === void 0);
+        }
+        CompletionItemLabelDetails3.is = is;
+      })(CompletionItemLabelDetails2 || (exports3.CompletionItemLabelDetails = CompletionItemLabelDetails2 = {}));
+      var CompletionItem2;
+      (function(CompletionItem3) {
+        function create(label) {
+          return { label };
+        }
+        CompletionItem3.create = create;
+      })(CompletionItem2 || (exports3.CompletionItem = CompletionItem2 = {}));
+      var CompletionList2;
+      (function(CompletionList3) {
+        function create(items, isIncomplete) {
+          return { items: items ? items : [], isIncomplete: !!isIncomplete };
+        }
+        CompletionList3.create = create;
+      })(CompletionList2 || (exports3.CompletionList = CompletionList2 = {}));
+      var MarkedString2;
+      (function(MarkedString3) {
+        function fromPlainText(plainText) {
+          return plainText.replace(/[\\`*_{}[\]()#+\-.!]/g, "\\$&");
+        }
+        MarkedString3.fromPlainText = fromPlainText;
+        function is(value) {
+          var candidate = value;
+          return Is2.string(candidate) || Is2.objectLiteral(candidate) && Is2.string(candidate.language) && Is2.string(candidate.value);
+        }
+        MarkedString3.is = is;
+      })(MarkedString2 || (exports3.MarkedString = MarkedString2 = {}));
+      var Hover2;
+      (function(Hover3) {
+        function is(value) {
+          var candidate = value;
+          return !!candidate && Is2.objectLiteral(candidate) && (MarkupContent2.is(candidate.contents) || MarkedString2.is(candidate.contents) || Is2.typedArray(candidate.contents, MarkedString2.is)) && (value.range === void 0 || Range2.is(value.range));
+        }
+        Hover3.is = is;
+      })(Hover2 || (exports3.Hover = Hover2 = {}));
+      var ParameterInformation2;
+      (function(ParameterInformation3) {
+        function create(label, documentation) {
+          return documentation ? { label, documentation } : { label };
+        }
+        ParameterInformation3.create = create;
+      })(ParameterInformation2 || (exports3.ParameterInformation = ParameterInformation2 = {}));
+      var SignatureInformation2;
+      (function(SignatureInformation3) {
+        function create(label, documentation) {
+          var parameters = [];
+          for (var _i = 2; _i < arguments.length; _i++) {
+            parameters[_i - 2] = arguments[_i];
           }
-          return this._workspaceEdit;
-        },
-        enumerable: false,
-        configurable: true
-      });
-      WorkspaceChange2.prototype.getTextEditChange = function(key) {
-        if (OptionalVersionedTextDocumentIdentifier.is(key)) {
-          this.initDocumentChanges();
-          if (this._workspaceEdit.documentChanges === void 0) {
-            throw new Error("Workspace edit is not configured for document changes.");
+          var result = { label };
+          if (Is2.defined(documentation)) {
+            result.documentation = documentation;
           }
-          var textDocument = { uri: key.uri, version: key.version };
-          var result = this._textEditChanges[textDocument.uri];
-          if (!result) {
-            var edits = [];
-            var textDocumentEdit = {
-              textDocument,
-              edits
-            };
-            this._workspaceEdit.documentChanges.push(textDocumentEdit);
-            result = new TextEditChangeImpl(edits, this._changeAnnotations);
-            this._textEditChanges[textDocument.uri] = result;
-          }
-          return result;
-        } else {
-          this.initChanges();
-          if (this._workspaceEdit.changes === void 0) {
-            throw new Error("Workspace edit is not configured for normal text edit changes.");
-          }
-          var result = this._textEditChanges[key];
-          if (!result) {
-            var edits = [];
-            this._workspaceEdit.changes[key] = edits;
-            result = new TextEditChangeImpl(edits);
-            this._textEditChanges[key] = result;
-          }
-          return result;
-        }
-      };
-      WorkspaceChange2.prototype.initDocumentChanges = function() {
-        if (this._workspaceEdit.documentChanges === void 0 && this._workspaceEdit.changes === void 0) {
-          this._changeAnnotations = new ChangeAnnotations();
-          this._workspaceEdit.documentChanges = [];
-          this._workspaceEdit.changeAnnotations = this._changeAnnotations.all();
-        }
-      };
-      WorkspaceChange2.prototype.initChanges = function() {
-        if (this._workspaceEdit.documentChanges === void 0 && this._workspaceEdit.changes === void 0) {
-          this._workspaceEdit.changes = /* @__PURE__ */ Object.create(null);
-        }
-      };
-      WorkspaceChange2.prototype.createFile = function(uri, optionsOrAnnotation, options2) {
-        this.initDocumentChanges();
-        if (this._workspaceEdit.documentChanges === void 0) {
-          throw new Error("Workspace edit is not configured for document changes.");
-        }
-        var annotation;
-        if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
-          annotation = optionsOrAnnotation;
-        } else {
-          options2 = optionsOrAnnotation;
-        }
-        var operation;
-        var id;
-        if (annotation === void 0) {
-          operation = CreateFile.create(uri, options2);
-        } else {
-          id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
-          operation = CreateFile.create(uri, options2, id);
-        }
-        this._workspaceEdit.documentChanges.push(operation);
-        if (id !== void 0) {
-          return id;
-        }
-      };
-      WorkspaceChange2.prototype.renameFile = function(oldUri, newUri, optionsOrAnnotation, options2) {
-        this.initDocumentChanges();
-        if (this._workspaceEdit.documentChanges === void 0) {
-          throw new Error("Workspace edit is not configured for document changes.");
-        }
-        var annotation;
-        if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
-          annotation = optionsOrAnnotation;
-        } else {
-          options2 = optionsOrAnnotation;
-        }
-        var operation;
-        var id;
-        if (annotation === void 0) {
-          operation = RenameFile.create(oldUri, newUri, options2);
-        } else {
-          id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
-          operation = RenameFile.create(oldUri, newUri, options2, id);
-        }
-        this._workspaceEdit.documentChanges.push(operation);
-        if (id !== void 0) {
-          return id;
-        }
-      };
-      WorkspaceChange2.prototype.deleteFile = function(uri, optionsOrAnnotation, options2) {
-        this.initDocumentChanges();
-        if (this._workspaceEdit.documentChanges === void 0) {
-          throw new Error("Workspace edit is not configured for document changes.");
-        }
-        var annotation;
-        if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
-          annotation = optionsOrAnnotation;
-        } else {
-          options2 = optionsOrAnnotation;
-        }
-        var operation;
-        var id;
-        if (annotation === void 0) {
-          operation = DeleteFile.create(uri, options2);
-        } else {
-          id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
-          operation = DeleteFile.create(uri, options2, id);
-        }
-        this._workspaceEdit.documentChanges.push(operation);
-        if (id !== void 0) {
-          return id;
-        }
-      };
-      return WorkspaceChange2;
-    }();
-    (function(TextDocumentIdentifier3) {
-      function create(uri) {
-        return { uri };
-      }
-      TextDocumentIdentifier3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.defined(candidate) && Is.string(candidate.uri);
-      }
-      TextDocumentIdentifier3.is = is;
-    })(TextDocumentIdentifier || (TextDocumentIdentifier = {}));
-    (function(VersionedTextDocumentIdentifier3) {
-      function create(uri, version) {
-        return { uri, version };
-      }
-      VersionedTextDocumentIdentifier3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.defined(candidate) && Is.string(candidate.uri) && Is.integer(candidate.version);
-      }
-      VersionedTextDocumentIdentifier3.is = is;
-    })(VersionedTextDocumentIdentifier || (VersionedTextDocumentIdentifier = {}));
-    (function(OptionalVersionedTextDocumentIdentifier3) {
-      function create(uri, version) {
-        return { uri, version };
-      }
-      OptionalVersionedTextDocumentIdentifier3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.defined(candidate) && Is.string(candidate.uri) && (candidate.version === null || Is.integer(candidate.version));
-      }
-      OptionalVersionedTextDocumentIdentifier3.is = is;
-    })(OptionalVersionedTextDocumentIdentifier || (OptionalVersionedTextDocumentIdentifier = {}));
-    (function(TextDocumentItem3) {
-      function create(uri, languageId, version, text) {
-        return { uri, languageId, version, text };
-      }
-      TextDocumentItem3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.defined(candidate) && Is.string(candidate.uri) && Is.string(candidate.languageId) && Is.integer(candidate.version) && Is.string(candidate.text);
-      }
-      TextDocumentItem3.is = is;
-    })(TextDocumentItem || (TextDocumentItem = {}));
-    (function(MarkupKind3) {
-      MarkupKind3.PlainText = "plaintext";
-      MarkupKind3.Markdown = "markdown";
-    })(MarkupKind || (MarkupKind = {}));
-    (function(MarkupKind3) {
-      function is(value) {
-        var candidate = value;
-        return candidate === MarkupKind3.PlainText || candidate === MarkupKind3.Markdown;
-      }
-      MarkupKind3.is = is;
-    })(MarkupKind || (MarkupKind = {}));
-    (function(MarkupContent3) {
-      function is(value) {
-        var candidate = value;
-        return Is.objectLiteral(value) && MarkupKind.is(candidate.kind) && Is.string(candidate.value);
-      }
-      MarkupContent3.is = is;
-    })(MarkupContent || (MarkupContent = {}));
-    (function(CompletionItemKind3) {
-      CompletionItemKind3.Text = 1;
-      CompletionItemKind3.Method = 2;
-      CompletionItemKind3.Function = 3;
-      CompletionItemKind3.Constructor = 4;
-      CompletionItemKind3.Field = 5;
-      CompletionItemKind3.Variable = 6;
-      CompletionItemKind3.Class = 7;
-      CompletionItemKind3.Interface = 8;
-      CompletionItemKind3.Module = 9;
-      CompletionItemKind3.Property = 10;
-      CompletionItemKind3.Unit = 11;
-      CompletionItemKind3.Value = 12;
-      CompletionItemKind3.Enum = 13;
-      CompletionItemKind3.Keyword = 14;
-      CompletionItemKind3.Snippet = 15;
-      CompletionItemKind3.Color = 16;
-      CompletionItemKind3.File = 17;
-      CompletionItemKind3.Reference = 18;
-      CompletionItemKind3.Folder = 19;
-      CompletionItemKind3.EnumMember = 20;
-      CompletionItemKind3.Constant = 21;
-      CompletionItemKind3.Struct = 22;
-      CompletionItemKind3.Event = 23;
-      CompletionItemKind3.Operator = 24;
-      CompletionItemKind3.TypeParameter = 25;
-    })(CompletionItemKind || (CompletionItemKind = {}));
-    (function(InsertTextFormat3) {
-      InsertTextFormat3.PlainText = 1;
-      InsertTextFormat3.Snippet = 2;
-    })(InsertTextFormat || (InsertTextFormat = {}));
-    (function(CompletionItemTag3) {
-      CompletionItemTag3.Deprecated = 1;
-    })(CompletionItemTag || (CompletionItemTag = {}));
-    (function(InsertReplaceEdit3) {
-      function create(newText, insert, replace) {
-        return { newText, insert, replace };
-      }
-      InsertReplaceEdit3.create = create;
-      function is(value) {
-        var candidate = value;
-        return candidate && Is.string(candidate.newText) && Range.is(candidate.insert) && Range.is(candidate.replace);
-      }
-      InsertReplaceEdit3.is = is;
-    })(InsertReplaceEdit || (InsertReplaceEdit = {}));
-    (function(InsertTextMode3) {
-      InsertTextMode3.asIs = 1;
-      InsertTextMode3.adjustIndentation = 2;
-    })(InsertTextMode || (InsertTextMode = {}));
-    (function(CompletionItem3) {
-      function create(label) {
-        return { label };
-      }
-      CompletionItem3.create = create;
-    })(CompletionItem || (CompletionItem = {}));
-    (function(CompletionList3) {
-      function create(items, isIncomplete) {
-        return { items: items ? items : [], isIncomplete: !!isIncomplete };
-      }
-      CompletionList3.create = create;
-    })(CompletionList || (CompletionList = {}));
-    (function(MarkedString3) {
-      function fromPlainText(plainText) {
-        return plainText.replace(/[\\`*_{}[\]()#+\-.!]/g, "\\$&");
-      }
-      MarkedString3.fromPlainText = fromPlainText;
-      function is(value) {
-        var candidate = value;
-        return Is.string(candidate) || Is.objectLiteral(candidate) && Is.string(candidate.language) && Is.string(candidate.value);
-      }
-      MarkedString3.is = is;
-    })(MarkedString || (MarkedString = {}));
-    (function(Hover3) {
-      function is(value) {
-        var candidate = value;
-        return !!candidate && Is.objectLiteral(candidate) && (MarkupContent.is(candidate.contents) || MarkedString.is(candidate.contents) || Is.typedArray(candidate.contents, MarkedString.is)) && (value.range === void 0 || Range.is(value.range));
-      }
-      Hover3.is = is;
-    })(Hover || (Hover = {}));
-    (function(ParameterInformation3) {
-      function create(label, documentation) {
-        return documentation ? { label, documentation } : { label };
-      }
-      ParameterInformation3.create = create;
-    })(ParameterInformation || (ParameterInformation = {}));
-    (function(SignatureInformation3) {
-      function create(label, documentation) {
-        var parameters = [];
-        for (var _i = 2; _i < arguments.length; _i++) {
-          parameters[_i - 2] = arguments[_i];
-        }
-        var result = { label };
-        if (Is.defined(documentation)) {
-          result.documentation = documentation;
-        }
-        if (Is.defined(parameters)) {
-          result.parameters = parameters;
-        } else {
-          result.parameters = [];
-        }
-        return result;
-      }
-      SignatureInformation3.create = create;
-    })(SignatureInformation || (SignatureInformation = {}));
-    (function(DocumentHighlightKind3) {
-      DocumentHighlightKind3.Text = 1;
-      DocumentHighlightKind3.Read = 2;
-      DocumentHighlightKind3.Write = 3;
-    })(DocumentHighlightKind || (DocumentHighlightKind = {}));
-    (function(DocumentHighlight3) {
-      function create(range, kind) {
-        var result = { range };
-        if (Is.number(kind)) {
-          result.kind = kind;
-        }
-        return result;
-      }
-      DocumentHighlight3.create = create;
-    })(DocumentHighlight || (DocumentHighlight = {}));
-    (function(SymbolKind3) {
-      SymbolKind3.File = 1;
-      SymbolKind3.Module = 2;
-      SymbolKind3.Namespace = 3;
-      SymbolKind3.Package = 4;
-      SymbolKind3.Class = 5;
-      SymbolKind3.Method = 6;
-      SymbolKind3.Property = 7;
-      SymbolKind3.Field = 8;
-      SymbolKind3.Constructor = 9;
-      SymbolKind3.Enum = 10;
-      SymbolKind3.Interface = 11;
-      SymbolKind3.Function = 12;
-      SymbolKind3.Variable = 13;
-      SymbolKind3.Constant = 14;
-      SymbolKind3.String = 15;
-      SymbolKind3.Number = 16;
-      SymbolKind3.Boolean = 17;
-      SymbolKind3.Array = 18;
-      SymbolKind3.Object = 19;
-      SymbolKind3.Key = 20;
-      SymbolKind3.Null = 21;
-      SymbolKind3.EnumMember = 22;
-      SymbolKind3.Struct = 23;
-      SymbolKind3.Event = 24;
-      SymbolKind3.Operator = 25;
-      SymbolKind3.TypeParameter = 26;
-    })(SymbolKind || (SymbolKind = {}));
-    (function(SymbolTag3) {
-      SymbolTag3.Deprecated = 1;
-    })(SymbolTag || (SymbolTag = {}));
-    (function(SymbolInformation3) {
-      function create(name, kind, range, uri, containerName) {
-        var result = {
-          name,
-          kind,
-          location: { uri, range }
-        };
-        if (containerName) {
-          result.containerName = containerName;
-        }
-        return result;
-      }
-      SymbolInformation3.create = create;
-    })(SymbolInformation || (SymbolInformation = {}));
-    (function(DocumentSymbol3) {
-      function create(name, detail, kind, range, selectionRange, children) {
-        var result = {
-          name,
-          detail,
-          kind,
-          range,
-          selectionRange
-        };
-        if (children !== void 0) {
-          result.children = children;
-        }
-        return result;
-      }
-      DocumentSymbol3.create = create;
-      function is(value) {
-        var candidate = value;
-        return candidate && Is.string(candidate.name) && Is.number(candidate.kind) && Range.is(candidate.range) && Range.is(candidate.selectionRange) && (candidate.detail === void 0 || Is.string(candidate.detail)) && (candidate.deprecated === void 0 || Is.boolean(candidate.deprecated)) && (candidate.children === void 0 || Array.isArray(candidate.children)) && (candidate.tags === void 0 || Array.isArray(candidate.tags));
-      }
-      DocumentSymbol3.is = is;
-    })(DocumentSymbol || (DocumentSymbol = {}));
-    (function(CodeActionKind3) {
-      CodeActionKind3.Empty = "";
-      CodeActionKind3.QuickFix = "quickfix";
-      CodeActionKind3.Refactor = "refactor";
-      CodeActionKind3.RefactorExtract = "refactor.extract";
-      CodeActionKind3.RefactorInline = "refactor.inline";
-      CodeActionKind3.RefactorRewrite = "refactor.rewrite";
-      CodeActionKind3.Source = "source";
-      CodeActionKind3.SourceOrganizeImports = "source.organizeImports";
-      CodeActionKind3.SourceFixAll = "source.fixAll";
-    })(CodeActionKind || (CodeActionKind = {}));
-    (function(CodeActionContext3) {
-      function create(diagnostics, only) {
-        var result = { diagnostics };
-        if (only !== void 0 && only !== null) {
-          result.only = only;
-        }
-        return result;
-      }
-      CodeActionContext3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.defined(candidate) && Is.typedArray(candidate.diagnostics, Diagnostic.is) && (candidate.only === void 0 || Is.typedArray(candidate.only, Is.string));
-      }
-      CodeActionContext3.is = is;
-    })(CodeActionContext || (CodeActionContext = {}));
-    (function(CodeAction3) {
-      function create(title, kindOrCommandOrEdit, kind) {
-        var result = { title };
-        var checkKind = true;
-        if (typeof kindOrCommandOrEdit === "string") {
-          checkKind = false;
-          result.kind = kindOrCommandOrEdit;
-        } else if (Command.is(kindOrCommandOrEdit)) {
-          result.command = kindOrCommandOrEdit;
-        } else {
-          result.edit = kindOrCommandOrEdit;
-        }
-        if (checkKind && kind !== void 0) {
-          result.kind = kind;
-        }
-        return result;
-      }
-      CodeAction3.create = create;
-      function is(value) {
-        var candidate = value;
-        return candidate && Is.string(candidate.title) && (candidate.diagnostics === void 0 || Is.typedArray(candidate.diagnostics, Diagnostic.is)) && (candidate.kind === void 0 || Is.string(candidate.kind)) && (candidate.edit !== void 0 || candidate.command !== void 0) && (candidate.command === void 0 || Command.is(candidate.command)) && (candidate.isPreferred === void 0 || Is.boolean(candidate.isPreferred)) && (candidate.edit === void 0 || WorkspaceEdit.is(candidate.edit));
-      }
-      CodeAction3.is = is;
-    })(CodeAction || (CodeAction = {}));
-    (function(CodeLens3) {
-      function create(range, data) {
-        var result = { range };
-        if (Is.defined(data)) {
-          result.data = data;
-        }
-        return result;
-      }
-      CodeLens3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.defined(candidate) && Range.is(candidate.range) && (Is.undefined(candidate.command) || Command.is(candidate.command));
-      }
-      CodeLens3.is = is;
-    })(CodeLens || (CodeLens = {}));
-    (function(FormattingOptions3) {
-      function create(tabSize, insertSpaces) {
-        return { tabSize, insertSpaces };
-      }
-      FormattingOptions3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.defined(candidate) && Is.uinteger(candidate.tabSize) && Is.boolean(candidate.insertSpaces);
-      }
-      FormattingOptions3.is = is;
-    })(FormattingOptions || (FormattingOptions = {}));
-    (function(DocumentLink3) {
-      function create(range, target, data) {
-        return { range, target, data };
-      }
-      DocumentLink3.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.defined(candidate) && Range.is(candidate.range) && (Is.undefined(candidate.target) || Is.string(candidate.target));
-      }
-      DocumentLink3.is = is;
-    })(DocumentLink || (DocumentLink = {}));
-    (function(SelectionRange3) {
-      function create(range, parent) {
-        return { range, parent };
-      }
-      SelectionRange3.create = create;
-      function is(value) {
-        var candidate = value;
-        return candidate !== void 0 && Range.is(candidate.range) && (candidate.parent === void 0 || SelectionRange3.is(candidate.parent));
-      }
-      SelectionRange3.is = is;
-    })(SelectionRange || (SelectionRange = {}));
-    EOL = ["\n", "\r\n", "\r"];
-    (function(TextDocument4) {
-      function create(uri, languageId, version, content) {
-        return new FullTextDocument(uri, languageId, version, content);
-      }
-      TextDocument4.create = create;
-      function is(value) {
-        var candidate = value;
-        return Is.defined(candidate) && Is.string(candidate.uri) && (Is.undefined(candidate.languageId) || Is.string(candidate.languageId)) && Is.uinteger(candidate.lineCount) && Is.func(candidate.getText) && Is.func(candidate.positionAt) && Is.func(candidate.offsetAt) ? true : false;
-      }
-      TextDocument4.is = is;
-      function applyEdits(document, edits) {
-        var text = document.getText();
-        var sortedEdits = mergeSort2(edits, function(a2, b) {
-          var diff = a2.range.start.line - b.range.start.line;
-          if (diff === 0) {
-            return a2.range.start.character - b.range.start.character;
-          }
-          return diff;
-        });
-        var lastModifiedOffset = text.length;
-        for (var i = sortedEdits.length - 1; i >= 0; i--) {
-          var e = sortedEdits[i];
-          var startOffset = document.offsetAt(e.range.start);
-          var endOffset = document.offsetAt(e.range.end);
-          if (endOffset <= lastModifiedOffset) {
-            text = text.substring(0, startOffset) + e.newText + text.substring(endOffset, text.length);
+          if (Is2.defined(parameters)) {
+            result.parameters = parameters;
           } else {
-            throw new Error("Overlapping edit");
+            result.parameters = [];
           }
-          lastModifiedOffset = startOffset;
+          return result;
         }
-        return text;
-      }
-      TextDocument4.applyEdits = applyEdits;
-      function mergeSort2(data, compare) {
-        if (data.length <= 1) {
-          return data;
+        SignatureInformation3.create = create;
+      })(SignatureInformation2 || (exports3.SignatureInformation = SignatureInformation2 = {}));
+      var DocumentHighlightKind2;
+      (function(DocumentHighlightKind3) {
+        DocumentHighlightKind3.Text = 1;
+        DocumentHighlightKind3.Read = 2;
+        DocumentHighlightKind3.Write = 3;
+      })(DocumentHighlightKind2 || (exports3.DocumentHighlightKind = DocumentHighlightKind2 = {}));
+      var DocumentHighlight2;
+      (function(DocumentHighlight3) {
+        function create(range, kind) {
+          var result = { range };
+          if (Is2.number(kind)) {
+            result.kind = kind;
+          }
+          return result;
         }
-        var p = data.length / 2 | 0;
-        var left = data.slice(0, p);
-        var right = data.slice(p);
-        mergeSort2(left, compare);
-        mergeSort2(right, compare);
-        var leftIdx = 0;
-        var rightIdx = 0;
-        var i = 0;
-        while (leftIdx < left.length && rightIdx < right.length) {
-          var ret = compare(left[leftIdx], right[rightIdx]);
-          if (ret <= 0) {
+        DocumentHighlight3.create = create;
+      })(DocumentHighlight2 || (exports3.DocumentHighlight = DocumentHighlight2 = {}));
+      var SymbolKind2;
+      (function(SymbolKind3) {
+        SymbolKind3.File = 1;
+        SymbolKind3.Module = 2;
+        SymbolKind3.Namespace = 3;
+        SymbolKind3.Package = 4;
+        SymbolKind3.Class = 5;
+        SymbolKind3.Method = 6;
+        SymbolKind3.Property = 7;
+        SymbolKind3.Field = 8;
+        SymbolKind3.Constructor = 9;
+        SymbolKind3.Enum = 10;
+        SymbolKind3.Interface = 11;
+        SymbolKind3.Function = 12;
+        SymbolKind3.Variable = 13;
+        SymbolKind3.Constant = 14;
+        SymbolKind3.String = 15;
+        SymbolKind3.Number = 16;
+        SymbolKind3.Boolean = 17;
+        SymbolKind3.Array = 18;
+        SymbolKind3.Object = 19;
+        SymbolKind3.Key = 20;
+        SymbolKind3.Null = 21;
+        SymbolKind3.EnumMember = 22;
+        SymbolKind3.Struct = 23;
+        SymbolKind3.Event = 24;
+        SymbolKind3.Operator = 25;
+        SymbolKind3.TypeParameter = 26;
+      })(SymbolKind2 || (exports3.SymbolKind = SymbolKind2 = {}));
+      var SymbolTag2;
+      (function(SymbolTag3) {
+        SymbolTag3.Deprecated = 1;
+      })(SymbolTag2 || (exports3.SymbolTag = SymbolTag2 = {}));
+      var SymbolInformation2;
+      (function(SymbolInformation3) {
+        function create(name, kind, range, uri, containerName) {
+          var result = {
+            name,
+            kind,
+            location: { uri, range }
+          };
+          if (containerName) {
+            result.containerName = containerName;
+          }
+          return result;
+        }
+        SymbolInformation3.create = create;
+      })(SymbolInformation2 || (exports3.SymbolInformation = SymbolInformation2 = {}));
+      var WorkspaceSymbol2;
+      (function(WorkspaceSymbol3) {
+        function create(name, kind, uri, range) {
+          return range !== void 0 ? { name, kind, location: { uri, range } } : { name, kind, location: { uri } };
+        }
+        WorkspaceSymbol3.create = create;
+      })(WorkspaceSymbol2 || (exports3.WorkspaceSymbol = WorkspaceSymbol2 = {}));
+      var DocumentSymbol2;
+      (function(DocumentSymbol3) {
+        function create(name, detail, kind, range, selectionRange, children) {
+          var result = {
+            name,
+            detail,
+            kind,
+            range,
+            selectionRange
+          };
+          if (children !== void 0) {
+            result.children = children;
+          }
+          return result;
+        }
+        DocumentSymbol3.create = create;
+        function is(value) {
+          var candidate = value;
+          return candidate && Is2.string(candidate.name) && Is2.number(candidate.kind) && Range2.is(candidate.range) && Range2.is(candidate.selectionRange) && (candidate.detail === void 0 || Is2.string(candidate.detail)) && (candidate.deprecated === void 0 || Is2.boolean(candidate.deprecated)) && (candidate.children === void 0 || Array.isArray(candidate.children)) && (candidate.tags === void 0 || Array.isArray(candidate.tags));
+        }
+        DocumentSymbol3.is = is;
+      })(DocumentSymbol2 || (exports3.DocumentSymbol = DocumentSymbol2 = {}));
+      var CodeActionKind2;
+      (function(CodeActionKind3) {
+        CodeActionKind3.Empty = "";
+        CodeActionKind3.QuickFix = "quickfix";
+        CodeActionKind3.Refactor = "refactor";
+        CodeActionKind3.RefactorExtract = "refactor.extract";
+        CodeActionKind3.RefactorInline = "refactor.inline";
+        CodeActionKind3.RefactorRewrite = "refactor.rewrite";
+        CodeActionKind3.Source = "source";
+        CodeActionKind3.SourceOrganizeImports = "source.organizeImports";
+        CodeActionKind3.SourceFixAll = "source.fixAll";
+      })(CodeActionKind2 || (exports3.CodeActionKind = CodeActionKind2 = {}));
+      var CodeActionTriggerKind2;
+      (function(CodeActionTriggerKind3) {
+        CodeActionTriggerKind3.Invoked = 1;
+        CodeActionTriggerKind3.Automatic = 2;
+      })(CodeActionTriggerKind2 || (exports3.CodeActionTriggerKind = CodeActionTriggerKind2 = {}));
+      var CodeActionContext2;
+      (function(CodeActionContext3) {
+        function create(diagnostics, only, triggerKind) {
+          var result = { diagnostics };
+          if (only !== void 0 && only !== null) {
+            result.only = only;
+          }
+          if (triggerKind !== void 0 && triggerKind !== null) {
+            result.triggerKind = triggerKind;
+          }
+          return result;
+        }
+        CodeActionContext3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.defined(candidate) && Is2.typedArray(candidate.diagnostics, Diagnostic2.is) && (candidate.only === void 0 || Is2.typedArray(candidate.only, Is2.string)) && (candidate.triggerKind === void 0 || candidate.triggerKind === CodeActionTriggerKind2.Invoked || candidate.triggerKind === CodeActionTriggerKind2.Automatic);
+        }
+        CodeActionContext3.is = is;
+      })(CodeActionContext2 || (exports3.CodeActionContext = CodeActionContext2 = {}));
+      var CodeAction2;
+      (function(CodeAction3) {
+        function create(title, kindOrCommandOrEdit, kind) {
+          var result = { title };
+          var checkKind = true;
+          if (typeof kindOrCommandOrEdit === "string") {
+            checkKind = false;
+            result.kind = kindOrCommandOrEdit;
+          } else if (Command2.is(kindOrCommandOrEdit)) {
+            result.command = kindOrCommandOrEdit;
+          } else {
+            result.edit = kindOrCommandOrEdit;
+          }
+          if (checkKind && kind !== void 0) {
+            result.kind = kind;
+          }
+          return result;
+        }
+        CodeAction3.create = create;
+        function is(value) {
+          var candidate = value;
+          return candidate && Is2.string(candidate.title) && (candidate.diagnostics === void 0 || Is2.typedArray(candidate.diagnostics, Diagnostic2.is)) && (candidate.kind === void 0 || Is2.string(candidate.kind)) && (candidate.edit !== void 0 || candidate.command !== void 0) && (candidate.command === void 0 || Command2.is(candidate.command)) && (candidate.isPreferred === void 0 || Is2.boolean(candidate.isPreferred)) && (candidate.edit === void 0 || WorkspaceEdit2.is(candidate.edit));
+        }
+        CodeAction3.is = is;
+      })(CodeAction2 || (exports3.CodeAction = CodeAction2 = {}));
+      var CodeLens2;
+      (function(CodeLens3) {
+        function create(range, data) {
+          var result = { range };
+          if (Is2.defined(data)) {
+            result.data = data;
+          }
+          return result;
+        }
+        CodeLens3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.defined(candidate) && Range2.is(candidate.range) && (Is2.undefined(candidate.command) || Command2.is(candidate.command));
+        }
+        CodeLens3.is = is;
+      })(CodeLens2 || (exports3.CodeLens = CodeLens2 = {}));
+      var FormattingOptions2;
+      (function(FormattingOptions3) {
+        function create(tabSize, insertSpaces) {
+          return { tabSize, insertSpaces };
+        }
+        FormattingOptions3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.defined(candidate) && Is2.uinteger(candidate.tabSize) && Is2.boolean(candidate.insertSpaces);
+        }
+        FormattingOptions3.is = is;
+      })(FormattingOptions2 || (exports3.FormattingOptions = FormattingOptions2 = {}));
+      var DocumentLink2;
+      (function(DocumentLink3) {
+        function create(range, target, data) {
+          return { range, target, data };
+        }
+        DocumentLink3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.defined(candidate) && Range2.is(candidate.range) && (Is2.undefined(candidate.target) || Is2.string(candidate.target));
+        }
+        DocumentLink3.is = is;
+      })(DocumentLink2 || (exports3.DocumentLink = DocumentLink2 = {}));
+      var SelectionRange2;
+      (function(SelectionRange3) {
+        function create(range, parent) {
+          return { range, parent };
+        }
+        SelectionRange3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && (candidate.parent === void 0 || SelectionRange3.is(candidate.parent));
+        }
+        SelectionRange3.is = is;
+      })(SelectionRange2 || (exports3.SelectionRange = SelectionRange2 = {}));
+      var SemanticTokenTypes2;
+      (function(SemanticTokenTypes3) {
+        SemanticTokenTypes3["namespace"] = "namespace";
+        SemanticTokenTypes3["type"] = "type";
+        SemanticTokenTypes3["class"] = "class";
+        SemanticTokenTypes3["enum"] = "enum";
+        SemanticTokenTypes3["interface"] = "interface";
+        SemanticTokenTypes3["struct"] = "struct";
+        SemanticTokenTypes3["typeParameter"] = "typeParameter";
+        SemanticTokenTypes3["parameter"] = "parameter";
+        SemanticTokenTypes3["variable"] = "variable";
+        SemanticTokenTypes3["property"] = "property";
+        SemanticTokenTypes3["enumMember"] = "enumMember";
+        SemanticTokenTypes3["event"] = "event";
+        SemanticTokenTypes3["function"] = "function";
+        SemanticTokenTypes3["method"] = "method";
+        SemanticTokenTypes3["macro"] = "macro";
+        SemanticTokenTypes3["keyword"] = "keyword";
+        SemanticTokenTypes3["modifier"] = "modifier";
+        SemanticTokenTypes3["comment"] = "comment";
+        SemanticTokenTypes3["string"] = "string";
+        SemanticTokenTypes3["number"] = "number";
+        SemanticTokenTypes3["regexp"] = "regexp";
+        SemanticTokenTypes3["operator"] = "operator";
+        SemanticTokenTypes3["decorator"] = "decorator";
+      })(SemanticTokenTypes2 || (exports3.SemanticTokenTypes = SemanticTokenTypes2 = {}));
+      var SemanticTokenModifiers2;
+      (function(SemanticTokenModifiers3) {
+        SemanticTokenModifiers3["declaration"] = "declaration";
+        SemanticTokenModifiers3["definition"] = "definition";
+        SemanticTokenModifiers3["readonly"] = "readonly";
+        SemanticTokenModifiers3["static"] = "static";
+        SemanticTokenModifiers3["deprecated"] = "deprecated";
+        SemanticTokenModifiers3["abstract"] = "abstract";
+        SemanticTokenModifiers3["async"] = "async";
+        SemanticTokenModifiers3["modification"] = "modification";
+        SemanticTokenModifiers3["documentation"] = "documentation";
+        SemanticTokenModifiers3["defaultLibrary"] = "defaultLibrary";
+      })(SemanticTokenModifiers2 || (exports3.SemanticTokenModifiers = SemanticTokenModifiers2 = {}));
+      var SemanticTokens2;
+      (function(SemanticTokens3) {
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && (candidate.resultId === void 0 || typeof candidate.resultId === "string") && Array.isArray(candidate.data) && (candidate.data.length === 0 || typeof candidate.data[0] === "number");
+        }
+        SemanticTokens3.is = is;
+      })(SemanticTokens2 || (exports3.SemanticTokens = SemanticTokens2 = {}));
+      var InlineValueText2;
+      (function(InlineValueText3) {
+        function create(range, text) {
+          return { range, text };
+        }
+        InlineValueText3.create = create;
+        function is(value) {
+          var candidate = value;
+          return candidate !== void 0 && candidate !== null && Range2.is(candidate.range) && Is2.string(candidate.text);
+        }
+        InlineValueText3.is = is;
+      })(InlineValueText2 || (exports3.InlineValueText = InlineValueText2 = {}));
+      var InlineValueVariableLookup2;
+      (function(InlineValueVariableLookup3) {
+        function create(range, variableName, caseSensitiveLookup) {
+          return { range, variableName, caseSensitiveLookup };
+        }
+        InlineValueVariableLookup3.create = create;
+        function is(value) {
+          var candidate = value;
+          return candidate !== void 0 && candidate !== null && Range2.is(candidate.range) && Is2.boolean(candidate.caseSensitiveLookup) && (Is2.string(candidate.variableName) || candidate.variableName === void 0);
+        }
+        InlineValueVariableLookup3.is = is;
+      })(InlineValueVariableLookup2 || (exports3.InlineValueVariableLookup = InlineValueVariableLookup2 = {}));
+      var InlineValueEvaluatableExpression2;
+      (function(InlineValueEvaluatableExpression3) {
+        function create(range, expression) {
+          return { range, expression };
+        }
+        InlineValueEvaluatableExpression3.create = create;
+        function is(value) {
+          var candidate = value;
+          return candidate !== void 0 && candidate !== null && Range2.is(candidate.range) && (Is2.string(candidate.expression) || candidate.expression === void 0);
+        }
+        InlineValueEvaluatableExpression3.is = is;
+      })(InlineValueEvaluatableExpression2 || (exports3.InlineValueEvaluatableExpression = InlineValueEvaluatableExpression2 = {}));
+      var InlineValueContext2;
+      (function(InlineValueContext3) {
+        function create(frameId, stoppedLocation) {
+          return { frameId, stoppedLocation };
+        }
+        InlineValueContext3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.defined(candidate) && Range2.is(value.stoppedLocation);
+        }
+        InlineValueContext3.is = is;
+      })(InlineValueContext2 || (exports3.InlineValueContext = InlineValueContext2 = {}));
+      var InlayHintKind3;
+      (function(InlayHintKind4) {
+        InlayHintKind4.Type = 1;
+        InlayHintKind4.Parameter = 2;
+        function is(value) {
+          return value === 1 || value === 2;
+        }
+        InlayHintKind4.is = is;
+      })(InlayHintKind3 || (exports3.InlayHintKind = InlayHintKind3 = {}));
+      var InlayHintLabelPart2;
+      (function(InlayHintLabelPart3) {
+        function create(value) {
+          return { value };
+        }
+        InlayHintLabelPart3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && (candidate.tooltip === void 0 || Is2.string(candidate.tooltip) || MarkupContent2.is(candidate.tooltip)) && (candidate.location === void 0 || Location2.is(candidate.location)) && (candidate.command === void 0 || Command2.is(candidate.command));
+        }
+        InlayHintLabelPart3.is = is;
+      })(InlayHintLabelPart2 || (exports3.InlayHintLabelPart = InlayHintLabelPart2 = {}));
+      var InlayHint2;
+      (function(InlayHint3) {
+        function create(position, label, kind) {
+          var result = { position, label };
+          if (kind !== void 0) {
+            result.kind = kind;
+          }
+          return result;
+        }
+        InlayHint3.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && Position2.is(candidate.position) && (Is2.string(candidate.label) || Is2.typedArray(candidate.label, InlayHintLabelPart2.is)) && (candidate.kind === void 0 || InlayHintKind3.is(candidate.kind)) && candidate.textEdits === void 0 || Is2.typedArray(candidate.textEdits, TextEdit2.is) && (candidate.tooltip === void 0 || Is2.string(candidate.tooltip) || MarkupContent2.is(candidate.tooltip)) && (candidate.paddingLeft === void 0 || Is2.boolean(candidate.paddingLeft)) && (candidate.paddingRight === void 0 || Is2.boolean(candidate.paddingRight));
+        }
+        InlayHint3.is = is;
+      })(InlayHint2 || (exports3.InlayHint = InlayHint2 = {}));
+      var StringValue2;
+      (function(StringValue3) {
+        function createSnippet(value) {
+          return { kind: "snippet", value };
+        }
+        StringValue3.createSnippet = createSnippet;
+      })(StringValue2 || (exports3.StringValue = StringValue2 = {}));
+      var InlineCompletionItem2;
+      (function(InlineCompletionItem3) {
+        function create(insertText, filterText, range, command) {
+          return { insertText, filterText, range, command };
+        }
+        InlineCompletionItem3.create = create;
+      })(InlineCompletionItem2 || (exports3.InlineCompletionItem = InlineCompletionItem2 = {}));
+      var InlineCompletionList2;
+      (function(InlineCompletionList3) {
+        function create(items) {
+          return { items };
+        }
+        InlineCompletionList3.create = create;
+      })(InlineCompletionList2 || (exports3.InlineCompletionList = InlineCompletionList2 = {}));
+      var InlineCompletionTriggerKind2;
+      (function(InlineCompletionTriggerKind3) {
+        InlineCompletionTriggerKind3.Invoked = 0;
+        InlineCompletionTriggerKind3.Automatic = 1;
+      })(InlineCompletionTriggerKind2 || (exports3.InlineCompletionTriggerKind = InlineCompletionTriggerKind2 = {}));
+      var SelectedCompletionInfo2;
+      (function(SelectedCompletionInfo3) {
+        function create(range, text) {
+          return { range, text };
+        }
+        SelectedCompletionInfo3.create = create;
+      })(SelectedCompletionInfo2 || (exports3.SelectedCompletionInfo = SelectedCompletionInfo2 = {}));
+      var InlineCompletionContext2;
+      (function(InlineCompletionContext3) {
+        function create(triggerKind, selectedCompletionInfo) {
+          return { triggerKind, selectedCompletionInfo };
+        }
+        InlineCompletionContext3.create = create;
+      })(InlineCompletionContext2 || (exports3.InlineCompletionContext = InlineCompletionContext2 = {}));
+      var WorkspaceFolder2;
+      (function(WorkspaceFolder3) {
+        function is(value) {
+          var candidate = value;
+          return Is2.objectLiteral(candidate) && URI3.is(candidate.uri) && Is2.string(candidate.name);
+        }
+        WorkspaceFolder3.is = is;
+      })(WorkspaceFolder2 || (exports3.WorkspaceFolder = WorkspaceFolder2 = {}));
+      exports3.EOL = ["\n", "\r\n", "\r"];
+      var TextDocument3;
+      (function(TextDocument4) {
+        function create(uri, languageId, version, content) {
+          return new FullTextDocument3(uri, languageId, version, content);
+        }
+        TextDocument4.create = create;
+        function is(value) {
+          var candidate = value;
+          return Is2.defined(candidate) && Is2.string(candidate.uri) && (Is2.undefined(candidate.languageId) || Is2.string(candidate.languageId)) && Is2.uinteger(candidate.lineCount) && Is2.func(candidate.getText) && Is2.func(candidate.positionAt) && Is2.func(candidate.offsetAt) ? true : false;
+        }
+        TextDocument4.is = is;
+        function applyEdits(document, edits) {
+          var text = document.getText();
+          var sortedEdits = mergeSort2(edits, function(a2, b) {
+            var diff = a2.range.start.line - b.range.start.line;
+            if (diff === 0) {
+              return a2.range.start.character - b.range.start.character;
+            }
+            return diff;
+          });
+          var lastModifiedOffset = text.length;
+          for (var i = sortedEdits.length - 1; i >= 0; i--) {
+            var e = sortedEdits[i];
+            var startOffset = document.offsetAt(e.range.start);
+            var endOffset = document.offsetAt(e.range.end);
+            if (endOffset <= lastModifiedOffset) {
+              text = text.substring(0, startOffset) + e.newText + text.substring(endOffset, text.length);
+            } else {
+              throw new Error("Overlapping edit");
+            }
+            lastModifiedOffset = startOffset;
+          }
+          return text;
+        }
+        TextDocument4.applyEdits = applyEdits;
+        function mergeSort2(data, compare) {
+          if (data.length <= 1) {
+            return data;
+          }
+          var p = data.length / 2 | 0;
+          var left = data.slice(0, p);
+          var right = data.slice(p);
+          mergeSort2(left, compare);
+          mergeSort2(right, compare);
+          var leftIdx = 0;
+          var rightIdx = 0;
+          var i = 0;
+          while (leftIdx < left.length && rightIdx < right.length) {
+            var ret = compare(left[leftIdx], right[rightIdx]);
+            if (ret <= 0) {
+              data[i++] = left[leftIdx++];
+            } else {
+              data[i++] = right[rightIdx++];
+            }
+          }
+          while (leftIdx < left.length) {
             data[i++] = left[leftIdx++];
-          } else {
+          }
+          while (rightIdx < right.length) {
             data[i++] = right[rightIdx++];
           }
+          return data;
         }
-        while (leftIdx < left.length) {
-          data[i++] = left[leftIdx++];
-        }
-        while (rightIdx < right.length) {
-          data[i++] = right[rightIdx++];
-        }
-        return data;
-      }
-    })(TextDocument || (TextDocument = {}));
-    FullTextDocument = /** @class */
-    function() {
-      function FullTextDocument4(uri, languageId, version, content) {
-        this._uri = uri;
-        this._languageId = languageId;
-        this._version = version;
-        this._content = content;
-        this._lineOffsets = void 0;
-      }
-      Object.defineProperty(FullTextDocument4.prototype, "uri", {
-        get: function() {
-          return this._uri;
-        },
-        enumerable: false,
-        configurable: true
-      });
-      Object.defineProperty(FullTextDocument4.prototype, "languageId", {
-        get: function() {
-          return this._languageId;
-        },
-        enumerable: false,
-        configurable: true
-      });
-      Object.defineProperty(FullTextDocument4.prototype, "version", {
-        get: function() {
-          return this._version;
-        },
-        enumerable: false,
-        configurable: true
-      });
-      FullTextDocument4.prototype.getText = function(range) {
-        if (range) {
-          var start = this.offsetAt(range.start);
-          var end = this.offsetAt(range.end);
-          return this._content.substring(start, end);
-        }
-        return this._content;
-      };
-      FullTextDocument4.prototype.update = function(event, version) {
-        this._content = event.text;
-        this._version = version;
-        this._lineOffsets = void 0;
-      };
-      FullTextDocument4.prototype.getLineOffsets = function() {
-        if (this._lineOffsets === void 0) {
-          var lineOffsets = [];
-          var text = this._content;
-          var isLineStart = true;
-          for (var i = 0; i < text.length; i++) {
-            if (isLineStart) {
-              lineOffsets.push(i);
-              isLineStart = false;
+      })(TextDocument3 || (exports3.TextDocument = TextDocument3 = {}));
+      var FullTextDocument3 = (
+        /** @class */
+        function() {
+          function FullTextDocument4(uri, languageId, version, content) {
+            this._uri = uri;
+            this._languageId = languageId;
+            this._version = version;
+            this._content = content;
+            this._lineOffsets = void 0;
+          }
+          Object.defineProperty(FullTextDocument4.prototype, "uri", {
+            get: function() {
+              return this._uri;
+            },
+            enumerable: false,
+            configurable: true
+          });
+          Object.defineProperty(FullTextDocument4.prototype, "languageId", {
+            get: function() {
+              return this._languageId;
+            },
+            enumerable: false,
+            configurable: true
+          });
+          Object.defineProperty(FullTextDocument4.prototype, "version", {
+            get: function() {
+              return this._version;
+            },
+            enumerable: false,
+            configurable: true
+          });
+          FullTextDocument4.prototype.getText = function(range) {
+            if (range) {
+              var start = this.offsetAt(range.start);
+              var end = this.offsetAt(range.end);
+              return this._content.substring(start, end);
             }
-            var ch = text.charAt(i);
-            isLineStart = ch === "\r" || ch === "\n";
-            if (ch === "\r" && i + 1 < text.length && text.charAt(i + 1) === "\n") {
-              i++;
+            return this._content;
+          };
+          FullTextDocument4.prototype.update = function(event, version) {
+            this._content = event.text;
+            this._version = version;
+            this._lineOffsets = void 0;
+          };
+          FullTextDocument4.prototype.getLineOffsets = function() {
+            if (this._lineOffsets === void 0) {
+              var lineOffsets = [];
+              var text = this._content;
+              var isLineStart = true;
+              for (var i = 0; i < text.length; i++) {
+                if (isLineStart) {
+                  lineOffsets.push(i);
+                  isLineStart = false;
+                }
+                var ch = text.charAt(i);
+                isLineStart = ch === "\r" || ch === "\n";
+                if (ch === "\r" && i + 1 < text.length && text.charAt(i + 1) === "\n") {
+                  i++;
+                }
+              }
+              if (isLineStart && text.length > 0) {
+                lineOffsets.push(text.length);
+              }
+              this._lineOffsets = lineOffsets;
             }
-          }
-          if (isLineStart && text.length > 0) {
-            lineOffsets.push(text.length);
-          }
-          this._lineOffsets = lineOffsets;
+            return this._lineOffsets;
+          };
+          FullTextDocument4.prototype.positionAt = function(offset) {
+            offset = Math.max(Math.min(offset, this._content.length), 0);
+            var lineOffsets = this.getLineOffsets();
+            var low = 0, high = lineOffsets.length;
+            if (high === 0) {
+              return Position2.create(0, offset);
+            }
+            while (low < high) {
+              var mid = Math.floor((low + high) / 2);
+              if (lineOffsets[mid] > offset) {
+                high = mid;
+              } else {
+                low = mid + 1;
+              }
+            }
+            var line = low - 1;
+            return Position2.create(line, offset - lineOffsets[line]);
+          };
+          FullTextDocument4.prototype.offsetAt = function(position) {
+            var lineOffsets = this.getLineOffsets();
+            if (position.line >= lineOffsets.length) {
+              return this._content.length;
+            } else if (position.line < 0) {
+              return 0;
+            }
+            var lineOffset = lineOffsets[position.line];
+            var nextLineOffset = position.line + 1 < lineOffsets.length ? lineOffsets[position.line + 1] : this._content.length;
+            return Math.max(Math.min(lineOffset + position.character, nextLineOffset), lineOffset);
+          };
+          Object.defineProperty(FullTextDocument4.prototype, "lineCount", {
+            get: function() {
+              return this.getLineOffsets().length;
+            },
+            enumerable: false,
+            configurable: true
+          });
+          return FullTextDocument4;
+        }()
+      );
+      var Is2;
+      (function(Is3) {
+        var toString = Object.prototype.toString;
+        function defined(value) {
+          return typeof value !== "undefined";
         }
-        return this._lineOffsets;
-      };
-      FullTextDocument4.prototype.positionAt = function(offset) {
-        offset = Math.max(Math.min(offset, this._content.length), 0);
-        var lineOffsets = this.getLineOffsets();
-        var low = 0, high = lineOffsets.length;
-        if (high === 0) {
-          return Position.create(0, offset);
+        Is3.defined = defined;
+        function undefined2(value) {
+          return typeof value === "undefined";
         }
-        while (low < high) {
-          var mid = Math.floor((low + high) / 2);
-          if (lineOffsets[mid] > offset) {
-            high = mid;
-          } else {
-            low = mid + 1;
-          }
+        Is3.undefined = undefined2;
+        function boolean(value) {
+          return value === true || value === false;
         }
-        var line = low - 1;
-        return Position.create(line, offset - lineOffsets[line]);
-      };
-      FullTextDocument4.prototype.offsetAt = function(position) {
-        var lineOffsets = this.getLineOffsets();
-        if (position.line >= lineOffsets.length) {
-          return this._content.length;
-        } else if (position.line < 0) {
-          return 0;
+        Is3.boolean = boolean;
+        function string(value) {
+          return toString.call(value) === "[object String]";
         }
-        var lineOffset = lineOffsets[position.line];
-        var nextLineOffset = position.line + 1 < lineOffsets.length ? lineOffsets[position.line + 1] : this._content.length;
-        return Math.max(Math.min(lineOffset + position.character, nextLineOffset), lineOffset);
-      };
-      Object.defineProperty(FullTextDocument4.prototype, "lineCount", {
-        get: function() {
-          return this.getLineOffsets().length;
-        },
-        enumerable: false,
-        configurable: true
-      });
-      return FullTextDocument4;
-    }();
-    (function(Is3) {
-      var toString = Object.prototype.toString;
-      function defined(value) {
-        return typeof value !== "undefined";
-      }
-      Is3.defined = defined;
-      function undefined2(value) {
-        return typeof value === "undefined";
-      }
-      Is3.undefined = undefined2;
-      function boolean(value) {
-        return value === true || value === false;
-      }
-      Is3.boolean = boolean;
-      function string(value) {
-        return toString.call(value) === "[object String]";
-      }
-      Is3.string = string;
-      function number(value) {
-        return toString.call(value) === "[object Number]";
-      }
-      Is3.number = number;
-      function numberRange(value, min, max) {
-        return toString.call(value) === "[object Number]" && min <= value && value <= max;
-      }
-      Is3.numberRange = numberRange;
-      function integer3(value) {
-        return toString.call(value) === "[object Number]" && -2147483648 <= value && value <= 2147483647;
-      }
-      Is3.integer = integer3;
-      function uinteger3(value) {
-        return toString.call(value) === "[object Number]" && 0 <= value && value <= 2147483647;
-      }
-      Is3.uinteger = uinteger3;
-      function func(value) {
-        return toString.call(value) === "[object Function]";
-      }
-      Is3.func = func;
-      function objectLiteral(value) {
-        return value !== null && typeof value === "object";
-      }
-      Is3.objectLiteral = objectLiteral;
-      function typedArray(value, check) {
-        return Array.isArray(value) && value.every(check);
-      }
-      Is3.typedArray = typedArray;
-    })(Is || (Is = {}));
+        Is3.string = string;
+        function number(value) {
+          return toString.call(value) === "[object Number]";
+        }
+        Is3.number = number;
+        function numberRange(value, min, max) {
+          return toString.call(value) === "[object Number]" && min <= value && value <= max;
+        }
+        Is3.numberRange = numberRange;
+        function integer3(value) {
+          return toString.call(value) === "[object Number]" && -2147483648 <= value && value <= 2147483647;
+        }
+        Is3.integer = integer3;
+        function uinteger3(value) {
+          return toString.call(value) === "[object Number]" && 0 <= value && value <= 2147483647;
+        }
+        Is3.uinteger = uinteger3;
+        function func(value) {
+          return toString.call(value) === "[object Function]";
+        }
+        Is3.func = func;
+        function objectLiteral(value) {
+          return value !== null && typeof value === "object";
+        }
+        Is3.objectLiteral = objectLiteral;
+        function typedArray(value, check) {
+          return Array.isArray(value) && value.every(check);
+        }
+        Is3.typedArray = typedArray;
+      })(Is2 || (Is2 = {}));
+    });
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/messages.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/messages.js
 var require_messages2 = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/messages.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/messages.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.ProtocolNotificationType = exports2.ProtocolNotificationType0 = exports2.ProtocolRequestType = exports2.ProtocolRequestType0 = exports2.RegistrationType = void 0;
+    exports2.ProtocolNotificationType = exports2.ProtocolNotificationType0 = exports2.ProtocolRequestType = exports2.ProtocolRequestType0 = exports2.RegistrationType = exports2.MessageDirection = void 0;
     var vscode_jsonrpc_1 = require_main();
+    var MessageDirection;
+    (function(MessageDirection2) {
+      MessageDirection2["clientToServer"] = "clientToServer";
+      MessageDirection2["serverToClient"] = "serverToClient";
+      MessageDirection2["both"] = "both";
+    })(MessageDirection || (exports2.MessageDirection = MessageDirection = {}));
     var RegistrationType = class {
       constructor(method) {
         this.method = method;
@@ -5337,9 +5849,9 @@ var require_messages2 = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/utils/is.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/utils/is.js
 var require_is3 = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/utils/is.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/utils/is.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.objectLiteral = exports2.typedArray = exports2.stringArray = exports2.array = exports2.func = exports2.error = exports2.number = exports2.string = exports2.boolean = void 0;
@@ -5382,9 +5894,9 @@ var require_is3 = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.implementation.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.implementation.js
 var require_protocol_implementation = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.implementation.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.implementation.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ImplementationRequest = void 0;
@@ -5392,14 +5904,15 @@ var require_protocol_implementation = __commonJS({
     var ImplementationRequest;
     (function(ImplementationRequest2) {
       ImplementationRequest2.method = "textDocument/implementation";
+      ImplementationRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       ImplementationRequest2.type = new messages_1.ProtocolRequestType(ImplementationRequest2.method);
-    })(ImplementationRequest = exports2.ImplementationRequest || (exports2.ImplementationRequest = {}));
+    })(ImplementationRequest || (exports2.ImplementationRequest = ImplementationRequest = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.typeDefinition.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.typeDefinition.js
 var require_protocol_typeDefinition = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.typeDefinition.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.typeDefinition.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.TypeDefinitionRequest = void 0;
@@ -5407,46 +5920,53 @@ var require_protocol_typeDefinition = __commonJS({
     var TypeDefinitionRequest;
     (function(TypeDefinitionRequest2) {
       TypeDefinitionRequest2.method = "textDocument/typeDefinition";
+      TypeDefinitionRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       TypeDefinitionRequest2.type = new messages_1.ProtocolRequestType(TypeDefinitionRequest2.method);
-    })(TypeDefinitionRequest = exports2.TypeDefinitionRequest || (exports2.TypeDefinitionRequest = {}));
+    })(TypeDefinitionRequest || (exports2.TypeDefinitionRequest = TypeDefinitionRequest = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.workspaceFolders.js
-var require_protocol_workspaceFolders = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.workspaceFolders.js"(exports2) {
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.workspaceFolder.js
+var require_protocol_workspaceFolder = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.workspaceFolder.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.DidChangeWorkspaceFoldersNotification = exports2.WorkspaceFoldersRequest = void 0;
     var messages_1 = require_messages2();
     var WorkspaceFoldersRequest;
     (function(WorkspaceFoldersRequest2) {
-      WorkspaceFoldersRequest2.type = new messages_1.ProtocolRequestType0("workspace/workspaceFolders");
-    })(WorkspaceFoldersRequest = exports2.WorkspaceFoldersRequest || (exports2.WorkspaceFoldersRequest = {}));
+      WorkspaceFoldersRequest2.method = "workspace/workspaceFolders";
+      WorkspaceFoldersRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
+      WorkspaceFoldersRequest2.type = new messages_1.ProtocolRequestType0(WorkspaceFoldersRequest2.method);
+    })(WorkspaceFoldersRequest || (exports2.WorkspaceFoldersRequest = WorkspaceFoldersRequest = {}));
     var DidChangeWorkspaceFoldersNotification;
     (function(DidChangeWorkspaceFoldersNotification2) {
-      DidChangeWorkspaceFoldersNotification2.type = new messages_1.ProtocolNotificationType("workspace/didChangeWorkspaceFolders");
-    })(DidChangeWorkspaceFoldersNotification = exports2.DidChangeWorkspaceFoldersNotification || (exports2.DidChangeWorkspaceFoldersNotification = {}));
+      DidChangeWorkspaceFoldersNotification2.method = "workspace/didChangeWorkspaceFolders";
+      DidChangeWorkspaceFoldersNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
+      DidChangeWorkspaceFoldersNotification2.type = new messages_1.ProtocolNotificationType(DidChangeWorkspaceFoldersNotification2.method);
+    })(DidChangeWorkspaceFoldersNotification || (exports2.DidChangeWorkspaceFoldersNotification = DidChangeWorkspaceFoldersNotification = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.configuration.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.configuration.js
 var require_protocol_configuration = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.configuration.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.configuration.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ConfigurationRequest = void 0;
     var messages_1 = require_messages2();
     var ConfigurationRequest;
     (function(ConfigurationRequest2) {
-      ConfigurationRequest2.type = new messages_1.ProtocolRequestType("workspace/configuration");
-    })(ConfigurationRequest = exports2.ConfigurationRequest || (exports2.ConfigurationRequest = {}));
+      ConfigurationRequest2.method = "workspace/configuration";
+      ConfigurationRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
+      ConfigurationRequest2.type = new messages_1.ProtocolRequestType(ConfigurationRequest2.method);
+    })(ConfigurationRequest || (exports2.ConfigurationRequest = ConfigurationRequest = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.colorProvider.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.colorProvider.js
 var require_protocol_colorProvider = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.colorProvider.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.colorProvider.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ColorPresentationRequest = exports2.DocumentColorRequest = void 0;
@@ -5454,39 +5974,43 @@ var require_protocol_colorProvider = __commonJS({
     var DocumentColorRequest;
     (function(DocumentColorRequest2) {
       DocumentColorRequest2.method = "textDocument/documentColor";
+      DocumentColorRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       DocumentColorRequest2.type = new messages_1.ProtocolRequestType(DocumentColorRequest2.method);
-    })(DocumentColorRequest = exports2.DocumentColorRequest || (exports2.DocumentColorRequest = {}));
+    })(DocumentColorRequest || (exports2.DocumentColorRequest = DocumentColorRequest = {}));
     var ColorPresentationRequest;
     (function(ColorPresentationRequest2) {
-      ColorPresentationRequest2.type = new messages_1.ProtocolRequestType("textDocument/colorPresentation");
-    })(ColorPresentationRequest = exports2.ColorPresentationRequest || (exports2.ColorPresentationRequest = {}));
+      ColorPresentationRequest2.method = "textDocument/colorPresentation";
+      ColorPresentationRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
+      ColorPresentationRequest2.type = new messages_1.ProtocolRequestType(ColorPresentationRequest2.method);
+    })(ColorPresentationRequest || (exports2.ColorPresentationRequest = ColorPresentationRequest = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.foldingRange.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.foldingRange.js
 var require_protocol_foldingRange = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.foldingRange.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.foldingRange.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.FoldingRangeRequest = exports2.FoldingRangeKind = void 0;
+    exports2.FoldingRangeRefreshRequest = exports2.FoldingRangeRequest = void 0;
     var messages_1 = require_messages2();
-    var FoldingRangeKind3;
-    (function(FoldingRangeKind4) {
-      FoldingRangeKind4["Comment"] = "comment";
-      FoldingRangeKind4["Imports"] = "imports";
-      FoldingRangeKind4["Region"] = "region";
-    })(FoldingRangeKind3 = exports2.FoldingRangeKind || (exports2.FoldingRangeKind = {}));
     var FoldingRangeRequest;
     (function(FoldingRangeRequest2) {
       FoldingRangeRequest2.method = "textDocument/foldingRange";
+      FoldingRangeRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       FoldingRangeRequest2.type = new messages_1.ProtocolRequestType(FoldingRangeRequest2.method);
-    })(FoldingRangeRequest = exports2.FoldingRangeRequest || (exports2.FoldingRangeRequest = {}));
+    })(FoldingRangeRequest || (exports2.FoldingRangeRequest = FoldingRangeRequest = {}));
+    var FoldingRangeRefreshRequest;
+    (function(FoldingRangeRefreshRequest2) {
+      FoldingRangeRefreshRequest2.method = `workspace/foldingRange/refresh`;
+      FoldingRangeRefreshRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
+      FoldingRangeRefreshRequest2.type = new messages_1.ProtocolRequestType0(FoldingRangeRefreshRequest2.method);
+    })(FoldingRangeRefreshRequest || (exports2.FoldingRangeRefreshRequest = FoldingRangeRefreshRequest = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.declaration.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.declaration.js
 var require_protocol_declaration = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.declaration.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.declaration.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.DeclarationRequest = void 0;
@@ -5494,14 +6018,15 @@ var require_protocol_declaration = __commonJS({
     var DeclarationRequest;
     (function(DeclarationRequest2) {
       DeclarationRequest2.method = "textDocument/declaration";
+      DeclarationRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       DeclarationRequest2.type = new messages_1.ProtocolRequestType(DeclarationRequest2.method);
-    })(DeclarationRequest = exports2.DeclarationRequest || (exports2.DeclarationRequest = {}));
+    })(DeclarationRequest || (exports2.DeclarationRequest = DeclarationRequest = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.selectionRange.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.selectionRange.js
 var require_protocol_selectionRange = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.selectionRange.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.selectionRange.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.SelectionRangeRequest = void 0;
@@ -5509,14 +6034,15 @@ var require_protocol_selectionRange = __commonJS({
     var SelectionRangeRequest;
     (function(SelectionRangeRequest2) {
       SelectionRangeRequest2.method = "textDocument/selectionRange";
+      SelectionRangeRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       SelectionRangeRequest2.type = new messages_1.ProtocolRequestType(SelectionRangeRequest2.method);
-    })(SelectionRangeRequest = exports2.SelectionRangeRequest || (exports2.SelectionRangeRequest = {}));
+    })(SelectionRangeRequest || (exports2.SelectionRangeRequest = SelectionRangeRequest = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.progress.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.progress.js
 var require_protocol_progress = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.progress.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.progress.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.WorkDoneProgressCancelNotification = exports2.WorkDoneProgressCreateRequest = exports2.WorkDoneProgress = void 0;
@@ -5529,21 +6055,25 @@ var require_protocol_progress = __commonJS({
         return value === WorkDoneProgress2.type;
       }
       WorkDoneProgress2.is = is;
-    })(WorkDoneProgress = exports2.WorkDoneProgress || (exports2.WorkDoneProgress = {}));
+    })(WorkDoneProgress || (exports2.WorkDoneProgress = WorkDoneProgress = {}));
     var WorkDoneProgressCreateRequest;
     (function(WorkDoneProgressCreateRequest2) {
-      WorkDoneProgressCreateRequest2.type = new messages_1.ProtocolRequestType("window/workDoneProgress/create");
-    })(WorkDoneProgressCreateRequest = exports2.WorkDoneProgressCreateRequest || (exports2.WorkDoneProgressCreateRequest = {}));
+      WorkDoneProgressCreateRequest2.method = "window/workDoneProgress/create";
+      WorkDoneProgressCreateRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
+      WorkDoneProgressCreateRequest2.type = new messages_1.ProtocolRequestType(WorkDoneProgressCreateRequest2.method);
+    })(WorkDoneProgressCreateRequest || (exports2.WorkDoneProgressCreateRequest = WorkDoneProgressCreateRequest = {}));
     var WorkDoneProgressCancelNotification;
     (function(WorkDoneProgressCancelNotification2) {
-      WorkDoneProgressCancelNotification2.type = new messages_1.ProtocolNotificationType("window/workDoneProgress/cancel");
-    })(WorkDoneProgressCancelNotification = exports2.WorkDoneProgressCancelNotification || (exports2.WorkDoneProgressCancelNotification = {}));
+      WorkDoneProgressCancelNotification2.method = "window/workDoneProgress/cancel";
+      WorkDoneProgressCancelNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
+      WorkDoneProgressCancelNotification2.type = new messages_1.ProtocolNotificationType(WorkDoneProgressCancelNotification2.method);
+    })(WorkDoneProgressCancelNotification || (exports2.WorkDoneProgressCancelNotification = WorkDoneProgressCancelNotification = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.callHierarchy.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.callHierarchy.js
 var require_protocol_callHierarchy = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.callHierarchy.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.callHierarchy.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.CallHierarchyOutgoingCallsRequest = exports2.CallHierarchyIncomingCallsRequest = exports2.CallHierarchyPrepareRequest = void 0;
@@ -5551,109 +6081,73 @@ var require_protocol_callHierarchy = __commonJS({
     var CallHierarchyPrepareRequest;
     (function(CallHierarchyPrepareRequest2) {
       CallHierarchyPrepareRequest2.method = "textDocument/prepareCallHierarchy";
+      CallHierarchyPrepareRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       CallHierarchyPrepareRequest2.type = new messages_1.ProtocolRequestType(CallHierarchyPrepareRequest2.method);
-    })(CallHierarchyPrepareRequest = exports2.CallHierarchyPrepareRequest || (exports2.CallHierarchyPrepareRequest = {}));
+    })(CallHierarchyPrepareRequest || (exports2.CallHierarchyPrepareRequest = CallHierarchyPrepareRequest = {}));
     var CallHierarchyIncomingCallsRequest;
     (function(CallHierarchyIncomingCallsRequest2) {
       CallHierarchyIncomingCallsRequest2.method = "callHierarchy/incomingCalls";
+      CallHierarchyIncomingCallsRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       CallHierarchyIncomingCallsRequest2.type = new messages_1.ProtocolRequestType(CallHierarchyIncomingCallsRequest2.method);
-    })(CallHierarchyIncomingCallsRequest = exports2.CallHierarchyIncomingCallsRequest || (exports2.CallHierarchyIncomingCallsRequest = {}));
+    })(CallHierarchyIncomingCallsRequest || (exports2.CallHierarchyIncomingCallsRequest = CallHierarchyIncomingCallsRequest = {}));
     var CallHierarchyOutgoingCallsRequest;
     (function(CallHierarchyOutgoingCallsRequest2) {
       CallHierarchyOutgoingCallsRequest2.method = "callHierarchy/outgoingCalls";
+      CallHierarchyOutgoingCallsRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       CallHierarchyOutgoingCallsRequest2.type = new messages_1.ProtocolRequestType(CallHierarchyOutgoingCallsRequest2.method);
-    })(CallHierarchyOutgoingCallsRequest = exports2.CallHierarchyOutgoingCallsRequest || (exports2.CallHierarchyOutgoingCallsRequest = {}));
+    })(CallHierarchyOutgoingCallsRequest || (exports2.CallHierarchyOutgoingCallsRequest = CallHierarchyOutgoingCallsRequest = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.semanticTokens.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.semanticTokens.js
 var require_protocol_semanticTokens = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.semanticTokens.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.semanticTokens.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.SemanticTokensRefreshRequest = exports2.SemanticTokensRangeRequest = exports2.SemanticTokensDeltaRequest = exports2.SemanticTokensRequest = exports2.SemanticTokensRegistrationType = exports2.TokenFormat = exports2.SemanticTokens = exports2.SemanticTokenModifiers = exports2.SemanticTokenTypes = void 0;
+    exports2.SemanticTokensRefreshRequest = exports2.SemanticTokensRangeRequest = exports2.SemanticTokensDeltaRequest = exports2.SemanticTokensRequest = exports2.SemanticTokensRegistrationType = exports2.TokenFormat = void 0;
     var messages_1 = require_messages2();
-    var SemanticTokenTypes2;
-    (function(SemanticTokenTypes3) {
-      SemanticTokenTypes3["namespace"] = "namespace";
-      SemanticTokenTypes3["type"] = "type";
-      SemanticTokenTypes3["class"] = "class";
-      SemanticTokenTypes3["enum"] = "enum";
-      SemanticTokenTypes3["interface"] = "interface";
-      SemanticTokenTypes3["struct"] = "struct";
-      SemanticTokenTypes3["typeParameter"] = "typeParameter";
-      SemanticTokenTypes3["parameter"] = "parameter";
-      SemanticTokenTypes3["variable"] = "variable";
-      SemanticTokenTypes3["property"] = "property";
-      SemanticTokenTypes3["enumMember"] = "enumMember";
-      SemanticTokenTypes3["event"] = "event";
-      SemanticTokenTypes3["function"] = "function";
-      SemanticTokenTypes3["method"] = "method";
-      SemanticTokenTypes3["macro"] = "macro";
-      SemanticTokenTypes3["keyword"] = "keyword";
-      SemanticTokenTypes3["modifier"] = "modifier";
-      SemanticTokenTypes3["comment"] = "comment";
-      SemanticTokenTypes3["string"] = "string";
-      SemanticTokenTypes3["number"] = "number";
-      SemanticTokenTypes3["regexp"] = "regexp";
-      SemanticTokenTypes3["operator"] = "operator";
-    })(SemanticTokenTypes2 = exports2.SemanticTokenTypes || (exports2.SemanticTokenTypes = {}));
-    var SemanticTokenModifiers2;
-    (function(SemanticTokenModifiers3) {
-      SemanticTokenModifiers3["declaration"] = "declaration";
-      SemanticTokenModifiers3["definition"] = "definition";
-      SemanticTokenModifiers3["readonly"] = "readonly";
-      SemanticTokenModifiers3["static"] = "static";
-      SemanticTokenModifiers3["deprecated"] = "deprecated";
-      SemanticTokenModifiers3["abstract"] = "abstract";
-      SemanticTokenModifiers3["async"] = "async";
-      SemanticTokenModifiers3["modification"] = "modification";
-      SemanticTokenModifiers3["documentation"] = "documentation";
-      SemanticTokenModifiers3["defaultLibrary"] = "defaultLibrary";
-    })(SemanticTokenModifiers2 = exports2.SemanticTokenModifiers || (exports2.SemanticTokenModifiers = {}));
-    var SemanticTokens2;
-    (function(SemanticTokens3) {
-      function is(value) {
-        const candidate = value;
-        return candidate !== void 0 && (candidate.resultId === void 0 || typeof candidate.resultId === "string") && Array.isArray(candidate.data) && (candidate.data.length === 0 || typeof candidate.data[0] === "number");
-      }
-      SemanticTokens3.is = is;
-    })(SemanticTokens2 = exports2.SemanticTokens || (exports2.SemanticTokens = {}));
     var TokenFormat;
     (function(TokenFormat2) {
       TokenFormat2.Relative = "relative";
-    })(TokenFormat = exports2.TokenFormat || (exports2.TokenFormat = {}));
+    })(TokenFormat || (exports2.TokenFormat = TokenFormat = {}));
     var SemanticTokensRegistrationType;
     (function(SemanticTokensRegistrationType2) {
       SemanticTokensRegistrationType2.method = "textDocument/semanticTokens";
       SemanticTokensRegistrationType2.type = new messages_1.RegistrationType(SemanticTokensRegistrationType2.method);
-    })(SemanticTokensRegistrationType = exports2.SemanticTokensRegistrationType || (exports2.SemanticTokensRegistrationType = {}));
+    })(SemanticTokensRegistrationType || (exports2.SemanticTokensRegistrationType = SemanticTokensRegistrationType = {}));
     var SemanticTokensRequest;
     (function(SemanticTokensRequest2) {
       SemanticTokensRequest2.method = "textDocument/semanticTokens/full";
+      SemanticTokensRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       SemanticTokensRequest2.type = new messages_1.ProtocolRequestType(SemanticTokensRequest2.method);
-    })(SemanticTokensRequest = exports2.SemanticTokensRequest || (exports2.SemanticTokensRequest = {}));
+      SemanticTokensRequest2.registrationMethod = SemanticTokensRegistrationType.method;
+    })(SemanticTokensRequest || (exports2.SemanticTokensRequest = SemanticTokensRequest = {}));
     var SemanticTokensDeltaRequest;
     (function(SemanticTokensDeltaRequest2) {
       SemanticTokensDeltaRequest2.method = "textDocument/semanticTokens/full/delta";
+      SemanticTokensDeltaRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       SemanticTokensDeltaRequest2.type = new messages_1.ProtocolRequestType(SemanticTokensDeltaRequest2.method);
-    })(SemanticTokensDeltaRequest = exports2.SemanticTokensDeltaRequest || (exports2.SemanticTokensDeltaRequest = {}));
+      SemanticTokensDeltaRequest2.registrationMethod = SemanticTokensRegistrationType.method;
+    })(SemanticTokensDeltaRequest || (exports2.SemanticTokensDeltaRequest = SemanticTokensDeltaRequest = {}));
     var SemanticTokensRangeRequest;
     (function(SemanticTokensRangeRequest2) {
       SemanticTokensRangeRequest2.method = "textDocument/semanticTokens/range";
+      SemanticTokensRangeRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       SemanticTokensRangeRequest2.type = new messages_1.ProtocolRequestType(SemanticTokensRangeRequest2.method);
-    })(SemanticTokensRangeRequest = exports2.SemanticTokensRangeRequest || (exports2.SemanticTokensRangeRequest = {}));
+      SemanticTokensRangeRequest2.registrationMethod = SemanticTokensRegistrationType.method;
+    })(SemanticTokensRangeRequest || (exports2.SemanticTokensRangeRequest = SemanticTokensRangeRequest = {}));
     var SemanticTokensRefreshRequest;
     (function(SemanticTokensRefreshRequest2) {
       SemanticTokensRefreshRequest2.method = `workspace/semanticTokens/refresh`;
+      SemanticTokensRefreshRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
       SemanticTokensRefreshRequest2.type = new messages_1.ProtocolRequestType0(SemanticTokensRefreshRequest2.method);
-    })(SemanticTokensRefreshRequest = exports2.SemanticTokensRefreshRequest || (exports2.SemanticTokensRefreshRequest = {}));
+    })(SemanticTokensRefreshRequest || (exports2.SemanticTokensRefreshRequest = SemanticTokensRefreshRequest = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.showDocument.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.showDocument.js
 var require_protocol_showDocument = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.showDocument.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.showDocument.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ShowDocumentRequest = void 0;
@@ -5661,14 +6155,15 @@ var require_protocol_showDocument = __commonJS({
     var ShowDocumentRequest;
     (function(ShowDocumentRequest2) {
       ShowDocumentRequest2.method = "window/showDocument";
+      ShowDocumentRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
       ShowDocumentRequest2.type = new messages_1.ProtocolRequestType(ShowDocumentRequest2.method);
-    })(ShowDocumentRequest = exports2.ShowDocumentRequest || (exports2.ShowDocumentRequest = {}));
+    })(ShowDocumentRequest || (exports2.ShowDocumentRequest = ShowDocumentRequest = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.linkedEditingRange.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.linkedEditingRange.js
 var require_protocol_linkedEditingRange = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.linkedEditingRange.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.linkedEditingRange.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.LinkedEditingRangeRequest = void 0;
@@ -5676,14 +6171,15 @@ var require_protocol_linkedEditingRange = __commonJS({
     var LinkedEditingRangeRequest;
     (function(LinkedEditingRangeRequest2) {
       LinkedEditingRangeRequest2.method = "textDocument/linkedEditingRange";
+      LinkedEditingRangeRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       LinkedEditingRangeRequest2.type = new messages_1.ProtocolRequestType(LinkedEditingRangeRequest2.method);
-    })(LinkedEditingRangeRequest = exports2.LinkedEditingRangeRequest || (exports2.LinkedEditingRangeRequest = {}));
+    })(LinkedEditingRangeRequest || (exports2.LinkedEditingRangeRequest = LinkedEditingRangeRequest = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.fileOperations.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.fileOperations.js
 var require_protocol_fileOperations = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.fileOperations.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.fileOperations.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.WillDeleteFilesRequest = exports2.DidDeleteFilesNotification = exports2.DidRenameFilesNotification = exports2.WillRenameFilesRequest = exports2.DidCreateFilesNotification = exports2.WillCreateFilesRequest = exports2.FileOperationPatternKind = void 0;
@@ -5692,78 +6188,415 @@ var require_protocol_fileOperations = __commonJS({
     (function(FileOperationPatternKind2) {
       FileOperationPatternKind2.file = "file";
       FileOperationPatternKind2.folder = "folder";
-    })(FileOperationPatternKind = exports2.FileOperationPatternKind || (exports2.FileOperationPatternKind = {}));
+    })(FileOperationPatternKind || (exports2.FileOperationPatternKind = FileOperationPatternKind = {}));
     var WillCreateFilesRequest;
     (function(WillCreateFilesRequest2) {
       WillCreateFilesRequest2.method = "workspace/willCreateFiles";
+      WillCreateFilesRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       WillCreateFilesRequest2.type = new messages_1.ProtocolRequestType(WillCreateFilesRequest2.method);
-    })(WillCreateFilesRequest = exports2.WillCreateFilesRequest || (exports2.WillCreateFilesRequest = {}));
+    })(WillCreateFilesRequest || (exports2.WillCreateFilesRequest = WillCreateFilesRequest = {}));
     var DidCreateFilesNotification;
     (function(DidCreateFilesNotification2) {
       DidCreateFilesNotification2.method = "workspace/didCreateFiles";
+      DidCreateFilesNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
       DidCreateFilesNotification2.type = new messages_1.ProtocolNotificationType(DidCreateFilesNotification2.method);
-    })(DidCreateFilesNotification = exports2.DidCreateFilesNotification || (exports2.DidCreateFilesNotification = {}));
+    })(DidCreateFilesNotification || (exports2.DidCreateFilesNotification = DidCreateFilesNotification = {}));
     var WillRenameFilesRequest;
     (function(WillRenameFilesRequest2) {
       WillRenameFilesRequest2.method = "workspace/willRenameFiles";
+      WillRenameFilesRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       WillRenameFilesRequest2.type = new messages_1.ProtocolRequestType(WillRenameFilesRequest2.method);
-    })(WillRenameFilesRequest = exports2.WillRenameFilesRequest || (exports2.WillRenameFilesRequest = {}));
+    })(WillRenameFilesRequest || (exports2.WillRenameFilesRequest = WillRenameFilesRequest = {}));
     var DidRenameFilesNotification;
     (function(DidRenameFilesNotification2) {
       DidRenameFilesNotification2.method = "workspace/didRenameFiles";
+      DidRenameFilesNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
       DidRenameFilesNotification2.type = new messages_1.ProtocolNotificationType(DidRenameFilesNotification2.method);
-    })(DidRenameFilesNotification = exports2.DidRenameFilesNotification || (exports2.DidRenameFilesNotification = {}));
+    })(DidRenameFilesNotification || (exports2.DidRenameFilesNotification = DidRenameFilesNotification = {}));
     var DidDeleteFilesNotification;
     (function(DidDeleteFilesNotification2) {
       DidDeleteFilesNotification2.method = "workspace/didDeleteFiles";
+      DidDeleteFilesNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
       DidDeleteFilesNotification2.type = new messages_1.ProtocolNotificationType(DidDeleteFilesNotification2.method);
-    })(DidDeleteFilesNotification = exports2.DidDeleteFilesNotification || (exports2.DidDeleteFilesNotification = {}));
+    })(DidDeleteFilesNotification || (exports2.DidDeleteFilesNotification = DidDeleteFilesNotification = {}));
     var WillDeleteFilesRequest;
     (function(WillDeleteFilesRequest2) {
       WillDeleteFilesRequest2.method = "workspace/willDeleteFiles";
+      WillDeleteFilesRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       WillDeleteFilesRequest2.type = new messages_1.ProtocolRequestType(WillDeleteFilesRequest2.method);
-    })(WillDeleteFilesRequest = exports2.WillDeleteFilesRequest || (exports2.WillDeleteFilesRequest = {}));
+    })(WillDeleteFilesRequest || (exports2.WillDeleteFilesRequest = WillDeleteFilesRequest = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.moniker.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.moniker.js
 var require_protocol_moniker = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.moniker.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.moniker.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.MonikerRequest = exports2.MonikerKind = exports2.UniquenessLevel = void 0;
     var messages_1 = require_messages2();
     var UniquenessLevel;
     (function(UniquenessLevel2) {
-      UniquenessLevel2["document"] = "document";
-      UniquenessLevel2["project"] = "project";
-      UniquenessLevel2["group"] = "group";
-      UniquenessLevel2["scheme"] = "scheme";
-      UniquenessLevel2["global"] = "global";
-    })(UniquenessLevel = exports2.UniquenessLevel || (exports2.UniquenessLevel = {}));
+      UniquenessLevel2.document = "document";
+      UniquenessLevel2.project = "project";
+      UniquenessLevel2.group = "group";
+      UniquenessLevel2.scheme = "scheme";
+      UniquenessLevel2.global = "global";
+    })(UniquenessLevel || (exports2.UniquenessLevel = UniquenessLevel = {}));
     var MonikerKind;
     (function(MonikerKind2) {
-      MonikerKind2["import"] = "import";
-      MonikerKind2["export"] = "export";
-      MonikerKind2["local"] = "local";
-    })(MonikerKind = exports2.MonikerKind || (exports2.MonikerKind = {}));
+      MonikerKind2.$import = "import";
+      MonikerKind2.$export = "export";
+      MonikerKind2.local = "local";
+    })(MonikerKind || (exports2.MonikerKind = MonikerKind = {}));
     var MonikerRequest;
     (function(MonikerRequest2) {
       MonikerRequest2.method = "textDocument/moniker";
+      MonikerRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       MonikerRequest2.type = new messages_1.ProtocolRequestType(MonikerRequest2.method);
-    })(MonikerRequest = exports2.MonikerRequest || (exports2.MonikerRequest = {}));
+    })(MonikerRequest || (exports2.MonikerRequest = MonikerRequest = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.js
-var require_protocol = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/protocol.js"(exports2) {
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.typeHierarchy.js
+var require_protocol_typeHierarchy = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.typeHierarchy.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.DocumentLinkRequest = exports2.CodeLensRefreshRequest = exports2.CodeLensResolveRequest = exports2.CodeLensRequest = exports2.WorkspaceSymbolRequest = exports2.CodeActionResolveRequest = exports2.CodeActionRequest = exports2.DocumentSymbolRequest = exports2.DocumentHighlightRequest = exports2.ReferencesRequest = exports2.DefinitionRequest = exports2.SignatureHelpRequest = exports2.SignatureHelpTriggerKind = exports2.HoverRequest = exports2.CompletionResolveRequest = exports2.CompletionRequest = exports2.CompletionTriggerKind = exports2.PublishDiagnosticsNotification = exports2.WatchKind = exports2.FileChangeType = exports2.DidChangeWatchedFilesNotification = exports2.WillSaveTextDocumentWaitUntilRequest = exports2.WillSaveTextDocumentNotification = exports2.TextDocumentSaveReason = exports2.DidSaveTextDocumentNotification = exports2.DidCloseTextDocumentNotification = exports2.DidChangeTextDocumentNotification = exports2.TextDocumentContentChangeEvent = exports2.DidOpenTextDocumentNotification = exports2.TextDocumentSyncKind = exports2.TelemetryEventNotification = exports2.LogMessageNotification = exports2.ShowMessageRequest = exports2.ShowMessageNotification = exports2.MessageType = exports2.DidChangeConfigurationNotification = exports2.ExitNotification = exports2.ShutdownRequest = exports2.InitializedNotification = exports2.InitializeError = exports2.InitializeRequest = exports2.WorkDoneProgressOptions = exports2.TextDocumentRegistrationOptions = exports2.StaticRegistrationOptions = exports2.FailureHandlingKind = exports2.ResourceOperationKind = exports2.UnregistrationRequest = exports2.RegistrationRequest = exports2.DocumentSelector = exports2.DocumentFilter = void 0;
-    exports2.MonikerRequest = exports2.MonikerKind = exports2.UniquenessLevel = exports2.WillDeleteFilesRequest = exports2.DidDeleteFilesNotification = exports2.WillRenameFilesRequest = exports2.DidRenameFilesNotification = exports2.WillCreateFilesRequest = exports2.DidCreateFilesNotification = exports2.FileOperationPatternKind = exports2.LinkedEditingRangeRequest = exports2.ShowDocumentRequest = exports2.SemanticTokensRegistrationType = exports2.SemanticTokensRefreshRequest = exports2.SemanticTokensRangeRequest = exports2.SemanticTokensDeltaRequest = exports2.SemanticTokensRequest = exports2.TokenFormat = exports2.SemanticTokens = exports2.SemanticTokenModifiers = exports2.SemanticTokenTypes = exports2.CallHierarchyPrepareRequest = exports2.CallHierarchyOutgoingCallsRequest = exports2.CallHierarchyIncomingCallsRequest = exports2.WorkDoneProgressCancelNotification = exports2.WorkDoneProgressCreateRequest = exports2.WorkDoneProgress = exports2.SelectionRangeRequest = exports2.DeclarationRequest = exports2.FoldingRangeRequest = exports2.ColorPresentationRequest = exports2.DocumentColorRequest = exports2.ConfigurationRequest = exports2.DidChangeWorkspaceFoldersNotification = exports2.WorkspaceFoldersRequest = exports2.TypeDefinitionRequest = exports2.ImplementationRequest = exports2.ApplyWorkspaceEditRequest = exports2.ExecuteCommandRequest = exports2.PrepareRenameRequest = exports2.RenameRequest = exports2.PrepareSupportDefaultBehavior = exports2.DocumentOnTypeFormattingRequest = exports2.DocumentRangeFormattingRequest = exports2.DocumentFormattingRequest = exports2.DocumentLinkResolveRequest = void 0;
-    var Is3 = require_is3();
+    exports2.TypeHierarchySubtypesRequest = exports2.TypeHierarchySupertypesRequest = exports2.TypeHierarchyPrepareRequest = void 0;
     var messages_1 = require_messages2();
+    var TypeHierarchyPrepareRequest;
+    (function(TypeHierarchyPrepareRequest2) {
+      TypeHierarchyPrepareRequest2.method = "textDocument/prepareTypeHierarchy";
+      TypeHierarchyPrepareRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
+      TypeHierarchyPrepareRequest2.type = new messages_1.ProtocolRequestType(TypeHierarchyPrepareRequest2.method);
+    })(TypeHierarchyPrepareRequest || (exports2.TypeHierarchyPrepareRequest = TypeHierarchyPrepareRequest = {}));
+    var TypeHierarchySupertypesRequest;
+    (function(TypeHierarchySupertypesRequest2) {
+      TypeHierarchySupertypesRequest2.method = "typeHierarchy/supertypes";
+      TypeHierarchySupertypesRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
+      TypeHierarchySupertypesRequest2.type = new messages_1.ProtocolRequestType(TypeHierarchySupertypesRequest2.method);
+    })(TypeHierarchySupertypesRequest || (exports2.TypeHierarchySupertypesRequest = TypeHierarchySupertypesRequest = {}));
+    var TypeHierarchySubtypesRequest;
+    (function(TypeHierarchySubtypesRequest2) {
+      TypeHierarchySubtypesRequest2.method = "typeHierarchy/subtypes";
+      TypeHierarchySubtypesRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
+      TypeHierarchySubtypesRequest2.type = new messages_1.ProtocolRequestType(TypeHierarchySubtypesRequest2.method);
+    })(TypeHierarchySubtypesRequest || (exports2.TypeHierarchySubtypesRequest = TypeHierarchySubtypesRequest = {}));
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.inlineValue.js
+var require_protocol_inlineValue = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.inlineValue.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.InlineValueRefreshRequest = exports2.InlineValueRequest = void 0;
+    var messages_1 = require_messages2();
+    var InlineValueRequest;
+    (function(InlineValueRequest2) {
+      InlineValueRequest2.method = "textDocument/inlineValue";
+      InlineValueRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
+      InlineValueRequest2.type = new messages_1.ProtocolRequestType(InlineValueRequest2.method);
+    })(InlineValueRequest || (exports2.InlineValueRequest = InlineValueRequest = {}));
+    var InlineValueRefreshRequest;
+    (function(InlineValueRefreshRequest2) {
+      InlineValueRefreshRequest2.method = `workspace/inlineValue/refresh`;
+      InlineValueRefreshRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
+      InlineValueRefreshRequest2.type = new messages_1.ProtocolRequestType0(InlineValueRefreshRequest2.method);
+    })(InlineValueRefreshRequest || (exports2.InlineValueRefreshRequest = InlineValueRefreshRequest = {}));
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.inlayHint.js
+var require_protocol_inlayHint = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.inlayHint.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.InlayHintRefreshRequest = exports2.InlayHintResolveRequest = exports2.InlayHintRequest = void 0;
+    var messages_1 = require_messages2();
+    var InlayHintRequest;
+    (function(InlayHintRequest2) {
+      InlayHintRequest2.method = "textDocument/inlayHint";
+      InlayHintRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
+      InlayHintRequest2.type = new messages_1.ProtocolRequestType(InlayHintRequest2.method);
+    })(InlayHintRequest || (exports2.InlayHintRequest = InlayHintRequest = {}));
+    var InlayHintResolveRequest;
+    (function(InlayHintResolveRequest2) {
+      InlayHintResolveRequest2.method = "inlayHint/resolve";
+      InlayHintResolveRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
+      InlayHintResolveRequest2.type = new messages_1.ProtocolRequestType(InlayHintResolveRequest2.method);
+    })(InlayHintResolveRequest || (exports2.InlayHintResolveRequest = InlayHintResolveRequest = {}));
+    var InlayHintRefreshRequest;
+    (function(InlayHintRefreshRequest2) {
+      InlayHintRefreshRequest2.method = `workspace/inlayHint/refresh`;
+      InlayHintRefreshRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
+      InlayHintRefreshRequest2.type = new messages_1.ProtocolRequestType0(InlayHintRefreshRequest2.method);
+    })(InlayHintRefreshRequest || (exports2.InlayHintRefreshRequest = InlayHintRefreshRequest = {}));
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.diagnostic.js
+var require_protocol_diagnostic = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.diagnostic.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.DiagnosticRefreshRequest = exports2.WorkspaceDiagnosticRequest = exports2.DocumentDiagnosticRequest = exports2.DocumentDiagnosticReportKind = exports2.DiagnosticServerCancellationData = void 0;
+    var vscode_jsonrpc_1 = require_main();
+    var Is2 = require_is3();
+    var messages_1 = require_messages2();
+    var DiagnosticServerCancellationData;
+    (function(DiagnosticServerCancellationData2) {
+      function is(value) {
+        const candidate = value;
+        return candidate && Is2.boolean(candidate.retriggerRequest);
+      }
+      DiagnosticServerCancellationData2.is = is;
+    })(DiagnosticServerCancellationData || (exports2.DiagnosticServerCancellationData = DiagnosticServerCancellationData = {}));
+    var DocumentDiagnosticReportKind;
+    (function(DocumentDiagnosticReportKind2) {
+      DocumentDiagnosticReportKind2.Full = "full";
+      DocumentDiagnosticReportKind2.Unchanged = "unchanged";
+    })(DocumentDiagnosticReportKind || (exports2.DocumentDiagnosticReportKind = DocumentDiagnosticReportKind = {}));
+    var DocumentDiagnosticRequest;
+    (function(DocumentDiagnosticRequest2) {
+      DocumentDiagnosticRequest2.method = "textDocument/diagnostic";
+      DocumentDiagnosticRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
+      DocumentDiagnosticRequest2.type = new messages_1.ProtocolRequestType(DocumentDiagnosticRequest2.method);
+      DocumentDiagnosticRequest2.partialResult = new vscode_jsonrpc_1.ProgressType();
+    })(DocumentDiagnosticRequest || (exports2.DocumentDiagnosticRequest = DocumentDiagnosticRequest = {}));
+    var WorkspaceDiagnosticRequest;
+    (function(WorkspaceDiagnosticRequest2) {
+      WorkspaceDiagnosticRequest2.method = "workspace/diagnostic";
+      WorkspaceDiagnosticRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
+      WorkspaceDiagnosticRequest2.type = new messages_1.ProtocolRequestType(WorkspaceDiagnosticRequest2.method);
+      WorkspaceDiagnosticRequest2.partialResult = new vscode_jsonrpc_1.ProgressType();
+    })(WorkspaceDiagnosticRequest || (exports2.WorkspaceDiagnosticRequest = WorkspaceDiagnosticRequest = {}));
+    var DiagnosticRefreshRequest;
+    (function(DiagnosticRefreshRequest2) {
+      DiagnosticRefreshRequest2.method = `workspace/diagnostic/refresh`;
+      DiagnosticRefreshRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
+      DiagnosticRefreshRequest2.type = new messages_1.ProtocolRequestType0(DiagnosticRefreshRequest2.method);
+    })(DiagnosticRefreshRequest || (exports2.DiagnosticRefreshRequest = DiagnosticRefreshRequest = {}));
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.notebook.js
+var require_protocol_notebook = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.notebook.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.DidCloseNotebookDocumentNotification = exports2.DidSaveNotebookDocumentNotification = exports2.DidChangeNotebookDocumentNotification = exports2.NotebookCellArrayChange = exports2.DidOpenNotebookDocumentNotification = exports2.NotebookDocumentSyncRegistrationType = exports2.NotebookDocument = exports2.NotebookCell = exports2.ExecutionSummary = exports2.NotebookCellKind = void 0;
+    var vscode_languageserver_types_1 = require_main2();
+    var Is2 = require_is3();
+    var messages_1 = require_messages2();
+    var NotebookCellKind;
+    (function(NotebookCellKind2) {
+      NotebookCellKind2.Markup = 1;
+      NotebookCellKind2.Code = 2;
+      function is(value) {
+        return value === 1 || value === 2;
+      }
+      NotebookCellKind2.is = is;
+    })(NotebookCellKind || (exports2.NotebookCellKind = NotebookCellKind = {}));
+    var ExecutionSummary;
+    (function(ExecutionSummary2) {
+      function create(executionOrder, success) {
+        const result = { executionOrder };
+        if (success === true || success === false) {
+          result.success = success;
+        }
+        return result;
+      }
+      ExecutionSummary2.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && vscode_languageserver_types_1.uinteger.is(candidate.executionOrder) && (candidate.success === void 0 || Is2.boolean(candidate.success));
+      }
+      ExecutionSummary2.is = is;
+      function equals(one, other) {
+        if (one === other) {
+          return true;
+        }
+        if (one === null || one === void 0 || other === null || other === void 0) {
+          return false;
+        }
+        return one.executionOrder === other.executionOrder && one.success === other.success;
+      }
+      ExecutionSummary2.equals = equals;
+    })(ExecutionSummary || (exports2.ExecutionSummary = ExecutionSummary = {}));
+    var NotebookCell;
+    (function(NotebookCell2) {
+      function create(kind, document) {
+        return { kind, document };
+      }
+      NotebookCell2.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && NotebookCellKind.is(candidate.kind) && vscode_languageserver_types_1.DocumentUri.is(candidate.document) && (candidate.metadata === void 0 || Is2.objectLiteral(candidate.metadata));
+      }
+      NotebookCell2.is = is;
+      function diff(one, two) {
+        const result = /* @__PURE__ */ new Set();
+        if (one.document !== two.document) {
+          result.add("document");
+        }
+        if (one.kind !== two.kind) {
+          result.add("kind");
+        }
+        if (one.executionSummary !== two.executionSummary) {
+          result.add("executionSummary");
+        }
+        if ((one.metadata !== void 0 || two.metadata !== void 0) && !equalsMetadata(one.metadata, two.metadata)) {
+          result.add("metadata");
+        }
+        if ((one.executionSummary !== void 0 || two.executionSummary !== void 0) && !ExecutionSummary.equals(one.executionSummary, two.executionSummary)) {
+          result.add("executionSummary");
+        }
+        return result;
+      }
+      NotebookCell2.diff = diff;
+      function equalsMetadata(one, other) {
+        if (one === other) {
+          return true;
+        }
+        if (one === null || one === void 0 || other === null || other === void 0) {
+          return false;
+        }
+        if (typeof one !== typeof other) {
+          return false;
+        }
+        if (typeof one !== "object") {
+          return false;
+        }
+        const oneArray = Array.isArray(one);
+        const otherArray = Array.isArray(other);
+        if (oneArray !== otherArray) {
+          return false;
+        }
+        if (oneArray && otherArray) {
+          if (one.length !== other.length) {
+            return false;
+          }
+          for (let i = 0; i < one.length; i++) {
+            if (!equalsMetadata(one[i], other[i])) {
+              return false;
+            }
+          }
+        }
+        if (Is2.objectLiteral(one) && Is2.objectLiteral(other)) {
+          const oneKeys = Object.keys(one);
+          const otherKeys = Object.keys(other);
+          if (oneKeys.length !== otherKeys.length) {
+            return false;
+          }
+          oneKeys.sort();
+          otherKeys.sort();
+          if (!equalsMetadata(oneKeys, otherKeys)) {
+            return false;
+          }
+          for (let i = 0; i < oneKeys.length; i++) {
+            const prop = oneKeys[i];
+            if (!equalsMetadata(one[prop], other[prop])) {
+              return false;
+            }
+          }
+        }
+        return true;
+      }
+    })(NotebookCell || (exports2.NotebookCell = NotebookCell = {}));
+    var NotebookDocument;
+    (function(NotebookDocument2) {
+      function create(uri, notebookType, version, cells) {
+        return { uri, notebookType, version, cells };
+      }
+      NotebookDocument2.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && Is2.string(candidate.uri) && vscode_languageserver_types_1.integer.is(candidate.version) && Is2.typedArray(candidate.cells, NotebookCell.is);
+      }
+      NotebookDocument2.is = is;
+    })(NotebookDocument || (exports2.NotebookDocument = NotebookDocument = {}));
+    var NotebookDocumentSyncRegistrationType;
+    (function(NotebookDocumentSyncRegistrationType2) {
+      NotebookDocumentSyncRegistrationType2.method = "notebookDocument/sync";
+      NotebookDocumentSyncRegistrationType2.messageDirection = messages_1.MessageDirection.clientToServer;
+      NotebookDocumentSyncRegistrationType2.type = new messages_1.RegistrationType(NotebookDocumentSyncRegistrationType2.method);
+    })(NotebookDocumentSyncRegistrationType || (exports2.NotebookDocumentSyncRegistrationType = NotebookDocumentSyncRegistrationType = {}));
+    var DidOpenNotebookDocumentNotification;
+    (function(DidOpenNotebookDocumentNotification2) {
+      DidOpenNotebookDocumentNotification2.method = "notebookDocument/didOpen";
+      DidOpenNotebookDocumentNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
+      DidOpenNotebookDocumentNotification2.type = new messages_1.ProtocolNotificationType(DidOpenNotebookDocumentNotification2.method);
+      DidOpenNotebookDocumentNotification2.registrationMethod = NotebookDocumentSyncRegistrationType.method;
+    })(DidOpenNotebookDocumentNotification || (exports2.DidOpenNotebookDocumentNotification = DidOpenNotebookDocumentNotification = {}));
+    var NotebookCellArrayChange;
+    (function(NotebookCellArrayChange2) {
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && vscode_languageserver_types_1.uinteger.is(candidate.start) && vscode_languageserver_types_1.uinteger.is(candidate.deleteCount) && (candidate.cells === void 0 || Is2.typedArray(candidate.cells, NotebookCell.is));
+      }
+      NotebookCellArrayChange2.is = is;
+      function create(start, deleteCount, cells) {
+        const result = { start, deleteCount };
+        if (cells !== void 0) {
+          result.cells = cells;
+        }
+        return result;
+      }
+      NotebookCellArrayChange2.create = create;
+    })(NotebookCellArrayChange || (exports2.NotebookCellArrayChange = NotebookCellArrayChange = {}));
+    var DidChangeNotebookDocumentNotification;
+    (function(DidChangeNotebookDocumentNotification2) {
+      DidChangeNotebookDocumentNotification2.method = "notebookDocument/didChange";
+      DidChangeNotebookDocumentNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
+      DidChangeNotebookDocumentNotification2.type = new messages_1.ProtocolNotificationType(DidChangeNotebookDocumentNotification2.method);
+      DidChangeNotebookDocumentNotification2.registrationMethod = NotebookDocumentSyncRegistrationType.method;
+    })(DidChangeNotebookDocumentNotification || (exports2.DidChangeNotebookDocumentNotification = DidChangeNotebookDocumentNotification = {}));
+    var DidSaveNotebookDocumentNotification;
+    (function(DidSaveNotebookDocumentNotification2) {
+      DidSaveNotebookDocumentNotification2.method = "notebookDocument/didSave";
+      DidSaveNotebookDocumentNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
+      DidSaveNotebookDocumentNotification2.type = new messages_1.ProtocolNotificationType(DidSaveNotebookDocumentNotification2.method);
+      DidSaveNotebookDocumentNotification2.registrationMethod = NotebookDocumentSyncRegistrationType.method;
+    })(DidSaveNotebookDocumentNotification || (exports2.DidSaveNotebookDocumentNotification = DidSaveNotebookDocumentNotification = {}));
+    var DidCloseNotebookDocumentNotification;
+    (function(DidCloseNotebookDocumentNotification2) {
+      DidCloseNotebookDocumentNotification2.method = "notebookDocument/didClose";
+      DidCloseNotebookDocumentNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
+      DidCloseNotebookDocumentNotification2.type = new messages_1.ProtocolNotificationType(DidCloseNotebookDocumentNotification2.method);
+      DidCloseNotebookDocumentNotification2.registrationMethod = NotebookDocumentSyncRegistrationType.method;
+    })(DidCloseNotebookDocumentNotification || (exports2.DidCloseNotebookDocumentNotification = DidCloseNotebookDocumentNotification = {}));
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.inlineCompletion.js
+var require_protocol_inlineCompletion = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.inlineCompletion.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.InlineCompletionRequest = void 0;
+    var messages_1 = require_messages2();
+    var InlineCompletionRequest;
+    (function(InlineCompletionRequest2) {
+      InlineCompletionRequest2.method = "textDocument/inlineCompletion";
+      InlineCompletionRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
+      InlineCompletionRequest2.type = new messages_1.ProtocolRequestType(InlineCompletionRequest2.method);
+    })(InlineCompletionRequest || (exports2.InlineCompletionRequest = InlineCompletionRequest = {}));
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.js
+var require_protocol = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/protocol.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.WorkspaceSymbolRequest = exports2.CodeActionResolveRequest = exports2.CodeActionRequest = exports2.DocumentSymbolRequest = exports2.DocumentHighlightRequest = exports2.ReferencesRequest = exports2.DefinitionRequest = exports2.SignatureHelpRequest = exports2.SignatureHelpTriggerKind = exports2.HoverRequest = exports2.CompletionResolveRequest = exports2.CompletionRequest = exports2.CompletionTriggerKind = exports2.PublishDiagnosticsNotification = exports2.WatchKind = exports2.RelativePattern = exports2.FileChangeType = exports2.DidChangeWatchedFilesNotification = exports2.WillSaveTextDocumentWaitUntilRequest = exports2.WillSaveTextDocumentNotification = exports2.TextDocumentSaveReason = exports2.DidSaveTextDocumentNotification = exports2.DidCloseTextDocumentNotification = exports2.DidChangeTextDocumentNotification = exports2.TextDocumentContentChangeEvent = exports2.DidOpenTextDocumentNotification = exports2.TextDocumentSyncKind = exports2.TelemetryEventNotification = exports2.LogMessageNotification = exports2.ShowMessageRequest = exports2.ShowMessageNotification = exports2.MessageType = exports2.DidChangeConfigurationNotification = exports2.ExitNotification = exports2.ShutdownRequest = exports2.InitializedNotification = exports2.InitializeErrorCodes = exports2.InitializeRequest = exports2.WorkDoneProgressOptions = exports2.TextDocumentRegistrationOptions = exports2.StaticRegistrationOptions = exports2.PositionEncodingKind = exports2.FailureHandlingKind = exports2.ResourceOperationKind = exports2.UnregistrationRequest = exports2.RegistrationRequest = exports2.DocumentSelector = exports2.NotebookCellTextDocumentFilter = exports2.NotebookDocumentFilter = exports2.TextDocumentFilter = void 0;
+    exports2.MonikerRequest = exports2.MonikerKind = exports2.UniquenessLevel = exports2.WillDeleteFilesRequest = exports2.DidDeleteFilesNotification = exports2.WillRenameFilesRequest = exports2.DidRenameFilesNotification = exports2.WillCreateFilesRequest = exports2.DidCreateFilesNotification = exports2.FileOperationPatternKind = exports2.LinkedEditingRangeRequest = exports2.ShowDocumentRequest = exports2.SemanticTokensRegistrationType = exports2.SemanticTokensRefreshRequest = exports2.SemanticTokensRangeRequest = exports2.SemanticTokensDeltaRequest = exports2.SemanticTokensRequest = exports2.TokenFormat = exports2.CallHierarchyPrepareRequest = exports2.CallHierarchyOutgoingCallsRequest = exports2.CallHierarchyIncomingCallsRequest = exports2.WorkDoneProgressCancelNotification = exports2.WorkDoneProgressCreateRequest = exports2.WorkDoneProgress = exports2.SelectionRangeRequest = exports2.DeclarationRequest = exports2.FoldingRangeRefreshRequest = exports2.FoldingRangeRequest = exports2.ColorPresentationRequest = exports2.DocumentColorRequest = exports2.ConfigurationRequest = exports2.DidChangeWorkspaceFoldersNotification = exports2.WorkspaceFoldersRequest = exports2.TypeDefinitionRequest = exports2.ImplementationRequest = exports2.ApplyWorkspaceEditRequest = exports2.ExecuteCommandRequest = exports2.PrepareRenameRequest = exports2.RenameRequest = exports2.PrepareSupportDefaultBehavior = exports2.DocumentOnTypeFormattingRequest = exports2.DocumentRangesFormattingRequest = exports2.DocumentRangeFormattingRequest = exports2.DocumentFormattingRequest = exports2.DocumentLinkResolveRequest = exports2.DocumentLinkRequest = exports2.CodeLensRefreshRequest = exports2.CodeLensResolveRequest = exports2.CodeLensRequest = exports2.WorkspaceSymbolResolveRequest = void 0;
+    exports2.InlineCompletionRequest = exports2.DidCloseNotebookDocumentNotification = exports2.DidSaveNotebookDocumentNotification = exports2.DidChangeNotebookDocumentNotification = exports2.NotebookCellArrayChange = exports2.DidOpenNotebookDocumentNotification = exports2.NotebookDocumentSyncRegistrationType = exports2.NotebookDocument = exports2.NotebookCell = exports2.ExecutionSummary = exports2.NotebookCellKind = exports2.DiagnosticRefreshRequest = exports2.WorkspaceDiagnosticRequest = exports2.DocumentDiagnosticRequest = exports2.DocumentDiagnosticReportKind = exports2.DiagnosticServerCancellationData = exports2.InlayHintRefreshRequest = exports2.InlayHintResolveRequest = exports2.InlayHintRequest = exports2.InlineValueRefreshRequest = exports2.InlineValueRequest = exports2.TypeHierarchySupertypesRequest = exports2.TypeHierarchySubtypesRequest = exports2.TypeHierarchyPrepareRequest = void 0;
+    var messages_1 = require_messages2();
+    var vscode_languageserver_types_1 = require_main2();
+    var Is2 = require_is3();
     var protocol_implementation_1 = require_protocol_implementation();
     Object.defineProperty(exports2, "ImplementationRequest", { enumerable: true, get: function() {
       return protocol_implementation_1.ImplementationRequest;
@@ -5772,12 +6605,12 @@ var require_protocol = __commonJS({
     Object.defineProperty(exports2, "TypeDefinitionRequest", { enumerable: true, get: function() {
       return protocol_typeDefinition_1.TypeDefinitionRequest;
     } });
-    var protocol_workspaceFolders_1 = require_protocol_workspaceFolders();
+    var protocol_workspaceFolder_1 = require_protocol_workspaceFolder();
     Object.defineProperty(exports2, "WorkspaceFoldersRequest", { enumerable: true, get: function() {
-      return protocol_workspaceFolders_1.WorkspaceFoldersRequest;
+      return protocol_workspaceFolder_1.WorkspaceFoldersRequest;
     } });
     Object.defineProperty(exports2, "DidChangeWorkspaceFoldersNotification", { enumerable: true, get: function() {
-      return protocol_workspaceFolders_1.DidChangeWorkspaceFoldersNotification;
+      return protocol_workspaceFolder_1.DidChangeWorkspaceFoldersNotification;
     } });
     var protocol_configuration_1 = require_protocol_configuration();
     Object.defineProperty(exports2, "ConfigurationRequest", { enumerable: true, get: function() {
@@ -5793,6 +6626,9 @@ var require_protocol = __commonJS({
     var protocol_foldingRange_1 = require_protocol_foldingRange();
     Object.defineProperty(exports2, "FoldingRangeRequest", { enumerable: true, get: function() {
       return protocol_foldingRange_1.FoldingRangeRequest;
+    } });
+    Object.defineProperty(exports2, "FoldingRangeRefreshRequest", { enumerable: true, get: function() {
+      return protocol_foldingRange_1.FoldingRangeRefreshRequest;
     } });
     var protocol_declaration_1 = require_protocol_declaration();
     Object.defineProperty(exports2, "DeclarationRequest", { enumerable: true, get: function() {
@@ -5823,15 +6659,6 @@ var require_protocol = __commonJS({
       return protocol_callHierarchy_1.CallHierarchyPrepareRequest;
     } });
     var protocol_semanticTokens_1 = require_protocol_semanticTokens();
-    Object.defineProperty(exports2, "SemanticTokenTypes", { enumerable: true, get: function() {
-      return protocol_semanticTokens_1.SemanticTokenTypes;
-    } });
-    Object.defineProperty(exports2, "SemanticTokenModifiers", { enumerable: true, get: function() {
-      return protocol_semanticTokens_1.SemanticTokenModifiers;
-    } });
-    Object.defineProperty(exports2, "SemanticTokens", { enumerable: true, get: function() {
-      return protocol_semanticTokens_1.SemanticTokens;
-    } });
     Object.defineProperty(exports2, "TokenFormat", { enumerable: true, get: function() {
       return protocol_semanticTokens_1.TokenFormat;
     } });
@@ -5890,14 +6717,108 @@ var require_protocol = __commonJS({
     Object.defineProperty(exports2, "MonikerRequest", { enumerable: true, get: function() {
       return protocol_moniker_1.MonikerRequest;
     } });
-    var DocumentFilter;
-    (function(DocumentFilter2) {
+    var protocol_typeHierarchy_1 = require_protocol_typeHierarchy();
+    Object.defineProperty(exports2, "TypeHierarchyPrepareRequest", { enumerable: true, get: function() {
+      return protocol_typeHierarchy_1.TypeHierarchyPrepareRequest;
+    } });
+    Object.defineProperty(exports2, "TypeHierarchySubtypesRequest", { enumerable: true, get: function() {
+      return protocol_typeHierarchy_1.TypeHierarchySubtypesRequest;
+    } });
+    Object.defineProperty(exports2, "TypeHierarchySupertypesRequest", { enumerable: true, get: function() {
+      return protocol_typeHierarchy_1.TypeHierarchySupertypesRequest;
+    } });
+    var protocol_inlineValue_1 = require_protocol_inlineValue();
+    Object.defineProperty(exports2, "InlineValueRequest", { enumerable: true, get: function() {
+      return protocol_inlineValue_1.InlineValueRequest;
+    } });
+    Object.defineProperty(exports2, "InlineValueRefreshRequest", { enumerable: true, get: function() {
+      return protocol_inlineValue_1.InlineValueRefreshRequest;
+    } });
+    var protocol_inlayHint_1 = require_protocol_inlayHint();
+    Object.defineProperty(exports2, "InlayHintRequest", { enumerable: true, get: function() {
+      return protocol_inlayHint_1.InlayHintRequest;
+    } });
+    Object.defineProperty(exports2, "InlayHintResolveRequest", { enumerable: true, get: function() {
+      return protocol_inlayHint_1.InlayHintResolveRequest;
+    } });
+    Object.defineProperty(exports2, "InlayHintRefreshRequest", { enumerable: true, get: function() {
+      return protocol_inlayHint_1.InlayHintRefreshRequest;
+    } });
+    var protocol_diagnostic_1 = require_protocol_diagnostic();
+    Object.defineProperty(exports2, "DiagnosticServerCancellationData", { enumerable: true, get: function() {
+      return protocol_diagnostic_1.DiagnosticServerCancellationData;
+    } });
+    Object.defineProperty(exports2, "DocumentDiagnosticReportKind", { enumerable: true, get: function() {
+      return protocol_diagnostic_1.DocumentDiagnosticReportKind;
+    } });
+    Object.defineProperty(exports2, "DocumentDiagnosticRequest", { enumerable: true, get: function() {
+      return protocol_diagnostic_1.DocumentDiagnosticRequest;
+    } });
+    Object.defineProperty(exports2, "WorkspaceDiagnosticRequest", { enumerable: true, get: function() {
+      return protocol_diagnostic_1.WorkspaceDiagnosticRequest;
+    } });
+    Object.defineProperty(exports2, "DiagnosticRefreshRequest", { enumerable: true, get: function() {
+      return protocol_diagnostic_1.DiagnosticRefreshRequest;
+    } });
+    var protocol_notebook_1 = require_protocol_notebook();
+    Object.defineProperty(exports2, "NotebookCellKind", { enumerable: true, get: function() {
+      return protocol_notebook_1.NotebookCellKind;
+    } });
+    Object.defineProperty(exports2, "ExecutionSummary", { enumerable: true, get: function() {
+      return protocol_notebook_1.ExecutionSummary;
+    } });
+    Object.defineProperty(exports2, "NotebookCell", { enumerable: true, get: function() {
+      return protocol_notebook_1.NotebookCell;
+    } });
+    Object.defineProperty(exports2, "NotebookDocument", { enumerable: true, get: function() {
+      return protocol_notebook_1.NotebookDocument;
+    } });
+    Object.defineProperty(exports2, "NotebookDocumentSyncRegistrationType", { enumerable: true, get: function() {
+      return protocol_notebook_1.NotebookDocumentSyncRegistrationType;
+    } });
+    Object.defineProperty(exports2, "DidOpenNotebookDocumentNotification", { enumerable: true, get: function() {
+      return protocol_notebook_1.DidOpenNotebookDocumentNotification;
+    } });
+    Object.defineProperty(exports2, "NotebookCellArrayChange", { enumerable: true, get: function() {
+      return protocol_notebook_1.NotebookCellArrayChange;
+    } });
+    Object.defineProperty(exports2, "DidChangeNotebookDocumentNotification", { enumerable: true, get: function() {
+      return protocol_notebook_1.DidChangeNotebookDocumentNotification;
+    } });
+    Object.defineProperty(exports2, "DidSaveNotebookDocumentNotification", { enumerable: true, get: function() {
+      return protocol_notebook_1.DidSaveNotebookDocumentNotification;
+    } });
+    Object.defineProperty(exports2, "DidCloseNotebookDocumentNotification", { enumerable: true, get: function() {
+      return protocol_notebook_1.DidCloseNotebookDocumentNotification;
+    } });
+    var protocol_inlineCompletion_1 = require_protocol_inlineCompletion();
+    Object.defineProperty(exports2, "InlineCompletionRequest", { enumerable: true, get: function() {
+      return protocol_inlineCompletion_1.InlineCompletionRequest;
+    } });
+    var TextDocumentFilter;
+    (function(TextDocumentFilter2) {
       function is(value) {
         const candidate = value;
-        return Is3.string(candidate.language) || Is3.string(candidate.scheme) || Is3.string(candidate.pattern);
+        return Is2.string(candidate) || (Is2.string(candidate.language) || Is2.string(candidate.scheme) || Is2.string(candidate.pattern));
       }
-      DocumentFilter2.is = is;
-    })(DocumentFilter = exports2.DocumentFilter || (exports2.DocumentFilter = {}));
+      TextDocumentFilter2.is = is;
+    })(TextDocumentFilter || (exports2.TextDocumentFilter = TextDocumentFilter = {}));
+    var NotebookDocumentFilter;
+    (function(NotebookDocumentFilter2) {
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && (Is2.string(candidate.notebookType) || Is2.string(candidate.scheme) || Is2.string(candidate.pattern));
+      }
+      NotebookDocumentFilter2.is = is;
+    })(NotebookDocumentFilter || (exports2.NotebookDocumentFilter = NotebookDocumentFilter = {}));
+    var NotebookCellTextDocumentFilter;
+    (function(NotebookCellTextDocumentFilter2) {
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && (Is2.string(candidate.notebook) || NotebookDocumentFilter.is(candidate.notebook)) && (candidate.language === void 0 || Is2.string(candidate.language));
+      }
+      NotebookCellTextDocumentFilter2.is = is;
+    })(NotebookCellTextDocumentFilter || (exports2.NotebookCellTextDocumentFilter = NotebookCellTextDocumentFilter = {}));
     var DocumentSelector;
     (function(DocumentSelector2) {
       function is(value) {
@@ -5905,43 +6826,53 @@ var require_protocol = __commonJS({
           return false;
         }
         for (let elem of value) {
-          if (!Is3.string(elem) && !DocumentFilter.is(elem)) {
+          if (!Is2.string(elem) && !TextDocumentFilter.is(elem) && !NotebookCellTextDocumentFilter.is(elem)) {
             return false;
           }
         }
         return true;
       }
       DocumentSelector2.is = is;
-    })(DocumentSelector = exports2.DocumentSelector || (exports2.DocumentSelector = {}));
+    })(DocumentSelector || (exports2.DocumentSelector = DocumentSelector = {}));
     var RegistrationRequest;
     (function(RegistrationRequest2) {
-      RegistrationRequest2.type = new messages_1.ProtocolRequestType("client/registerCapability");
-    })(RegistrationRequest = exports2.RegistrationRequest || (exports2.RegistrationRequest = {}));
+      RegistrationRequest2.method = "client/registerCapability";
+      RegistrationRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
+      RegistrationRequest2.type = new messages_1.ProtocolRequestType(RegistrationRequest2.method);
+    })(RegistrationRequest || (exports2.RegistrationRequest = RegistrationRequest = {}));
     var UnregistrationRequest;
     (function(UnregistrationRequest2) {
-      UnregistrationRequest2.type = new messages_1.ProtocolRequestType("client/unregisterCapability");
-    })(UnregistrationRequest = exports2.UnregistrationRequest || (exports2.UnregistrationRequest = {}));
+      UnregistrationRequest2.method = "client/unregisterCapability";
+      UnregistrationRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
+      UnregistrationRequest2.type = new messages_1.ProtocolRequestType(UnregistrationRequest2.method);
+    })(UnregistrationRequest || (exports2.UnregistrationRequest = UnregistrationRequest = {}));
     var ResourceOperationKind;
     (function(ResourceOperationKind2) {
       ResourceOperationKind2.Create = "create";
       ResourceOperationKind2.Rename = "rename";
       ResourceOperationKind2.Delete = "delete";
-    })(ResourceOperationKind = exports2.ResourceOperationKind || (exports2.ResourceOperationKind = {}));
+    })(ResourceOperationKind || (exports2.ResourceOperationKind = ResourceOperationKind = {}));
     var FailureHandlingKind;
     (function(FailureHandlingKind2) {
       FailureHandlingKind2.Abort = "abort";
       FailureHandlingKind2.Transactional = "transactional";
       FailureHandlingKind2.TextOnlyTransactional = "textOnlyTransactional";
       FailureHandlingKind2.Undo = "undo";
-    })(FailureHandlingKind = exports2.FailureHandlingKind || (exports2.FailureHandlingKind = {}));
+    })(FailureHandlingKind || (exports2.FailureHandlingKind = FailureHandlingKind = {}));
+    var PositionEncodingKind;
+    (function(PositionEncodingKind2) {
+      PositionEncodingKind2.UTF8 = "utf-8";
+      PositionEncodingKind2.UTF16 = "utf-16";
+      PositionEncodingKind2.UTF32 = "utf-32";
+    })(PositionEncodingKind || (exports2.PositionEncodingKind = PositionEncodingKind = {}));
     var StaticRegistrationOptions;
     (function(StaticRegistrationOptions2) {
       function hasId(value) {
         const candidate = value;
-        return candidate && Is3.string(candidate.id) && candidate.id.length > 0;
+        return candidate && Is2.string(candidate.id) && candidate.id.length > 0;
       }
       StaticRegistrationOptions2.hasId = hasId;
-    })(StaticRegistrationOptions = exports2.StaticRegistrationOptions || (exports2.StaticRegistrationOptions = {}));
+    })(StaticRegistrationOptions || (exports2.StaticRegistrationOptions = StaticRegistrationOptions = {}));
     var TextDocumentRegistrationOptions;
     (function(TextDocumentRegistrationOptions2) {
       function is(value) {
@@ -5949,78 +6880,98 @@ var require_protocol = __commonJS({
         return candidate && (candidate.documentSelector === null || DocumentSelector.is(candidate.documentSelector));
       }
       TextDocumentRegistrationOptions2.is = is;
-    })(TextDocumentRegistrationOptions = exports2.TextDocumentRegistrationOptions || (exports2.TextDocumentRegistrationOptions = {}));
+    })(TextDocumentRegistrationOptions || (exports2.TextDocumentRegistrationOptions = TextDocumentRegistrationOptions = {}));
     var WorkDoneProgressOptions;
     (function(WorkDoneProgressOptions2) {
       function is(value) {
         const candidate = value;
-        return Is3.objectLiteral(candidate) && (candidate.workDoneProgress === void 0 || Is3.boolean(candidate.workDoneProgress));
+        return Is2.objectLiteral(candidate) && (candidate.workDoneProgress === void 0 || Is2.boolean(candidate.workDoneProgress));
       }
       WorkDoneProgressOptions2.is = is;
       function hasWorkDoneProgress(value) {
         const candidate = value;
-        return candidate && Is3.boolean(candidate.workDoneProgress);
+        return candidate && Is2.boolean(candidate.workDoneProgress);
       }
       WorkDoneProgressOptions2.hasWorkDoneProgress = hasWorkDoneProgress;
-    })(WorkDoneProgressOptions = exports2.WorkDoneProgressOptions || (exports2.WorkDoneProgressOptions = {}));
+    })(WorkDoneProgressOptions || (exports2.WorkDoneProgressOptions = WorkDoneProgressOptions = {}));
     var InitializeRequest;
     (function(InitializeRequest2) {
-      InitializeRequest2.type = new messages_1.ProtocolRequestType("initialize");
-    })(InitializeRequest = exports2.InitializeRequest || (exports2.InitializeRequest = {}));
-    var InitializeError;
-    (function(InitializeError2) {
-      InitializeError2.unknownProtocolVersion = 1;
-    })(InitializeError = exports2.InitializeError || (exports2.InitializeError = {}));
+      InitializeRequest2.method = "initialize";
+      InitializeRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
+      InitializeRequest2.type = new messages_1.ProtocolRequestType(InitializeRequest2.method);
+    })(InitializeRequest || (exports2.InitializeRequest = InitializeRequest = {}));
+    var InitializeErrorCodes;
+    (function(InitializeErrorCodes2) {
+      InitializeErrorCodes2.unknownProtocolVersion = 1;
+    })(InitializeErrorCodes || (exports2.InitializeErrorCodes = InitializeErrorCodes = {}));
     var InitializedNotification;
     (function(InitializedNotification2) {
-      InitializedNotification2.type = new messages_1.ProtocolNotificationType("initialized");
-    })(InitializedNotification = exports2.InitializedNotification || (exports2.InitializedNotification = {}));
+      InitializedNotification2.method = "initialized";
+      InitializedNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
+      InitializedNotification2.type = new messages_1.ProtocolNotificationType(InitializedNotification2.method);
+    })(InitializedNotification || (exports2.InitializedNotification = InitializedNotification = {}));
     var ShutdownRequest;
     (function(ShutdownRequest2) {
-      ShutdownRequest2.type = new messages_1.ProtocolRequestType0("shutdown");
-    })(ShutdownRequest = exports2.ShutdownRequest || (exports2.ShutdownRequest = {}));
+      ShutdownRequest2.method = "shutdown";
+      ShutdownRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
+      ShutdownRequest2.type = new messages_1.ProtocolRequestType0(ShutdownRequest2.method);
+    })(ShutdownRequest || (exports2.ShutdownRequest = ShutdownRequest = {}));
     var ExitNotification;
     (function(ExitNotification2) {
-      ExitNotification2.type = new messages_1.ProtocolNotificationType0("exit");
-    })(ExitNotification = exports2.ExitNotification || (exports2.ExitNotification = {}));
+      ExitNotification2.method = "exit";
+      ExitNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
+      ExitNotification2.type = new messages_1.ProtocolNotificationType0(ExitNotification2.method);
+    })(ExitNotification || (exports2.ExitNotification = ExitNotification = {}));
     var DidChangeConfigurationNotification;
     (function(DidChangeConfigurationNotification2) {
-      DidChangeConfigurationNotification2.type = new messages_1.ProtocolNotificationType("workspace/didChangeConfiguration");
-    })(DidChangeConfigurationNotification = exports2.DidChangeConfigurationNotification || (exports2.DidChangeConfigurationNotification = {}));
+      DidChangeConfigurationNotification2.method = "workspace/didChangeConfiguration";
+      DidChangeConfigurationNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
+      DidChangeConfigurationNotification2.type = new messages_1.ProtocolNotificationType(DidChangeConfigurationNotification2.method);
+    })(DidChangeConfigurationNotification || (exports2.DidChangeConfigurationNotification = DidChangeConfigurationNotification = {}));
     var MessageType;
     (function(MessageType2) {
       MessageType2.Error = 1;
       MessageType2.Warning = 2;
       MessageType2.Info = 3;
       MessageType2.Log = 4;
-    })(MessageType = exports2.MessageType || (exports2.MessageType = {}));
+      MessageType2.Debug = 5;
+    })(MessageType || (exports2.MessageType = MessageType = {}));
     var ShowMessageNotification;
     (function(ShowMessageNotification2) {
-      ShowMessageNotification2.type = new messages_1.ProtocolNotificationType("window/showMessage");
-    })(ShowMessageNotification = exports2.ShowMessageNotification || (exports2.ShowMessageNotification = {}));
+      ShowMessageNotification2.method = "window/showMessage";
+      ShowMessageNotification2.messageDirection = messages_1.MessageDirection.serverToClient;
+      ShowMessageNotification2.type = new messages_1.ProtocolNotificationType(ShowMessageNotification2.method);
+    })(ShowMessageNotification || (exports2.ShowMessageNotification = ShowMessageNotification = {}));
     var ShowMessageRequest;
     (function(ShowMessageRequest2) {
-      ShowMessageRequest2.type = new messages_1.ProtocolRequestType("window/showMessageRequest");
-    })(ShowMessageRequest = exports2.ShowMessageRequest || (exports2.ShowMessageRequest = {}));
+      ShowMessageRequest2.method = "window/showMessageRequest";
+      ShowMessageRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
+      ShowMessageRequest2.type = new messages_1.ProtocolRequestType(ShowMessageRequest2.method);
+    })(ShowMessageRequest || (exports2.ShowMessageRequest = ShowMessageRequest = {}));
     var LogMessageNotification;
     (function(LogMessageNotification2) {
-      LogMessageNotification2.type = new messages_1.ProtocolNotificationType("window/logMessage");
-    })(LogMessageNotification = exports2.LogMessageNotification || (exports2.LogMessageNotification = {}));
+      LogMessageNotification2.method = "window/logMessage";
+      LogMessageNotification2.messageDirection = messages_1.MessageDirection.serverToClient;
+      LogMessageNotification2.type = new messages_1.ProtocolNotificationType(LogMessageNotification2.method);
+    })(LogMessageNotification || (exports2.LogMessageNotification = LogMessageNotification = {}));
     var TelemetryEventNotification;
     (function(TelemetryEventNotification2) {
-      TelemetryEventNotification2.type = new messages_1.ProtocolNotificationType("telemetry/event");
-    })(TelemetryEventNotification = exports2.TelemetryEventNotification || (exports2.TelemetryEventNotification = {}));
+      TelemetryEventNotification2.method = "telemetry/event";
+      TelemetryEventNotification2.messageDirection = messages_1.MessageDirection.serverToClient;
+      TelemetryEventNotification2.type = new messages_1.ProtocolNotificationType(TelemetryEventNotification2.method);
+    })(TelemetryEventNotification || (exports2.TelemetryEventNotification = TelemetryEventNotification = {}));
     var TextDocumentSyncKind;
     (function(TextDocumentSyncKind2) {
       TextDocumentSyncKind2.None = 0;
       TextDocumentSyncKind2.Full = 1;
       TextDocumentSyncKind2.Incremental = 2;
-    })(TextDocumentSyncKind = exports2.TextDocumentSyncKind || (exports2.TextDocumentSyncKind = {}));
+    })(TextDocumentSyncKind || (exports2.TextDocumentSyncKind = TextDocumentSyncKind = {}));
     var DidOpenTextDocumentNotification;
     (function(DidOpenTextDocumentNotification2) {
       DidOpenTextDocumentNotification2.method = "textDocument/didOpen";
+      DidOpenTextDocumentNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
       DidOpenTextDocumentNotification2.type = new messages_1.ProtocolNotificationType(DidOpenTextDocumentNotification2.method);
-    })(DidOpenTextDocumentNotification = exports2.DidOpenTextDocumentNotification || (exports2.DidOpenTextDocumentNotification = {}));
+    })(DidOpenTextDocumentNotification || (exports2.DidOpenTextDocumentNotification = DidOpenTextDocumentNotification = {}));
     var TextDocumentContentChangeEvent;
     (function(TextDocumentContentChangeEvent2) {
       function isIncremental(event) {
@@ -6033,193 +6984,247 @@ var require_protocol = __commonJS({
         return candidate !== void 0 && candidate !== null && typeof candidate.text === "string" && candidate.range === void 0 && candidate.rangeLength === void 0;
       }
       TextDocumentContentChangeEvent2.isFull = isFull;
-    })(TextDocumentContentChangeEvent = exports2.TextDocumentContentChangeEvent || (exports2.TextDocumentContentChangeEvent = {}));
+    })(TextDocumentContentChangeEvent || (exports2.TextDocumentContentChangeEvent = TextDocumentContentChangeEvent = {}));
     var DidChangeTextDocumentNotification;
     (function(DidChangeTextDocumentNotification2) {
       DidChangeTextDocumentNotification2.method = "textDocument/didChange";
+      DidChangeTextDocumentNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
       DidChangeTextDocumentNotification2.type = new messages_1.ProtocolNotificationType(DidChangeTextDocumentNotification2.method);
-    })(DidChangeTextDocumentNotification = exports2.DidChangeTextDocumentNotification || (exports2.DidChangeTextDocumentNotification = {}));
+    })(DidChangeTextDocumentNotification || (exports2.DidChangeTextDocumentNotification = DidChangeTextDocumentNotification = {}));
     var DidCloseTextDocumentNotification;
     (function(DidCloseTextDocumentNotification2) {
       DidCloseTextDocumentNotification2.method = "textDocument/didClose";
+      DidCloseTextDocumentNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
       DidCloseTextDocumentNotification2.type = new messages_1.ProtocolNotificationType(DidCloseTextDocumentNotification2.method);
-    })(DidCloseTextDocumentNotification = exports2.DidCloseTextDocumentNotification || (exports2.DidCloseTextDocumentNotification = {}));
+    })(DidCloseTextDocumentNotification || (exports2.DidCloseTextDocumentNotification = DidCloseTextDocumentNotification = {}));
     var DidSaveTextDocumentNotification;
     (function(DidSaveTextDocumentNotification2) {
       DidSaveTextDocumentNotification2.method = "textDocument/didSave";
+      DidSaveTextDocumentNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
       DidSaveTextDocumentNotification2.type = new messages_1.ProtocolNotificationType(DidSaveTextDocumentNotification2.method);
-    })(DidSaveTextDocumentNotification = exports2.DidSaveTextDocumentNotification || (exports2.DidSaveTextDocumentNotification = {}));
+    })(DidSaveTextDocumentNotification || (exports2.DidSaveTextDocumentNotification = DidSaveTextDocumentNotification = {}));
     var TextDocumentSaveReason;
     (function(TextDocumentSaveReason2) {
       TextDocumentSaveReason2.Manual = 1;
       TextDocumentSaveReason2.AfterDelay = 2;
       TextDocumentSaveReason2.FocusOut = 3;
-    })(TextDocumentSaveReason = exports2.TextDocumentSaveReason || (exports2.TextDocumentSaveReason = {}));
+    })(TextDocumentSaveReason || (exports2.TextDocumentSaveReason = TextDocumentSaveReason = {}));
     var WillSaveTextDocumentNotification;
     (function(WillSaveTextDocumentNotification2) {
       WillSaveTextDocumentNotification2.method = "textDocument/willSave";
+      WillSaveTextDocumentNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
       WillSaveTextDocumentNotification2.type = new messages_1.ProtocolNotificationType(WillSaveTextDocumentNotification2.method);
-    })(WillSaveTextDocumentNotification = exports2.WillSaveTextDocumentNotification || (exports2.WillSaveTextDocumentNotification = {}));
+    })(WillSaveTextDocumentNotification || (exports2.WillSaveTextDocumentNotification = WillSaveTextDocumentNotification = {}));
     var WillSaveTextDocumentWaitUntilRequest;
     (function(WillSaveTextDocumentWaitUntilRequest2) {
       WillSaveTextDocumentWaitUntilRequest2.method = "textDocument/willSaveWaitUntil";
+      WillSaveTextDocumentWaitUntilRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       WillSaveTextDocumentWaitUntilRequest2.type = new messages_1.ProtocolRequestType(WillSaveTextDocumentWaitUntilRequest2.method);
-    })(WillSaveTextDocumentWaitUntilRequest = exports2.WillSaveTextDocumentWaitUntilRequest || (exports2.WillSaveTextDocumentWaitUntilRequest = {}));
+    })(WillSaveTextDocumentWaitUntilRequest || (exports2.WillSaveTextDocumentWaitUntilRequest = WillSaveTextDocumentWaitUntilRequest = {}));
     var DidChangeWatchedFilesNotification;
     (function(DidChangeWatchedFilesNotification2) {
-      DidChangeWatchedFilesNotification2.type = new messages_1.ProtocolNotificationType("workspace/didChangeWatchedFiles");
-    })(DidChangeWatchedFilesNotification = exports2.DidChangeWatchedFilesNotification || (exports2.DidChangeWatchedFilesNotification = {}));
+      DidChangeWatchedFilesNotification2.method = "workspace/didChangeWatchedFiles";
+      DidChangeWatchedFilesNotification2.messageDirection = messages_1.MessageDirection.clientToServer;
+      DidChangeWatchedFilesNotification2.type = new messages_1.ProtocolNotificationType(DidChangeWatchedFilesNotification2.method);
+    })(DidChangeWatchedFilesNotification || (exports2.DidChangeWatchedFilesNotification = DidChangeWatchedFilesNotification = {}));
     var FileChangeType;
     (function(FileChangeType2) {
       FileChangeType2.Created = 1;
       FileChangeType2.Changed = 2;
       FileChangeType2.Deleted = 3;
-    })(FileChangeType = exports2.FileChangeType || (exports2.FileChangeType = {}));
+    })(FileChangeType || (exports2.FileChangeType = FileChangeType = {}));
+    var RelativePattern;
+    (function(RelativePattern2) {
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && (vscode_languageserver_types_1.URI.is(candidate.baseUri) || vscode_languageserver_types_1.WorkspaceFolder.is(candidate.baseUri)) && Is2.string(candidate.pattern);
+      }
+      RelativePattern2.is = is;
+    })(RelativePattern || (exports2.RelativePattern = RelativePattern = {}));
     var WatchKind;
     (function(WatchKind2) {
       WatchKind2.Create = 1;
       WatchKind2.Change = 2;
       WatchKind2.Delete = 4;
-    })(WatchKind = exports2.WatchKind || (exports2.WatchKind = {}));
+    })(WatchKind || (exports2.WatchKind = WatchKind = {}));
     var PublishDiagnosticsNotification;
     (function(PublishDiagnosticsNotification2) {
-      PublishDiagnosticsNotification2.type = new messages_1.ProtocolNotificationType("textDocument/publishDiagnostics");
-    })(PublishDiagnosticsNotification = exports2.PublishDiagnosticsNotification || (exports2.PublishDiagnosticsNotification = {}));
+      PublishDiagnosticsNotification2.method = "textDocument/publishDiagnostics";
+      PublishDiagnosticsNotification2.messageDirection = messages_1.MessageDirection.serverToClient;
+      PublishDiagnosticsNotification2.type = new messages_1.ProtocolNotificationType(PublishDiagnosticsNotification2.method);
+    })(PublishDiagnosticsNotification || (exports2.PublishDiagnosticsNotification = PublishDiagnosticsNotification = {}));
     var CompletionTriggerKind;
     (function(CompletionTriggerKind2) {
       CompletionTriggerKind2.Invoked = 1;
       CompletionTriggerKind2.TriggerCharacter = 2;
       CompletionTriggerKind2.TriggerForIncompleteCompletions = 3;
-    })(CompletionTriggerKind = exports2.CompletionTriggerKind || (exports2.CompletionTriggerKind = {}));
+    })(CompletionTriggerKind || (exports2.CompletionTriggerKind = CompletionTriggerKind = {}));
     var CompletionRequest;
     (function(CompletionRequest2) {
       CompletionRequest2.method = "textDocument/completion";
+      CompletionRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       CompletionRequest2.type = new messages_1.ProtocolRequestType(CompletionRequest2.method);
-    })(CompletionRequest = exports2.CompletionRequest || (exports2.CompletionRequest = {}));
+    })(CompletionRequest || (exports2.CompletionRequest = CompletionRequest = {}));
     var CompletionResolveRequest;
     (function(CompletionResolveRequest2) {
       CompletionResolveRequest2.method = "completionItem/resolve";
+      CompletionResolveRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       CompletionResolveRequest2.type = new messages_1.ProtocolRequestType(CompletionResolveRequest2.method);
-    })(CompletionResolveRequest = exports2.CompletionResolveRequest || (exports2.CompletionResolveRequest = {}));
+    })(CompletionResolveRequest || (exports2.CompletionResolveRequest = CompletionResolveRequest = {}));
     var HoverRequest;
     (function(HoverRequest2) {
       HoverRequest2.method = "textDocument/hover";
+      HoverRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       HoverRequest2.type = new messages_1.ProtocolRequestType(HoverRequest2.method);
-    })(HoverRequest = exports2.HoverRequest || (exports2.HoverRequest = {}));
+    })(HoverRequest || (exports2.HoverRequest = HoverRequest = {}));
     var SignatureHelpTriggerKind;
     (function(SignatureHelpTriggerKind2) {
       SignatureHelpTriggerKind2.Invoked = 1;
       SignatureHelpTriggerKind2.TriggerCharacter = 2;
       SignatureHelpTriggerKind2.ContentChange = 3;
-    })(SignatureHelpTriggerKind = exports2.SignatureHelpTriggerKind || (exports2.SignatureHelpTriggerKind = {}));
+    })(SignatureHelpTriggerKind || (exports2.SignatureHelpTriggerKind = SignatureHelpTriggerKind = {}));
     var SignatureHelpRequest;
     (function(SignatureHelpRequest2) {
       SignatureHelpRequest2.method = "textDocument/signatureHelp";
+      SignatureHelpRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       SignatureHelpRequest2.type = new messages_1.ProtocolRequestType(SignatureHelpRequest2.method);
-    })(SignatureHelpRequest = exports2.SignatureHelpRequest || (exports2.SignatureHelpRequest = {}));
+    })(SignatureHelpRequest || (exports2.SignatureHelpRequest = SignatureHelpRequest = {}));
     var DefinitionRequest;
     (function(DefinitionRequest2) {
       DefinitionRequest2.method = "textDocument/definition";
+      DefinitionRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       DefinitionRequest2.type = new messages_1.ProtocolRequestType(DefinitionRequest2.method);
-    })(DefinitionRequest = exports2.DefinitionRequest || (exports2.DefinitionRequest = {}));
+    })(DefinitionRequest || (exports2.DefinitionRequest = DefinitionRequest = {}));
     var ReferencesRequest;
     (function(ReferencesRequest2) {
       ReferencesRequest2.method = "textDocument/references";
+      ReferencesRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       ReferencesRequest2.type = new messages_1.ProtocolRequestType(ReferencesRequest2.method);
-    })(ReferencesRequest = exports2.ReferencesRequest || (exports2.ReferencesRequest = {}));
+    })(ReferencesRequest || (exports2.ReferencesRequest = ReferencesRequest = {}));
     var DocumentHighlightRequest;
     (function(DocumentHighlightRequest2) {
       DocumentHighlightRequest2.method = "textDocument/documentHighlight";
+      DocumentHighlightRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       DocumentHighlightRequest2.type = new messages_1.ProtocolRequestType(DocumentHighlightRequest2.method);
-    })(DocumentHighlightRequest = exports2.DocumentHighlightRequest || (exports2.DocumentHighlightRequest = {}));
+    })(DocumentHighlightRequest || (exports2.DocumentHighlightRequest = DocumentHighlightRequest = {}));
     var DocumentSymbolRequest;
     (function(DocumentSymbolRequest2) {
       DocumentSymbolRequest2.method = "textDocument/documentSymbol";
+      DocumentSymbolRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       DocumentSymbolRequest2.type = new messages_1.ProtocolRequestType(DocumentSymbolRequest2.method);
-    })(DocumentSymbolRequest = exports2.DocumentSymbolRequest || (exports2.DocumentSymbolRequest = {}));
+    })(DocumentSymbolRequest || (exports2.DocumentSymbolRequest = DocumentSymbolRequest = {}));
     var CodeActionRequest;
     (function(CodeActionRequest2) {
       CodeActionRequest2.method = "textDocument/codeAction";
+      CodeActionRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       CodeActionRequest2.type = new messages_1.ProtocolRequestType(CodeActionRequest2.method);
-    })(CodeActionRequest = exports2.CodeActionRequest || (exports2.CodeActionRequest = {}));
+    })(CodeActionRequest || (exports2.CodeActionRequest = CodeActionRequest = {}));
     var CodeActionResolveRequest;
     (function(CodeActionResolveRequest2) {
       CodeActionResolveRequest2.method = "codeAction/resolve";
+      CodeActionResolveRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       CodeActionResolveRequest2.type = new messages_1.ProtocolRequestType(CodeActionResolveRequest2.method);
-    })(CodeActionResolveRequest = exports2.CodeActionResolveRequest || (exports2.CodeActionResolveRequest = {}));
+    })(CodeActionResolveRequest || (exports2.CodeActionResolveRequest = CodeActionResolveRequest = {}));
     var WorkspaceSymbolRequest;
     (function(WorkspaceSymbolRequest2) {
       WorkspaceSymbolRequest2.method = "workspace/symbol";
+      WorkspaceSymbolRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       WorkspaceSymbolRequest2.type = new messages_1.ProtocolRequestType(WorkspaceSymbolRequest2.method);
-    })(WorkspaceSymbolRequest = exports2.WorkspaceSymbolRequest || (exports2.WorkspaceSymbolRequest = {}));
+    })(WorkspaceSymbolRequest || (exports2.WorkspaceSymbolRequest = WorkspaceSymbolRequest = {}));
+    var WorkspaceSymbolResolveRequest;
+    (function(WorkspaceSymbolResolveRequest2) {
+      WorkspaceSymbolResolveRequest2.method = "workspaceSymbol/resolve";
+      WorkspaceSymbolResolveRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
+      WorkspaceSymbolResolveRequest2.type = new messages_1.ProtocolRequestType(WorkspaceSymbolResolveRequest2.method);
+    })(WorkspaceSymbolResolveRequest || (exports2.WorkspaceSymbolResolveRequest = WorkspaceSymbolResolveRequest = {}));
     var CodeLensRequest;
     (function(CodeLensRequest2) {
       CodeLensRequest2.method = "textDocument/codeLens";
+      CodeLensRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       CodeLensRequest2.type = new messages_1.ProtocolRequestType(CodeLensRequest2.method);
-    })(CodeLensRequest = exports2.CodeLensRequest || (exports2.CodeLensRequest = {}));
+    })(CodeLensRequest || (exports2.CodeLensRequest = CodeLensRequest = {}));
     var CodeLensResolveRequest;
     (function(CodeLensResolveRequest2) {
       CodeLensResolveRequest2.method = "codeLens/resolve";
+      CodeLensResolveRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       CodeLensResolveRequest2.type = new messages_1.ProtocolRequestType(CodeLensResolveRequest2.method);
-    })(CodeLensResolveRequest = exports2.CodeLensResolveRequest || (exports2.CodeLensResolveRequest = {}));
+    })(CodeLensResolveRequest || (exports2.CodeLensResolveRequest = CodeLensResolveRequest = {}));
     var CodeLensRefreshRequest;
     (function(CodeLensRefreshRequest2) {
       CodeLensRefreshRequest2.method = `workspace/codeLens/refresh`;
+      CodeLensRefreshRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
       CodeLensRefreshRequest2.type = new messages_1.ProtocolRequestType0(CodeLensRefreshRequest2.method);
-    })(CodeLensRefreshRequest = exports2.CodeLensRefreshRequest || (exports2.CodeLensRefreshRequest = {}));
+    })(CodeLensRefreshRequest || (exports2.CodeLensRefreshRequest = CodeLensRefreshRequest = {}));
     var DocumentLinkRequest;
     (function(DocumentLinkRequest2) {
       DocumentLinkRequest2.method = "textDocument/documentLink";
+      DocumentLinkRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       DocumentLinkRequest2.type = new messages_1.ProtocolRequestType(DocumentLinkRequest2.method);
-    })(DocumentLinkRequest = exports2.DocumentLinkRequest || (exports2.DocumentLinkRequest = {}));
+    })(DocumentLinkRequest || (exports2.DocumentLinkRequest = DocumentLinkRequest = {}));
     var DocumentLinkResolveRequest;
     (function(DocumentLinkResolveRequest2) {
       DocumentLinkResolveRequest2.method = "documentLink/resolve";
+      DocumentLinkResolveRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       DocumentLinkResolveRequest2.type = new messages_1.ProtocolRequestType(DocumentLinkResolveRequest2.method);
-    })(DocumentLinkResolveRequest = exports2.DocumentLinkResolveRequest || (exports2.DocumentLinkResolveRequest = {}));
+    })(DocumentLinkResolveRequest || (exports2.DocumentLinkResolveRequest = DocumentLinkResolveRequest = {}));
     var DocumentFormattingRequest;
     (function(DocumentFormattingRequest2) {
       DocumentFormattingRequest2.method = "textDocument/formatting";
+      DocumentFormattingRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       DocumentFormattingRequest2.type = new messages_1.ProtocolRequestType(DocumentFormattingRequest2.method);
-    })(DocumentFormattingRequest = exports2.DocumentFormattingRequest || (exports2.DocumentFormattingRequest = {}));
+    })(DocumentFormattingRequest || (exports2.DocumentFormattingRequest = DocumentFormattingRequest = {}));
     var DocumentRangeFormattingRequest;
     (function(DocumentRangeFormattingRequest2) {
       DocumentRangeFormattingRequest2.method = "textDocument/rangeFormatting";
+      DocumentRangeFormattingRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       DocumentRangeFormattingRequest2.type = new messages_1.ProtocolRequestType(DocumentRangeFormattingRequest2.method);
-    })(DocumentRangeFormattingRequest = exports2.DocumentRangeFormattingRequest || (exports2.DocumentRangeFormattingRequest = {}));
+    })(DocumentRangeFormattingRequest || (exports2.DocumentRangeFormattingRequest = DocumentRangeFormattingRequest = {}));
+    var DocumentRangesFormattingRequest;
+    (function(DocumentRangesFormattingRequest2) {
+      DocumentRangesFormattingRequest2.method = "textDocument/rangesFormatting";
+      DocumentRangesFormattingRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
+      DocumentRangesFormattingRequest2.type = new messages_1.ProtocolRequestType(DocumentRangesFormattingRequest2.method);
+    })(DocumentRangesFormattingRequest || (exports2.DocumentRangesFormattingRequest = DocumentRangesFormattingRequest = {}));
     var DocumentOnTypeFormattingRequest;
     (function(DocumentOnTypeFormattingRequest2) {
       DocumentOnTypeFormattingRequest2.method = "textDocument/onTypeFormatting";
+      DocumentOnTypeFormattingRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       DocumentOnTypeFormattingRequest2.type = new messages_1.ProtocolRequestType(DocumentOnTypeFormattingRequest2.method);
-    })(DocumentOnTypeFormattingRequest = exports2.DocumentOnTypeFormattingRequest || (exports2.DocumentOnTypeFormattingRequest = {}));
+    })(DocumentOnTypeFormattingRequest || (exports2.DocumentOnTypeFormattingRequest = DocumentOnTypeFormattingRequest = {}));
     var PrepareSupportDefaultBehavior;
     (function(PrepareSupportDefaultBehavior2) {
       PrepareSupportDefaultBehavior2.Identifier = 1;
-    })(PrepareSupportDefaultBehavior = exports2.PrepareSupportDefaultBehavior || (exports2.PrepareSupportDefaultBehavior = {}));
+    })(PrepareSupportDefaultBehavior || (exports2.PrepareSupportDefaultBehavior = PrepareSupportDefaultBehavior = {}));
     var RenameRequest;
     (function(RenameRequest2) {
       RenameRequest2.method = "textDocument/rename";
+      RenameRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       RenameRequest2.type = new messages_1.ProtocolRequestType(RenameRequest2.method);
-    })(RenameRequest = exports2.RenameRequest || (exports2.RenameRequest = {}));
+    })(RenameRequest || (exports2.RenameRequest = RenameRequest = {}));
     var PrepareRenameRequest;
     (function(PrepareRenameRequest2) {
       PrepareRenameRequest2.method = "textDocument/prepareRename";
+      PrepareRenameRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
       PrepareRenameRequest2.type = new messages_1.ProtocolRequestType(PrepareRenameRequest2.method);
-    })(PrepareRenameRequest = exports2.PrepareRenameRequest || (exports2.PrepareRenameRequest = {}));
+    })(PrepareRenameRequest || (exports2.PrepareRenameRequest = PrepareRenameRequest = {}));
     var ExecuteCommandRequest;
     (function(ExecuteCommandRequest2) {
-      ExecuteCommandRequest2.type = new messages_1.ProtocolRequestType("workspace/executeCommand");
-    })(ExecuteCommandRequest = exports2.ExecuteCommandRequest || (exports2.ExecuteCommandRequest = {}));
+      ExecuteCommandRequest2.method = "workspace/executeCommand";
+      ExecuteCommandRequest2.messageDirection = messages_1.MessageDirection.clientToServer;
+      ExecuteCommandRequest2.type = new messages_1.ProtocolRequestType(ExecuteCommandRequest2.method);
+    })(ExecuteCommandRequest || (exports2.ExecuteCommandRequest = ExecuteCommandRequest = {}));
     var ApplyWorkspaceEditRequest;
     (function(ApplyWorkspaceEditRequest2) {
+      ApplyWorkspaceEditRequest2.method = "workspace/applyEdit";
+      ApplyWorkspaceEditRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
       ApplyWorkspaceEditRequest2.type = new messages_1.ProtocolRequestType("workspace/applyEdit");
-    })(ApplyWorkspaceEditRequest = exports2.ApplyWorkspaceEditRequest || (exports2.ApplyWorkspaceEditRequest = {}));
+    })(ApplyWorkspaceEditRequest || (exports2.ApplyWorkspaceEditRequest = ApplyWorkspaceEditRequest = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/connection.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/connection.js
 var require_connection2 = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/connection.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/connection.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.createProtocolConnection = void 0;
@@ -6228,22 +7233,26 @@ var require_connection2 = __commonJS({
       if (vscode_jsonrpc_1.ConnectionStrategy.is(options2)) {
         options2 = { connectionStrategy: options2 };
       }
-      return vscode_jsonrpc_1.createMessageConnection(input, output, logger, options2);
+      return (0, vscode_jsonrpc_1.createMessageConnection)(input, output, logger, options2);
     }
     exports2.createProtocolConnection = createProtocolConnection;
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/api.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/api.js
 var require_api2 = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/common/api.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/common/api.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
@@ -6257,7 +7266,7 @@ var require_api2 = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.LSPErrorCodes = exports2.createProtocolConnection = void 0;
     __exportStar(require_main(), exports2);
-    __exportStar((init_main(), __toCommonJS(main_exports)), exports2);
+    __exportStar(require_main2(), exports2);
     __exportStar(require_messages2(), exports2);
     __exportStar(require_protocol(), exports2);
     var connection_1 = require_connection2();
@@ -6267,23 +7276,29 @@ var require_api2 = __commonJS({
     var LSPErrorCodes;
     (function(LSPErrorCodes2) {
       LSPErrorCodes2.lspReservedErrorRangeStart = -32899;
+      LSPErrorCodes2.RequestFailed = -32803;
+      LSPErrorCodes2.ServerCancelled = -32802;
       LSPErrorCodes2.ContentModified = -32801;
       LSPErrorCodes2.RequestCancelled = -32800;
       LSPErrorCodes2.lspReservedErrorRangeEnd = -32800;
-    })(LSPErrorCodes = exports2.LSPErrorCodes || (exports2.LSPErrorCodes = {}));
+    })(LSPErrorCodes || (exports2.LSPErrorCodes = LSPErrorCodes = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/node/main.js
-var require_main2 = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/lib/node/main.js"(exports2) {
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/node/main.js
+var require_main3 = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/lib/node/main.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
@@ -6300,15 +7315,15 @@ var require_main2 = __commonJS({
     __exportStar(require_node(), exports2);
     __exportStar(require_api2(), exports2);
     function createProtocolConnection(input, output, logger, options2) {
-      return node_1.createMessageConnection(input, output, logger, options2);
+      return (0, node_1.createMessageConnection)(input, output, logger, options2);
     }
     exports2.createProtocolConnection = createProtocolConnection;
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/utils/uuid.js
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/utils/uuid.js
 var require_uuid = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/utils/uuid.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/utils/uuid.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.generateUuid = exports2.parse = exports2.isUUID = exports2.v4 = exports2.empty = void 0;
@@ -6324,6 +7339,12 @@ var require_uuid = __commonJS({
       }
     };
     var V4UUID = class _V4UUID extends ValueUUID {
+      static _oneOf(array) {
+        return array[Math.floor(array.length * Math.random())];
+      }
+      static _randomHex() {
+        return _V4UUID._oneOf(_V4UUID._chars);
+      }
       constructor() {
         super([
           _V4UUID._randomHex(),
@@ -6364,12 +7385,6 @@ var require_uuid = __commonJS({
           _V4UUID._randomHex()
         ].join(""));
       }
-      static _oneOf(array) {
-        return array[Math.floor(array.length * Math.random())];
-      }
-      static _randomHex() {
-        return _V4UUID._oneOf(_V4UUID._chars);
-      }
     };
     V4UUID._chars = ["0", "1", "2", "3", "4", "5", "6", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
     V4UUID._timeHighBits = ["8", "9", "a", "b"];
@@ -6397,13 +7412,13 @@ var require_uuid = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/progress.js
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/progress.js
 var require_progress = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/progress.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/progress.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.attachPartialResult = exports2.ProgressFeature = exports2.attachWorkDone = void 0;
-    var vscode_languageserver_protocol_1 = require_main2();
+    var vscode_languageserver_protocol_1 = require_main3();
     var uuid_1 = require_uuid();
     var WorkDoneProgressReporterImpl = class _WorkDoneProgressReporterImpl {
       constructor(_connection, _token) {
@@ -6499,7 +7514,8 @@ var require_progress = __commonJS({
         }
         initialize(capabilities) {
           var _a3;
-          if (((_a3 = capabilities === null || capabilities === void 0 ? void 0 : capabilities.window) === null || _a3 === void 0 ? void 0 : _a3.workDoneProgress) === true) {
+          super.initialize(capabilities);
+          if (((_a3 = capabilities == null ? void 0 : capabilities.window) == null ? void 0 : _a3.workDoneProgress) === true) {
             this._progressSupported = true;
             this.connection.onNotification(vscode_languageserver_protocol_1.WorkDoneProgressCancelNotification.type, (params) => {
               let progress = WorkDoneProgressReporterImpl.Instances.get(params.token);
@@ -6518,7 +7534,7 @@ var require_progress = __commonJS({
         }
         createWorkDoneProgress() {
           if (this._progressSupported) {
-            const token = uuid_1.generateUuid();
+            const token = (0, uuid_1.generateUuid)();
             return this.connection.sendRequest(vscode_languageserver_protocol_1.WorkDoneProgressCreateRequest.type, { token }).then(() => {
               const result = new WorkDoneProgressServerReporterImpl(this.connection, token);
               return result;
@@ -6555,20 +7571,20 @@ var require_progress = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/configuration.js
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/configuration.js
 var require_configuration = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/configuration.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/configuration.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ConfigurationFeature = void 0;
-    var vscode_languageserver_protocol_1 = require_main2();
-    var Is3 = require_is();
+    var vscode_languageserver_protocol_1 = require_main3();
+    var Is2 = require_is();
     var ConfigurationFeature = (Base) => {
       return class extends Base {
         getConfiguration(arg) {
           if (!arg) {
             return this._getConfiguration({});
-          } else if (Is3.string(arg)) {
+          } else if (Is2.string(arg)) {
             return this._getConfiguration({ section: arg });
           } else {
             return this._getConfiguration(arg);
@@ -6579,7 +7595,11 @@ var require_configuration = __commonJS({
             items: Array.isArray(arg) ? arg : [arg]
           };
           return this.connection.sendRequest(vscode_languageserver_protocol_1.ConfigurationRequest.type, params).then((result) => {
-            return Array.isArray(arg) ? result : result[0];
+            if (Array.isArray(result)) {
+              return Array.isArray(arg) ? result : result[0];
+            } else {
+              return Array.isArray(arg) ? [] : null;
+            }
           });
         }
       };
@@ -6588,16 +7608,21 @@ var require_configuration = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/workspaceFolders.js
-var require_workspaceFolders = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/workspaceFolders.js"(exports2) {
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/workspaceFolder.js
+var require_workspaceFolder = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/workspaceFolder.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.WorkspaceFoldersFeature = void 0;
-    var vscode_languageserver_protocol_1 = require_main2();
+    var vscode_languageserver_protocol_1 = require_main3();
     var WorkspaceFoldersFeature = (Base) => {
       return class extends Base {
+        constructor() {
+          super();
+          this._notificationIsAutoRegistered = false;
+        }
         initialize(capabilities) {
+          super.initialize(capabilities);
           let workspaceCapabilities = capabilities.workspace;
           if (workspaceCapabilities && workspaceCapabilities.workspaceFolders) {
             this._onDidChangeWorkspaceFolders = new vscode_languageserver_protocol_1.Emitter();
@@ -6606,6 +7631,12 @@ var require_workspaceFolders = __commonJS({
             });
           }
         }
+        fillServerCapabilities(capabilities) {
+          var _a3, _b;
+          super.fillServerCapabilities(capabilities);
+          const changeNotifications = (_b = (_a3 = capabilities.workspace) == null ? void 0 : _a3.workspaceFolders) == null ? void 0 : _b.changeNotifications;
+          this._notificationIsAutoRegistered = changeNotifications === true || typeof changeNotifications === "string";
+        }
         getWorkspaceFolders() {
           return this.connection.sendRequest(vscode_languageserver_protocol_1.WorkspaceFoldersRequest.type);
         }
@@ -6613,7 +7644,7 @@ var require_workspaceFolders = __commonJS({
           if (!this._onDidChangeWorkspaceFolders) {
             throw new Error("Client doesn't support sending workspace folder change events.");
           }
-          if (!this._unregistration) {
+          if (!this._notificationIsAutoRegistered && !this._unregistration) {
             this._unregistration = this.connection.client.register(vscode_languageserver_protocol_1.DidChangeWorkspaceFoldersNotification.type);
           }
           return this._onDidChangeWorkspaceFolders.event;
@@ -6624,31 +7655,31 @@ var require_workspaceFolders = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/callHierarchy.js
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/callHierarchy.js
 var require_callHierarchy = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/callHierarchy.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/callHierarchy.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.CallHierarchyFeature = void 0;
-    var vscode_languageserver_protocol_1 = require_main2();
+    var vscode_languageserver_protocol_1 = require_main3();
     var CallHierarchyFeature = (Base) => {
       return class extends Base {
         get callHierarchy() {
           return {
             onPrepare: (handler) => {
-              this.connection.onRequest(vscode_languageserver_protocol_1.CallHierarchyPrepareRequest.type, (params, cancel) => {
+              return this.connection.onRequest(vscode_languageserver_protocol_1.CallHierarchyPrepareRequest.type, (params, cancel) => {
                 return handler(params, cancel, this.attachWorkDoneProgress(params), void 0);
               });
             },
             onIncomingCalls: (handler) => {
               const type = vscode_languageserver_protocol_1.CallHierarchyIncomingCallsRequest.type;
-              this.connection.onRequest(type, (params, cancel) => {
+              return this.connection.onRequest(type, (params, cancel) => {
                 return handler(params, cancel, this.attachWorkDoneProgress(params), this.attachPartialResultProgress(type, params));
               });
             },
             onOutgoingCalls: (handler) => {
               const type = vscode_languageserver_protocol_1.CallHierarchyOutgoingCallsRequest.type;
-              this.connection.onRequest(type, (params, cancel) => {
+              return this.connection.onRequest(type, (params, cancel) => {
                 return handler(params, cancel, this.attachWorkDoneProgress(params), this.attachPartialResultProgress(type, params));
               });
             }
@@ -6660,32 +7691,35 @@ var require_callHierarchy = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/semanticTokens.js
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/semanticTokens.js
 var require_semanticTokens = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/semanticTokens.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/semanticTokens.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.SemanticTokensBuilder = exports2.SemanticTokensFeature = void 0;
-    var vscode_languageserver_protocol_1 = require_main2();
+    exports2.SemanticTokensBuilder = exports2.SemanticTokensDiff = exports2.SemanticTokensFeature = void 0;
+    var vscode_languageserver_protocol_1 = require_main3();
     var SemanticTokensFeature = (Base) => {
       return class extends Base {
         get semanticTokens() {
           return {
+            refresh: () => {
+              return this.connection.sendRequest(vscode_languageserver_protocol_1.SemanticTokensRefreshRequest.type);
+            },
             on: (handler) => {
               const type = vscode_languageserver_protocol_1.SemanticTokensRequest.type;
-              this.connection.onRequest(type, (params, cancel) => {
+              return this.connection.onRequest(type, (params, cancel) => {
                 return handler(params, cancel, this.attachWorkDoneProgress(params), this.attachPartialResultProgress(type, params));
               });
             },
             onDelta: (handler) => {
               const type = vscode_languageserver_protocol_1.SemanticTokensDeltaRequest.type;
-              this.connection.onRequest(type, (params, cancel) => {
+              return this.connection.onRequest(type, (params, cancel) => {
                 return handler(params, cancel, this.attachWorkDoneProgress(params), this.attachPartialResultProgress(type, params));
               });
             },
             onRange: (handler) => {
               const type = vscode_languageserver_protocol_1.SemanticTokensRangeRequest.type;
-              this.connection.onRequest(type, (params, cancel) => {
+              return this.connection.onRequest(type, (params, cancel) => {
                 return handler(params, cancel, this.attachWorkDoneProgress(params), this.attachPartialResultProgress(type, params));
               });
             }
@@ -6694,6 +7728,54 @@ var require_semanticTokens = __commonJS({
       };
     };
     exports2.SemanticTokensFeature = SemanticTokensFeature;
+    var SemanticTokensDiff = class {
+      constructor(originalSequence, modifiedSequence) {
+        this.originalSequence = originalSequence;
+        this.modifiedSequence = modifiedSequence;
+      }
+      computeDiff() {
+        const originalLength = this.originalSequence.length;
+        const modifiedLength = this.modifiedSequence.length;
+        let startIndex = 0;
+        while (startIndex < modifiedLength && startIndex < originalLength && this.originalSequence[startIndex] === this.modifiedSequence[startIndex]) {
+          startIndex++;
+        }
+        if (startIndex < modifiedLength && startIndex < originalLength) {
+          let originalEndIndex = originalLength - 1;
+          let modifiedEndIndex = modifiedLength - 1;
+          while (originalEndIndex >= startIndex && modifiedEndIndex >= startIndex && this.originalSequence[originalEndIndex] === this.modifiedSequence[modifiedEndIndex]) {
+            originalEndIndex--;
+            modifiedEndIndex--;
+          }
+          if (originalEndIndex < startIndex || modifiedEndIndex < startIndex) {
+            originalEndIndex++;
+            modifiedEndIndex++;
+          }
+          const deleteCount = originalEndIndex - startIndex + 1;
+          const newData = this.modifiedSequence.slice(startIndex, modifiedEndIndex + 1);
+          if (newData.length === 1 && newData[0] === this.originalSequence[originalEndIndex]) {
+            return [
+              { start: startIndex, deleteCount: deleteCount - 1 }
+            ];
+          } else {
+            return [
+              { start: startIndex, deleteCount, data: newData }
+            ];
+          }
+        } else if (startIndex < modifiedLength) {
+          return [
+            { start: startIndex, deleteCount: 0, data: this.modifiedSequence.slice(startIndex) }
+          ];
+        } else if (startIndex < originalLength) {
+          return [
+            { start: startIndex, deleteCount: originalLength - startIndex }
+          ];
+        } else {
+          return [];
+        }
+      }
+    };
+    exports2.SemanticTokensDiff = SemanticTokensDiff;
     var SemanticTokensBuilder = class {
       constructor() {
         this._prevData = void 0;
@@ -6744,36 +7826,10 @@ var require_semanticTokens = __commonJS({
       }
       buildEdits() {
         if (this._prevData !== void 0) {
-          const prevDataLength = this._prevData.length;
-          const dataLength = this._data.length;
-          let startIndex = 0;
-          while (startIndex < dataLength && startIndex < prevDataLength && this._prevData[startIndex] === this._data[startIndex]) {
-            startIndex++;
-          }
-          if (startIndex < dataLength && startIndex < prevDataLength) {
-            let endIndex = 0;
-            while (endIndex < dataLength && endIndex < prevDataLength && this._prevData[prevDataLength - 1 - endIndex] === this._data[dataLength - 1 - endIndex]) {
-              endIndex++;
-            }
-            const newData = this._data.slice(startIndex, dataLength - endIndex);
-            const result = {
-              resultId: this.id,
-              edits: [
-                { start: startIndex, deleteCount: prevDataLength - endIndex - startIndex, data: newData }
-              ]
-            };
-            return result;
-          } else if (startIndex < dataLength) {
-            return { resultId: this.id, edits: [
-              { start: startIndex, deleteCount: 0, data: this._data.slice(startIndex) }
-            ] };
-          } else if (startIndex < prevDataLength) {
-            return { resultId: this.id, edits: [
-              { start: startIndex, deleteCount: prevDataLength - startIndex }
-            ] };
-          } else {
-            return { resultId: this.id, edits: [] };
-          }
+          return {
+            resultId: this.id,
+            edits: new SemanticTokensDiff(this._prevData, this._data).computeDiff()
+          };
         } else {
           return this.build();
         }
@@ -6783,13 +7839,13 @@ var require_semanticTokens = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/showDocument.js
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/showDocument.js
 var require_showDocument = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/showDocument.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/showDocument.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ShowDocumentFeature = void 0;
-    var vscode_languageserver_protocol_1 = require_main2();
+    var vscode_languageserver_protocol_1 = require_main3();
     var ShowDocumentFeature = (Base) => {
       return class extends Base {
         showDocument(params) {
@@ -6801,27 +7857,27 @@ var require_showDocument = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/fileOperations.js
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/fileOperations.js
 var require_fileOperations = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/fileOperations.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/fileOperations.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.FileOperationsFeature = void 0;
-    var vscode_languageserver_protocol_1 = require_main2();
+    var vscode_languageserver_protocol_1 = require_main3();
     var FileOperationsFeature = (Base) => {
       return class extends Base {
         onDidCreateFiles(handler) {
-          this.connection.onNotification(vscode_languageserver_protocol_1.DidCreateFilesNotification.type, (params) => {
+          return this.connection.onNotification(vscode_languageserver_protocol_1.DidCreateFilesNotification.type, (params) => {
             handler(params);
           });
         }
         onDidRenameFiles(handler) {
-          this.connection.onNotification(vscode_languageserver_protocol_1.DidRenameFilesNotification.type, (params) => {
+          return this.connection.onNotification(vscode_languageserver_protocol_1.DidRenameFilesNotification.type, (params) => {
             handler(params);
           });
         }
         onDidDeleteFiles(handler) {
-          this.connection.onNotification(vscode_languageserver_protocol_1.DidDeleteFilesNotification.type, (params) => {
+          return this.connection.onNotification(vscode_languageserver_protocol_1.DidDeleteFilesNotification.type, (params) => {
             handler(params);
           });
         }
@@ -6846,17 +7902,17 @@ var require_fileOperations = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/linkedEditingRange.js
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/linkedEditingRange.js
 var require_linkedEditingRange = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/linkedEditingRange.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/linkedEditingRange.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.LinkedEditingRangeFeature = void 0;
-    var vscode_languageserver_protocol_1 = require_main2();
+    var vscode_languageserver_protocol_1 = require_main3();
     var LinkedEditingRangeFeature = (Base) => {
       return class extends Base {
         onLinkedEditingRange(handler) {
-          this.connection.onRequest(vscode_languageserver_protocol_1.LinkedEditingRangeRequest.type, (params, cancel) => {
+          return this.connection.onRequest(vscode_languageserver_protocol_1.LinkedEditingRangeRequest.type, (params, cancel) => {
             return handler(params, cancel, this.attachWorkDoneProgress(params), void 0);
           });
         }
@@ -6866,20 +7922,31 @@ var require_linkedEditingRange = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/moniker.js
-var require_moniker = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/moniker.js"(exports2) {
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/typeHierarchy.js
+var require_typeHierarchy = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/typeHierarchy.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.MonikerFeature = void 0;
-    var vscode_languageserver_protocol_1 = require_main2();
-    var MonikerFeature = (Base) => {
+    exports2.TypeHierarchyFeature = void 0;
+    var vscode_languageserver_protocol_1 = require_main3();
+    var TypeHierarchyFeature = (Base) => {
       return class extends Base {
-        get moniker() {
+        get typeHierarchy() {
           return {
-            on: (handler) => {
-              const type = vscode_languageserver_protocol_1.MonikerRequest.type;
-              this.connection.onRequest(type, (params, cancel) => {
+            onPrepare: (handler) => {
+              return this.connection.onRequest(vscode_languageserver_protocol_1.TypeHierarchyPrepareRequest.type, (params, cancel) => {
+                return handler(params, cancel, this.attachWorkDoneProgress(params), void 0);
+              });
+            },
+            onSupertypes: (handler) => {
+              const type = vscode_languageserver_protocol_1.TypeHierarchySupertypesRequest.type;
+              return this.connection.onRequest(type, (params, cancel) => {
+                return handler(params, cancel, this.attachWorkDoneProgress(params), this.attachPartialResultProgress(type, params));
+              });
+            },
+            onSubtypes: (handler) => {
+              const type = vscode_languageserver_protocol_1.TypeHierarchySubtypesRequest.type;
+              return this.connection.onRequest(type, (params, cancel) => {
                 return handler(params, cancel, this.attachWorkDoneProgress(params), this.attachPartialResultProgress(type, params));
               });
             }
@@ -6887,41 +7954,143 @@ var require_moniker = __commonJS({
         }
       };
     };
-    exports2.MonikerFeature = MonikerFeature;
+    exports2.TypeHierarchyFeature = TypeHierarchyFeature;
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/server.js
-var require_server = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/server.js"(exports2) {
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/inlineValue.js
+var require_inlineValue = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/inlineValue.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.createConnection = exports2.combineFeatures = exports2.combineLanguagesFeatures = exports2.combineWorkspaceFeatures = exports2.combineWindowFeatures = exports2.combineClientFeatures = exports2.combineTracerFeatures = exports2.combineTelemetryFeatures = exports2.combineConsoleFeatures = exports2._LanguagesImpl = exports2.BulkUnregistration = exports2.BulkRegistration = exports2.ErrorMessageTracker = exports2.TextDocuments = void 0;
-    var vscode_languageserver_protocol_1 = require_main2();
-    var Is3 = require_is();
-    var UUID = require_uuid();
-    var progress_1 = require_progress();
-    var configuration_1 = require_configuration();
-    var workspaceFolders_1 = require_workspaceFolders();
-    var callHierarchy_1 = require_callHierarchy();
-    var semanticTokens_1 = require_semanticTokens();
-    var showDocument_1 = require_showDocument();
-    var fileOperations_1 = require_fileOperations();
-    var linkedEditingRange_1 = require_linkedEditingRange();
-    var moniker_1 = require_moniker();
-    function null2Undefined(value) {
-      if (value === null) {
-        return void 0;
-      }
-      return value;
-    }
+    exports2.InlineValueFeature = void 0;
+    var vscode_languageserver_protocol_1 = require_main3();
+    var InlineValueFeature = (Base) => {
+      return class extends Base {
+        get inlineValue() {
+          return {
+            refresh: () => {
+              return this.connection.sendRequest(vscode_languageserver_protocol_1.InlineValueRefreshRequest.type);
+            },
+            on: (handler) => {
+              return this.connection.onRequest(vscode_languageserver_protocol_1.InlineValueRequest.type, (params, cancel) => {
+                return handler(params, cancel, this.attachWorkDoneProgress(params));
+              });
+            }
+          };
+        }
+      };
+    };
+    exports2.InlineValueFeature = InlineValueFeature;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/foldingRange.js
+var require_foldingRange = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/foldingRange.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.FoldingRangeFeature = void 0;
+    var vscode_languageserver_protocol_1 = require_main3();
+    var FoldingRangeFeature = (Base) => {
+      return class extends Base {
+        get foldingRange() {
+          return {
+            refresh: () => {
+              return this.connection.sendRequest(vscode_languageserver_protocol_1.FoldingRangeRefreshRequest.type);
+            },
+            on: (handler) => {
+              const type = vscode_languageserver_protocol_1.FoldingRangeRequest.type;
+              return this.connection.onRequest(type, (params, cancel) => {
+                return handler(params, cancel, this.attachWorkDoneProgress(params), this.attachPartialResultProgress(type, params));
+              });
+            }
+          };
+        }
+      };
+    };
+    exports2.FoldingRangeFeature = FoldingRangeFeature;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/inlayHint.js
+var require_inlayHint = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/inlayHint.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.InlayHintFeature = void 0;
+    var vscode_languageserver_protocol_1 = require_main3();
+    var InlayHintFeature = (Base) => {
+      return class extends Base {
+        get inlayHint() {
+          return {
+            refresh: () => {
+              return this.connection.sendRequest(vscode_languageserver_protocol_1.InlayHintRefreshRequest.type);
+            },
+            on: (handler) => {
+              return this.connection.onRequest(vscode_languageserver_protocol_1.InlayHintRequest.type, (params, cancel) => {
+                return handler(params, cancel, this.attachWorkDoneProgress(params));
+              });
+            },
+            resolve: (handler) => {
+              return this.connection.onRequest(vscode_languageserver_protocol_1.InlayHintResolveRequest.type, (params, cancel) => {
+                return handler(params, cancel);
+              });
+            }
+          };
+        }
+      };
+    };
+    exports2.InlayHintFeature = InlayHintFeature;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/diagnostic.js
+var require_diagnostic = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/diagnostic.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.DiagnosticFeature = void 0;
+    var vscode_languageserver_protocol_1 = require_main3();
+    var DiagnosticFeature = (Base) => {
+      return class extends Base {
+        get diagnostics() {
+          return {
+            refresh: () => {
+              return this.connection.sendRequest(vscode_languageserver_protocol_1.DiagnosticRefreshRequest.type);
+            },
+            on: (handler) => {
+              return this.connection.onRequest(vscode_languageserver_protocol_1.DocumentDiagnosticRequest.type, (params, cancel) => {
+                return handler(params, cancel, this.attachWorkDoneProgress(params), this.attachPartialResultProgress(vscode_languageserver_protocol_1.DocumentDiagnosticRequest.partialResult, params));
+              });
+            },
+            onWorkspace: (handler) => {
+              return this.connection.onRequest(vscode_languageserver_protocol_1.WorkspaceDiagnosticRequest.type, (params, cancel) => {
+                return handler(params, cancel, this.attachWorkDoneProgress(params), this.attachPartialResultProgress(vscode_languageserver_protocol_1.WorkspaceDiagnosticRequest.partialResult, params));
+              });
+            }
+          };
+        }
+      };
+    };
+    exports2.DiagnosticFeature = DiagnosticFeature;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/textDocuments.js
+var require_textDocuments = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/textDocuments.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.TextDocuments = void 0;
+    var vscode_languageserver_protocol_1 = require_main3();
     var TextDocuments = class {
       /**
        * Create a new text document manager.
        */
       constructor(configuration) {
-        this._documents = /* @__PURE__ */ Object.create(null);
         this._configuration = configuration;
+        this._syncedDocuments = /* @__PURE__ */ new Map();
         this._onDidChangeContent = new vscode_languageserver_protocol_1.Emitter();
         this._onDidOpen = new vscode_languageserver_protocol_1.Emitter();
         this._onDidClose = new vscode_languageserver_protocol_1.Emitter();
@@ -6930,17 +8099,17 @@ var require_server = __commonJS({
       }
       /**
        * An event that fires when a text document managed by this manager
-       * has been opened or the content changes.
-       */
-      get onDidChangeContent() {
-        return this._onDidChangeContent.event;
-      }
-      /**
-       * An event that fires when a text document managed by this manager
        * has been opened.
        */
       get onDidOpen() {
         return this._onDidOpen.event;
+      }
+      /**
+       * An event that fires when a text document managed by this manager
+       * has been opened or the content changes.
+       */
+      get onDidChangeContent() {
+        return this._onDidChangeContent.event;
       }
       /**
        * An event that fires when a text document managed by this manager
@@ -6978,7 +8147,7 @@ var require_server = __commonJS({
        * @return the text document or `undefined`.
        */
       get(uri) {
-        return this._documents[uri];
+        return this._syncedDocuments.get(uri);
       }
       /**
        * Returns all text documents managed by this instance.
@@ -6986,7 +8155,7 @@ var require_server = __commonJS({
        * @return all text documents.
        */
       all() {
-        return Object.keys(this._documents).map((key) => this._documents[key]);
+        return Array.from(this._syncedDocuments.values());
       }
       /**
        * Returns the URIs of all text documents managed by this instance.
@@ -6994,7 +8163,7 @@ var require_server = __commonJS({
        * @return the URI's of all text documents.
        */
       keys() {
-        return Object.keys(this._documents);
+        return Array.from(this._syncedDocuments.keys());
       }
       /**
        * Listens for `low level` notification on the given connection to
@@ -7010,60 +8179,383 @@ var require_server = __commonJS({
        * @param connection The connection to listen on.
        */
       listen(connection) {
-        connection.__textDocumentSync = vscode_languageserver_protocol_1.TextDocumentSyncKind.Full;
-        connection.onDidOpenTextDocument((event) => {
-          let td = event.textDocument;
-          let document = this._configuration.create(td.uri, td.languageId, td.version, td.text);
-          this._documents[td.uri] = document;
-          let toFire = Object.freeze({ document });
+        connection.__textDocumentSync = vscode_languageserver_protocol_1.TextDocumentSyncKind.Incremental;
+        const disposables = [];
+        disposables.push(connection.onDidOpenTextDocument((event) => {
+          const td = event.textDocument;
+          const document = this._configuration.create(td.uri, td.languageId, td.version, td.text);
+          this._syncedDocuments.set(td.uri, document);
+          const toFire = Object.freeze({ document });
           this._onDidOpen.fire(toFire);
           this._onDidChangeContent.fire(toFire);
-        });
-        connection.onDidChangeTextDocument((event) => {
-          let td = event.textDocument;
-          let changes = event.contentChanges;
+        }));
+        disposables.push(connection.onDidChangeTextDocument((event) => {
+          const td = event.textDocument;
+          const changes = event.contentChanges;
           if (changes.length === 0) {
             return;
           }
-          let document = this._documents[td.uri];
           const { version } = td;
           if (version === null || version === void 0) {
             throw new Error(`Received document change event for ${td.uri} without valid version identifier`);
           }
-          document = this._configuration.update(document, changes, version);
-          this._documents[td.uri] = document;
-          this._onDidChangeContent.fire(Object.freeze({ document }));
-        });
-        connection.onDidCloseTextDocument((event) => {
-          let document = this._documents[event.textDocument.uri];
-          if (document) {
-            delete this._documents[event.textDocument.uri];
-            this._onDidClose.fire(Object.freeze({ document }));
+          let syncedDocument = this._syncedDocuments.get(td.uri);
+          if (syncedDocument !== void 0) {
+            syncedDocument = this._configuration.update(syncedDocument, changes, version);
+            this._syncedDocuments.set(td.uri, syncedDocument);
+            this._onDidChangeContent.fire(Object.freeze({ document: syncedDocument }));
           }
-        });
-        connection.onWillSaveTextDocument((event) => {
-          let document = this._documents[event.textDocument.uri];
-          if (document) {
-            this._onWillSave.fire(Object.freeze({ document, reason: event.reason }));
+        }));
+        disposables.push(connection.onDidCloseTextDocument((event) => {
+          let syncedDocument = this._syncedDocuments.get(event.textDocument.uri);
+          if (syncedDocument !== void 0) {
+            this._syncedDocuments.delete(event.textDocument.uri);
+            this._onDidClose.fire(Object.freeze({ document: syncedDocument }));
           }
-        });
-        connection.onWillSaveTextDocumentWaitUntil((event, token) => {
-          let document = this._documents[event.textDocument.uri];
-          if (document && this._willSaveWaitUntil) {
-            return this._willSaveWaitUntil(Object.freeze({ document, reason: event.reason }), token);
+        }));
+        disposables.push(connection.onWillSaveTextDocument((event) => {
+          let syncedDocument = this._syncedDocuments.get(event.textDocument.uri);
+          if (syncedDocument !== void 0) {
+            this._onWillSave.fire(Object.freeze({ document: syncedDocument, reason: event.reason }));
+          }
+        }));
+        disposables.push(connection.onWillSaveTextDocumentWaitUntil((event, token) => {
+          let syncedDocument = this._syncedDocuments.get(event.textDocument.uri);
+          if (syncedDocument !== void 0 && this._willSaveWaitUntil) {
+            return this._willSaveWaitUntil(Object.freeze({ document: syncedDocument, reason: event.reason }), token);
           } else {
             return [];
           }
-        });
-        connection.onDidSaveTextDocument((event) => {
-          let document = this._documents[event.textDocument.uri];
-          if (document) {
-            this._onDidSave.fire(Object.freeze({ document }));
+        }));
+        disposables.push(connection.onDidSaveTextDocument((event) => {
+          let syncedDocument = this._syncedDocuments.get(event.textDocument.uri);
+          if (syncedDocument !== void 0) {
+            this._onDidSave.fire(Object.freeze({ document: syncedDocument }));
           }
+        }));
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+          disposables.forEach((disposable) => disposable.dispose());
         });
       }
     };
     exports2.TextDocuments = TextDocuments;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/notebook.js
+var require_notebook = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/notebook.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.NotebookDocuments = exports2.NotebookSyncFeature = void 0;
+    var vscode_languageserver_protocol_1 = require_main3();
+    var textDocuments_1 = require_textDocuments();
+    var NotebookSyncFeature = (Base) => {
+      return class extends Base {
+        get synchronization() {
+          return {
+            onDidOpenNotebookDocument: (handler) => {
+              return this.connection.onNotification(vscode_languageserver_protocol_1.DidOpenNotebookDocumentNotification.type, (params) => {
+                handler(params);
+              });
+            },
+            onDidChangeNotebookDocument: (handler) => {
+              return this.connection.onNotification(vscode_languageserver_protocol_1.DidChangeNotebookDocumentNotification.type, (params) => {
+                handler(params);
+              });
+            },
+            onDidSaveNotebookDocument: (handler) => {
+              return this.connection.onNotification(vscode_languageserver_protocol_1.DidSaveNotebookDocumentNotification.type, (params) => {
+                handler(params);
+              });
+            },
+            onDidCloseNotebookDocument: (handler) => {
+              return this.connection.onNotification(vscode_languageserver_protocol_1.DidCloseNotebookDocumentNotification.type, (params) => {
+                handler(params);
+              });
+            }
+          };
+        }
+      };
+    };
+    exports2.NotebookSyncFeature = NotebookSyncFeature;
+    var CellTextDocumentConnection = class _CellTextDocumentConnection {
+      onDidOpenTextDocument(handler) {
+        this.openHandler = handler;
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+          this.openHandler = void 0;
+        });
+      }
+      openTextDocument(params) {
+        this.openHandler && this.openHandler(params);
+      }
+      onDidChangeTextDocument(handler) {
+        this.changeHandler = handler;
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+          this.changeHandler = handler;
+        });
+      }
+      changeTextDocument(params) {
+        this.changeHandler && this.changeHandler(params);
+      }
+      onDidCloseTextDocument(handler) {
+        this.closeHandler = handler;
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+          this.closeHandler = void 0;
+        });
+      }
+      closeTextDocument(params) {
+        this.closeHandler && this.closeHandler(params);
+      }
+      onWillSaveTextDocument() {
+        return _CellTextDocumentConnection.NULL_DISPOSE;
+      }
+      onWillSaveTextDocumentWaitUntil() {
+        return _CellTextDocumentConnection.NULL_DISPOSE;
+      }
+      onDidSaveTextDocument() {
+        return _CellTextDocumentConnection.NULL_DISPOSE;
+      }
+    };
+    CellTextDocumentConnection.NULL_DISPOSE = Object.freeze({ dispose: () => {
+    } });
+    var NotebookDocuments = class {
+      constructor(configurationOrTextDocuments) {
+        if (configurationOrTextDocuments instanceof textDocuments_1.TextDocuments) {
+          this._cellTextDocuments = configurationOrTextDocuments;
+        } else {
+          this._cellTextDocuments = new textDocuments_1.TextDocuments(configurationOrTextDocuments);
+        }
+        this.notebookDocuments = /* @__PURE__ */ new Map();
+        this.notebookCellMap = /* @__PURE__ */ new Map();
+        this._onDidOpen = new vscode_languageserver_protocol_1.Emitter();
+        this._onDidChange = new vscode_languageserver_protocol_1.Emitter();
+        this._onDidSave = new vscode_languageserver_protocol_1.Emitter();
+        this._onDidClose = new vscode_languageserver_protocol_1.Emitter();
+      }
+      get cellTextDocuments() {
+        return this._cellTextDocuments;
+      }
+      getCellTextDocument(cell) {
+        return this._cellTextDocuments.get(cell.document);
+      }
+      getNotebookDocument(uri) {
+        return this.notebookDocuments.get(uri);
+      }
+      getNotebookCell(uri) {
+        const value = this.notebookCellMap.get(uri);
+        return value && value[0];
+      }
+      findNotebookDocumentForCell(cell) {
+        const key = typeof cell === "string" ? cell : cell.document;
+        const value = this.notebookCellMap.get(key);
+        return value && value[1];
+      }
+      get onDidOpen() {
+        return this._onDidOpen.event;
+      }
+      get onDidSave() {
+        return this._onDidSave.event;
+      }
+      get onDidChange() {
+        return this._onDidChange.event;
+      }
+      get onDidClose() {
+        return this._onDidClose.event;
+      }
+      /**
+       * Listens for `low level` notification on the given connection to
+       * update the notebook documents managed by this instance.
+       *
+       * Please note that the connection only provides handlers not an event model. Therefore
+       * listening on a connection will overwrite the following handlers on a connection:
+       * `onDidOpenNotebookDocument`, `onDidChangeNotebookDocument`, `onDidSaveNotebookDocument`,
+       *  and `onDidCloseNotebookDocument`.
+       *
+       * @param connection The connection to listen on.
+       */
+      listen(connection) {
+        const cellTextDocumentConnection = new CellTextDocumentConnection();
+        const disposables = [];
+        disposables.push(this.cellTextDocuments.listen(cellTextDocumentConnection));
+        disposables.push(connection.notebooks.synchronization.onDidOpenNotebookDocument((params) => {
+          this.notebookDocuments.set(params.notebookDocument.uri, params.notebookDocument);
+          for (const cellTextDocument of params.cellTextDocuments) {
+            cellTextDocumentConnection.openTextDocument({ textDocument: cellTextDocument });
+          }
+          this.updateCellMap(params.notebookDocument);
+          this._onDidOpen.fire(params.notebookDocument);
+        }));
+        disposables.push(connection.notebooks.synchronization.onDidChangeNotebookDocument((params) => {
+          const notebookDocument = this.notebookDocuments.get(params.notebookDocument.uri);
+          if (notebookDocument === void 0) {
+            return;
+          }
+          notebookDocument.version = params.notebookDocument.version;
+          const oldMetadata = notebookDocument.metadata;
+          let metadataChanged = false;
+          const change = params.change;
+          if (change.metadata !== void 0) {
+            metadataChanged = true;
+            notebookDocument.metadata = change.metadata;
+          }
+          const opened = [];
+          const closed = [];
+          const data = [];
+          const text = [];
+          if (change.cells !== void 0) {
+            const changedCells = change.cells;
+            if (changedCells.structure !== void 0) {
+              const array = changedCells.structure.array;
+              notebookDocument.cells.splice(array.start, array.deleteCount, ...array.cells !== void 0 ? array.cells : []);
+              if (changedCells.structure.didOpen !== void 0) {
+                for (const open of changedCells.structure.didOpen) {
+                  cellTextDocumentConnection.openTextDocument({ textDocument: open });
+                  opened.push(open.uri);
+                }
+              }
+              if (changedCells.structure.didClose) {
+                for (const close of changedCells.structure.didClose) {
+                  cellTextDocumentConnection.closeTextDocument({ textDocument: close });
+                  closed.push(close.uri);
+                }
+              }
+            }
+            if (changedCells.data !== void 0) {
+              const cellUpdates = new Map(changedCells.data.map((cell) => [cell.document, cell]));
+              for (let i = 0; i <= notebookDocument.cells.length; i++) {
+                const change2 = cellUpdates.get(notebookDocument.cells[i].document);
+                if (change2 !== void 0) {
+                  const old = notebookDocument.cells.splice(i, 1, change2);
+                  data.push({ old: old[0], new: change2 });
+                  cellUpdates.delete(change2.document);
+                  if (cellUpdates.size === 0) {
+                    break;
+                  }
+                }
+              }
+            }
+            if (changedCells.textContent !== void 0) {
+              for (const cellTextDocument of changedCells.textContent) {
+                cellTextDocumentConnection.changeTextDocument({ textDocument: cellTextDocument.document, contentChanges: cellTextDocument.changes });
+                text.push(cellTextDocument.document.uri);
+              }
+            }
+          }
+          this.updateCellMap(notebookDocument);
+          const changeEvent = { notebookDocument };
+          if (metadataChanged) {
+            changeEvent.metadata = { old: oldMetadata, new: notebookDocument.metadata };
+          }
+          const added = [];
+          for (const open of opened) {
+            added.push(this.getNotebookCell(open));
+          }
+          const removed = [];
+          for (const close of closed) {
+            removed.push(this.getNotebookCell(close));
+          }
+          const textContent = [];
+          for (const change2 of text) {
+            textContent.push(this.getNotebookCell(change2));
+          }
+          if (added.length > 0 || removed.length > 0 || data.length > 0 || textContent.length > 0) {
+            changeEvent.cells = { added, removed, changed: { data, textContent } };
+          }
+          if (changeEvent.metadata !== void 0 || changeEvent.cells !== void 0) {
+            this._onDidChange.fire(changeEvent);
+          }
+        }));
+        disposables.push(connection.notebooks.synchronization.onDidSaveNotebookDocument((params) => {
+          const notebookDocument = this.notebookDocuments.get(params.notebookDocument.uri);
+          if (notebookDocument === void 0) {
+            return;
+          }
+          this._onDidSave.fire(notebookDocument);
+        }));
+        disposables.push(connection.notebooks.synchronization.onDidCloseNotebookDocument((params) => {
+          const notebookDocument = this.notebookDocuments.get(params.notebookDocument.uri);
+          if (notebookDocument === void 0) {
+            return;
+          }
+          this._onDidClose.fire(notebookDocument);
+          for (const cellTextDocument of params.cellTextDocuments) {
+            cellTextDocumentConnection.closeTextDocument({ textDocument: cellTextDocument });
+          }
+          this.notebookDocuments.delete(params.notebookDocument.uri);
+          for (const cell of notebookDocument.cells) {
+            this.notebookCellMap.delete(cell.document);
+          }
+        }));
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+          disposables.forEach((disposable) => disposable.dispose());
+        });
+      }
+      updateCellMap(notebookDocument) {
+        for (const cell of notebookDocument.cells) {
+          this.notebookCellMap.set(cell.document, [cell, notebookDocument]);
+        }
+      }
+    };
+    exports2.NotebookDocuments = NotebookDocuments;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/moniker.js
+var require_moniker = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/moniker.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.MonikerFeature = void 0;
+    var vscode_languageserver_protocol_1 = require_main3();
+    var MonikerFeature = (Base) => {
+      return class extends Base {
+        get moniker() {
+          return {
+            on: (handler) => {
+              const type = vscode_languageserver_protocol_1.MonikerRequest.type;
+              return this.connection.onRequest(type, (params, cancel) => {
+                return handler(params, cancel, this.attachWorkDoneProgress(params), this.attachPartialResultProgress(type, params));
+              });
+            }
+          };
+        }
+      };
+    };
+    exports2.MonikerFeature = MonikerFeature;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/server.js
+var require_server = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/server.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.createConnection = exports2.combineFeatures = exports2.combineNotebooksFeatures = exports2.combineLanguagesFeatures = exports2.combineWorkspaceFeatures = exports2.combineWindowFeatures = exports2.combineClientFeatures = exports2.combineTracerFeatures = exports2.combineTelemetryFeatures = exports2.combineConsoleFeatures = exports2._NotebooksImpl = exports2._LanguagesImpl = exports2.BulkUnregistration = exports2.BulkRegistration = exports2.ErrorMessageTracker = void 0;
+    var vscode_languageserver_protocol_1 = require_main3();
+    var Is2 = require_is();
+    var UUID = require_uuid();
+    var progress_1 = require_progress();
+    var configuration_1 = require_configuration();
+    var workspaceFolder_1 = require_workspaceFolder();
+    var callHierarchy_1 = require_callHierarchy();
+    var semanticTokens_1 = require_semanticTokens();
+    var showDocument_1 = require_showDocument();
+    var fileOperations_1 = require_fileOperations();
+    var linkedEditingRange_1 = require_linkedEditingRange();
+    var typeHierarchy_1 = require_typeHierarchy();
+    var inlineValue_1 = require_inlineValue();
+    var foldingRange_1 = require_foldingRange();
+    var inlayHint_1 = require_inlayHint();
+    var diagnostic_1 = require_diagnostic();
+    var notebook_1 = require_notebook();
+    var moniker_1 = require_moniker();
+    function null2Undefined(value) {
+      if (value === null) {
+        return void 0;
+      }
+      return value;
+    }
     var ErrorMessageTracker = class {
       constructor() {
         this._messages = /* @__PURE__ */ Object.create(null);
@@ -7124,9 +8616,14 @@ var require_server = __commonJS({
       log(message) {
         this.send(vscode_languageserver_protocol_1.MessageType.Log, message);
       }
+      debug(message) {
+        this.send(vscode_languageserver_protocol_1.MessageType.Debug, message);
+      }
       send(type, message) {
         if (this._rawConnection) {
-          this._rawConnection.sendNotification(vscode_languageserver_protocol_1.LogMessageNotification.type, { type, message });
+          this._rawConnection.sendNotification(vscode_languageserver_protocol_1.LogMessageNotification.type, { type, message }).catch(() => {
+            (0, vscode_languageserver_protocol_1.RAL)().console.error(`Sending log message failed`);
+          });
         }
       }
     };
@@ -7159,21 +8656,21 @@ var require_server = __commonJS({
         return this.connection.sendRequest(vscode_languageserver_protocol_1.ShowMessageRequest.type, params).then(null2Undefined);
       }
     };
-    var RemoteWindowImpl = showDocument_1.ShowDocumentFeature(progress_1.ProgressFeature(_RemoteWindowImpl));
+    var RemoteWindowImpl = (0, showDocument_1.ShowDocumentFeature)((0, progress_1.ProgressFeature)(_RemoteWindowImpl));
     var BulkRegistration;
     (function(BulkRegistration2) {
       function create() {
         return new BulkRegistrationImpl();
       }
       BulkRegistration2.create = create;
-    })(BulkRegistration = exports2.BulkRegistration || (exports2.BulkRegistration = {}));
+    })(BulkRegistration || (exports2.BulkRegistration = BulkRegistration = {}));
     var BulkRegistrationImpl = class {
       constructor() {
         this._registrations = [];
         this._registered = /* @__PURE__ */ new Set();
       }
       add(type, registerOptions) {
-        const method = Is3.string(type) ? type : type.method;
+        const method = Is2.string(type) ? type : type.method;
         if (this._registered.has(method)) {
           throw new Error(`${method} is already added to this registration`);
         }
@@ -7197,7 +8694,7 @@ var require_server = __commonJS({
         return new BulkUnregistrationImpl(void 0, []);
       }
       BulkUnregistration2.create = create;
-    })(BulkUnregistration = exports2.BulkUnregistration || (exports2.BulkUnregistration = {}));
+    })(BulkUnregistration || (exports2.BulkUnregistration = BulkUnregistration = {}));
     var BulkUnregistrationImpl = class {
       constructor(_connection, unregistrations) {
         this._connection = _connection;
@@ -7223,12 +8720,12 @@ var require_server = __commonJS({
         let params = {
           unregisterations: unregistrations
         };
-        this._connection.sendRequest(vscode_languageserver_protocol_1.UnregistrationRequest.type, params).then(void 0, (_error) => {
+        this._connection.sendRequest(vscode_languageserver_protocol_1.UnregistrationRequest.type, params).catch(() => {
           this._connection.console.info(`Bulk unregistration failed.`);
         });
       }
       disposeSingle(arg) {
-        const method = Is3.string(arg) ? arg : arg.method;
+        const method = Is2.string(arg) ? arg : arg.method;
         const unregistration = this._unregistrations.get(method);
         if (!unregistration) {
           return false;
@@ -7268,7 +8765,7 @@ var require_server = __commonJS({
         }
       }
       registerSingle1(unregistration, type, registerOptions) {
-        const method = Is3.string(type) ? type : type.method;
+        const method = Is2.string(type) ? type : type.method;
         const id = UUID.generateUuid();
         let params = {
           registrations: [{ id, method, registerOptions: registerOptions || {} }]
@@ -7285,14 +8782,16 @@ var require_server = __commonJS({
         });
       }
       registerSingle2(type, registerOptions) {
-        const method = Is3.string(type) ? type : type.method;
+        const method = Is2.string(type) ? type : type.method;
         const id = UUID.generateUuid();
         let params = {
           registrations: [{ id, method, registerOptions: registerOptions || {} }]
         };
         return this.connection.sendRequest(vscode_languageserver_protocol_1.RegistrationRequest.type, params).then((_result) => {
           return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.unregisterSingle(id, method);
+            this.unregisterSingle(id, method).catch(() => {
+              this.connection.console.info(`Un-registering capability with id ${id} failed.`);
+            });
           });
         }, (_error) => {
           this.connection.console.info(`Registering request handler for ${method} failed.`);
@@ -7303,7 +8802,7 @@ var require_server = __commonJS({
         let params = {
           unregisterations: [{ id, method }]
         };
-        return this.connection.sendRequest(vscode_languageserver_protocol_1.UnregistrationRequest.type, params).then(void 0, (_error) => {
+        return this.connection.sendRequest(vscode_languageserver_protocol_1.UnregistrationRequest.type, params).catch(() => {
           this.connection.console.info(`Un-registering request handler for ${id} failed.`);
         });
       }
@@ -7343,7 +8842,7 @@ var require_server = __commonJS({
         return this.connection.sendRequest(vscode_languageserver_protocol_1.ApplyWorkspaceEditRequest.type, params);
       }
     };
-    var RemoteWorkspaceImpl = fileOperations_1.FileOperationsFeature(workspaceFolders_1.WorkspaceFoldersFeature(configuration_1.ConfigurationFeature(_RemoteWorkspaceImpl)));
+    var RemoteWorkspaceImpl = (0, fileOperations_1.FileOperationsFeature)((0, workspaceFolder_1.WorkspaceFoldersFeature)((0, configuration_1.ConfigurationFeature)(_RemoteWorkspaceImpl)));
     var TracerImpl = class {
       constructor() {
         this._trace = vscode_languageserver_protocol_1.Trace.Off;
@@ -7371,6 +8870,7 @@ var require_server = __commonJS({
         this.connection.sendNotification(vscode_languageserver_protocol_1.LogTraceNotification.type, {
           message,
           verbose: this._trace === vscode_languageserver_protocol_1.Trace.Verbose ? verbose : void 0
+        }).catch(() => {
         });
       }
     };
@@ -7391,7 +8891,9 @@ var require_server = __commonJS({
       fillServerCapabilities(_capabilities) {
       }
       logEvent(data) {
-        this.connection.sendNotification(vscode_languageserver_protocol_1.TelemetryEventNotification.type, data);
+        this.connection.sendNotification(vscode_languageserver_protocol_1.TelemetryEventNotification.type, data).catch(() => {
+          this.connection.console.log(`Sending TelemetryEventNotification failed`);
+        });
       }
     };
     var _LanguagesImpl = class {
@@ -7411,14 +8913,39 @@ var require_server = __commonJS({
       fillServerCapabilities(_capabilities) {
       }
       attachWorkDoneProgress(params) {
-        return progress_1.attachWorkDone(this.connection, params);
+        return (0, progress_1.attachWorkDone)(this.connection, params);
       }
       attachPartialResultProgress(_type, params) {
-        return progress_1.attachPartialResult(this.connection, params);
+        return (0, progress_1.attachPartialResult)(this.connection, params);
       }
     };
     exports2._LanguagesImpl = _LanguagesImpl;
-    var LanguagesImpl = moniker_1.MonikerFeature(linkedEditingRange_1.LinkedEditingRangeFeature(semanticTokens_1.SemanticTokensFeature(callHierarchy_1.CallHierarchyFeature(_LanguagesImpl))));
+    var LanguagesImpl = (0, foldingRange_1.FoldingRangeFeature)((0, moniker_1.MonikerFeature)((0, diagnostic_1.DiagnosticFeature)((0, inlayHint_1.InlayHintFeature)((0, inlineValue_1.InlineValueFeature)((0, typeHierarchy_1.TypeHierarchyFeature)((0, linkedEditingRange_1.LinkedEditingRangeFeature)((0, semanticTokens_1.SemanticTokensFeature)((0, callHierarchy_1.CallHierarchyFeature)(_LanguagesImpl)))))))));
+    var _NotebooksImpl = class {
+      constructor() {
+      }
+      attach(connection) {
+        this._connection = connection;
+      }
+      get connection() {
+        if (!this._connection) {
+          throw new Error("Remote is not attached to a connection yet.");
+        }
+        return this._connection;
+      }
+      initialize(_capabilities) {
+      }
+      fillServerCapabilities(_capabilities) {
+      }
+      attachWorkDoneProgress(params) {
+        return (0, progress_1.attachWorkDone)(this.connection, params);
+      }
+      attachPartialResultProgress(_type, params) {
+        return (0, progress_1.attachPartialResult)(this.connection, params);
+      }
+    };
+    exports2._NotebooksImpl = _NotebooksImpl;
+    var NotebooksImpl = (0, notebook_1.NotebookSyncFeature)(_NotebooksImpl);
     function combineConsoleFeatures(one, two) {
       return function(Base) {
         return two(one(Base));
@@ -7461,6 +8988,12 @@ var require_server = __commonJS({
       };
     }
     exports2.combineLanguagesFeatures = combineLanguagesFeatures;
+    function combineNotebooksFeatures(one, two) {
+      return function(Base) {
+        return two(one(Base));
+      };
+    }
+    exports2.combineNotebooksFeatures = combineNotebooksFeatures;
     function combineFeatures(one, two) {
       function combine(one2, two2, func) {
         if (one2 && two2) {
@@ -7478,7 +9011,9 @@ var require_server = __commonJS({
         telemetry: combine(one.telemetry, two.telemetry, combineTelemetryFeatures),
         client: combine(one.client, two.client, combineClientFeatures),
         window: combine(one.window, two.window, combineWindowFeatures),
-        workspace: combine(one.workspace, two.workspace, combineWorkspaceFeatures)
+        workspace: combine(one.workspace, two.workspace, combineWorkspaceFeatures),
+        languages: combine(one.languages, two.languages, combineLanguagesFeatures),
+        notebooks: combine(one.notebooks, two.notebooks, combineNotebooksFeatures)
       };
       return result;
     }
@@ -7493,11 +9028,12 @@ var require_server = __commonJS({
       const remoteWindow = factories && factories.window ? new (factories.window(RemoteWindowImpl))() : new RemoteWindowImpl();
       const workspace = factories && factories.workspace ? new (factories.workspace(RemoteWorkspaceImpl))() : new RemoteWorkspaceImpl();
       const languages = factories && factories.languages ? new (factories.languages(LanguagesImpl))() : new LanguagesImpl();
-      const allRemotes = [logger, tracer, telemetry, client, remoteWindow, workspace, languages];
+      const notebooks = factories && factories.notebooks ? new (factories.notebooks(NotebooksImpl))() : new NotebooksImpl();
+      const allRemotes = [logger, tracer, telemetry, client, remoteWindow, workspace, languages, notebooks];
       function asPromise(value) {
         if (value instanceof Promise) {
           return value;
-        } else if (Is3.thenable(value)) {
+        } else if (Is2.thenable(value)) {
           return new Promise((resolve, reject) => {
             value.then((resolved) => resolve(resolved), (error) => reject(error));
           });
@@ -7510,23 +9046,40 @@ var require_server = __commonJS({
       let exitHandler = void 0;
       let protocolConnection = {
         listen: () => connection.listen(),
-        sendRequest: (type, ...params) => connection.sendRequest(Is3.string(type) ? type : type.method, ...params),
+        sendRequest: (type, ...params) => connection.sendRequest(Is2.string(type) ? type : type.method, ...params),
         onRequest: (type, handler) => connection.onRequest(type, handler),
         sendNotification: (type, param) => {
-          const method = Is3.string(type) ? type : type.method;
-          if (arguments.length === 1) {
-            connection.sendNotification(method);
-          } else {
-            connection.sendNotification(method, param);
-          }
+          const method = Is2.string(type) ? type : type.method;
+          return connection.sendNotification(method, param);
         },
         onNotification: (type, handler) => connection.onNotification(type, handler),
         onProgress: connection.onProgress,
         sendProgress: connection.sendProgress,
-        onInitialize: (handler) => initializeHandler = handler,
+        onInitialize: (handler) => {
+          initializeHandler = handler;
+          return {
+            dispose: () => {
+              initializeHandler = void 0;
+            }
+          };
+        },
         onInitialized: (handler) => connection.onNotification(vscode_languageserver_protocol_1.InitializedNotification.type, handler),
-        onShutdown: (handler) => shutdownHandler = handler,
-        onExit: (handler) => exitHandler = handler,
+        onShutdown: (handler) => {
+          shutdownHandler = handler;
+          return {
+            dispose: () => {
+              shutdownHandler = void 0;
+            }
+          };
+        },
+        onExit: (handler) => {
+          exitHandler = handler;
+          return {
+            dispose: () => {
+              exitHandler = void 0;
+            }
+          };
+        },
         get console() {
           return logger;
         },
@@ -7548,6 +9101,9 @@ var require_server = __commonJS({
         get languages() {
           return languages;
         },
+        get notebooks() {
+          return notebooks;
+        },
         onDidChangeConfiguration: (handler) => connection.onNotification(vscode_languageserver_protocol_1.DidChangeConfigurationNotification.type, handler),
         onDidChangeWatchedFiles: (handler) => connection.onNotification(vscode_languageserver_protocol_1.DidChangeWatchedFilesNotification.type, handler),
         __textDocumentSync: void 0,
@@ -7559,86 +9115,87 @@ var require_server = __commonJS({
         onDidSaveTextDocument: (handler) => connection.onNotification(vscode_languageserver_protocol_1.DidSaveTextDocumentNotification.type, handler),
         sendDiagnostics: (params) => connection.sendNotification(vscode_languageserver_protocol_1.PublishDiagnosticsNotification.type, params),
         onHover: (handler) => connection.onRequest(vscode_languageserver_protocol_1.HoverRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), void 0);
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), void 0);
         }),
         onCompletion: (handler) => connection.onRequest(vscode_languageserver_protocol_1.CompletionRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
         onCompletionResolve: (handler) => connection.onRequest(vscode_languageserver_protocol_1.CompletionResolveRequest.type, handler),
         onSignatureHelp: (handler) => connection.onRequest(vscode_languageserver_protocol_1.SignatureHelpRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), void 0);
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), void 0);
         }),
         onDeclaration: (handler) => connection.onRequest(vscode_languageserver_protocol_1.DeclarationRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
         onDefinition: (handler) => connection.onRequest(vscode_languageserver_protocol_1.DefinitionRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
         onTypeDefinition: (handler) => connection.onRequest(vscode_languageserver_protocol_1.TypeDefinitionRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
         onImplementation: (handler) => connection.onRequest(vscode_languageserver_protocol_1.ImplementationRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
         onReferences: (handler) => connection.onRequest(vscode_languageserver_protocol_1.ReferencesRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
         onDocumentHighlight: (handler) => connection.onRequest(vscode_languageserver_protocol_1.DocumentHighlightRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
         onDocumentSymbol: (handler) => connection.onRequest(vscode_languageserver_protocol_1.DocumentSymbolRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
         onWorkspaceSymbol: (handler) => connection.onRequest(vscode_languageserver_protocol_1.WorkspaceSymbolRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
+        onWorkspaceSymbolResolve: (handler) => connection.onRequest(vscode_languageserver_protocol_1.WorkspaceSymbolResolveRequest.type, handler),
         onCodeAction: (handler) => connection.onRequest(vscode_languageserver_protocol_1.CodeActionRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
         onCodeActionResolve: (handler) => connection.onRequest(vscode_languageserver_protocol_1.CodeActionResolveRequest.type, (params, cancel) => {
           return handler(params, cancel);
         }),
         onCodeLens: (handler) => connection.onRequest(vscode_languageserver_protocol_1.CodeLensRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
         onCodeLensResolve: (handler) => connection.onRequest(vscode_languageserver_protocol_1.CodeLensResolveRequest.type, (params, cancel) => {
           return handler(params, cancel);
         }),
         onDocumentFormatting: (handler) => connection.onRequest(vscode_languageserver_protocol_1.DocumentFormattingRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), void 0);
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), void 0);
         }),
         onDocumentRangeFormatting: (handler) => connection.onRequest(vscode_languageserver_protocol_1.DocumentRangeFormattingRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), void 0);
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), void 0);
         }),
         onDocumentOnTypeFormatting: (handler) => connection.onRequest(vscode_languageserver_protocol_1.DocumentOnTypeFormattingRequest.type, (params, cancel) => {
           return handler(params, cancel);
         }),
         onRenameRequest: (handler) => connection.onRequest(vscode_languageserver_protocol_1.RenameRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), void 0);
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), void 0);
         }),
         onPrepareRename: (handler) => connection.onRequest(vscode_languageserver_protocol_1.PrepareRenameRequest.type, (params, cancel) => {
           return handler(params, cancel);
         }),
         onDocumentLinks: (handler) => connection.onRequest(vscode_languageserver_protocol_1.DocumentLinkRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
         onDocumentLinkResolve: (handler) => connection.onRequest(vscode_languageserver_protocol_1.DocumentLinkResolveRequest.type, (params, cancel) => {
           return handler(params, cancel);
         }),
         onDocumentColor: (handler) => connection.onRequest(vscode_languageserver_protocol_1.DocumentColorRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
         onColorPresentation: (handler) => connection.onRequest(vscode_languageserver_protocol_1.ColorPresentationRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
         onFoldingRanges: (handler) => connection.onRequest(vscode_languageserver_protocol_1.FoldingRangeRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
         onSelectionRanges: (handler) => connection.onRequest(vscode_languageserver_protocol_1.SelectionRangeRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), progress_1.attachPartialResult(connection, params));
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), (0, progress_1.attachPartialResult)(connection, params));
         }),
         onExecuteCommand: (handler) => connection.onRequest(vscode_languageserver_protocol_1.ExecuteCommandRequest.type, (params, cancel) => {
-          return handler(params, cancel, progress_1.attachWorkDone(connection, params), void 0);
+          return handler(params, cancel, (0, progress_1.attachWorkDone)(connection, params), void 0);
         }),
         dispose: () => connection.dispose()
       };
@@ -7647,14 +9204,14 @@ var require_server = __commonJS({
       }
       connection.onRequest(vscode_languageserver_protocol_1.InitializeRequest.type, (params) => {
         watchDog.initialize(params);
-        if (Is3.string(params.trace)) {
+        if (Is2.string(params.trace)) {
           tracer.trace = vscode_languageserver_protocol_1.Trace.fromString(params.trace);
         }
         for (let remote of allRemotes) {
           remote.initialize(params.capabilities);
         }
         if (initializeHandler) {
-          let result = initializeHandler(params, new vscode_languageserver_protocol_1.CancellationTokenSource().token, progress_1.attachWorkDone(connection, params), void 0);
+          let result = initializeHandler(params, new vscode_languageserver_protocol_1.CancellationTokenSource().token, (0, progress_1.attachWorkDone)(connection, params), void 0);
           return asPromise(result).then((value) => {
             if (value instanceof vscode_languageserver_protocol_1.ResponseError) {
               return value;
@@ -7669,9 +9226,9 @@ var require_server = __commonJS({
               result2.capabilities = capabilities;
             }
             if (capabilities.textDocumentSync === void 0 || capabilities.textDocumentSync === null) {
-              capabilities.textDocumentSync = Is3.number(protocolConnection.__textDocumentSync) ? protocolConnection.__textDocumentSync : vscode_languageserver_protocol_1.TextDocumentSyncKind.None;
-            } else if (!Is3.number(capabilities.textDocumentSync) && !Is3.number(capabilities.textDocumentSync.change)) {
-              capabilities.textDocumentSync.change = Is3.number(protocolConnection.__textDocumentSync) ? protocolConnection.__textDocumentSync : vscode_languageserver_protocol_1.TextDocumentSyncKind.None;
+              capabilities.textDocumentSync = Is2.number(protocolConnection.__textDocumentSync) ? protocolConnection.__textDocumentSync : vscode_languageserver_protocol_1.TextDocumentSyncKind.None;
+            } else if (!Is2.number(capabilities.textDocumentSync) && !Is2.number(capabilities.textDocumentSync.change)) {
+              capabilities.textDocumentSync.change = Is2.number(protocolConnection.__textDocumentSync) ? protocolConnection.__textDocumentSync : vscode_languageserver_protocol_1.TextDocumentSyncKind.None;
             }
             for (let remote of allRemotes) {
               remote.fillServerCapabilities(capabilities);
@@ -7716,9 +9273,9 @@ var require_server = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/node/files.js
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/node/files.js
 var require_files = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/node/files.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/node/files.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.resolveModulePath = exports2.FileSystem = exports2.resolveGlobalYarnPath = exports2.resolveGlobalNodePath = exports2.resolve = exports2.uriToFilePath = void 0;
@@ -7783,7 +9340,7 @@ var require_files = __commonJS({
         }
         newEnv["ELECTRON_RUN_AS_NODE"] = "1";
         try {
-          let cp = child_process_1.fork("", [], {
+          let cp = (0, child_process_1.fork)("", [], {
             cwd,
             env: newEnv,
             execArgv: ["-e", app]
@@ -7833,7 +9390,7 @@ var require_files = __commonJS({
       };
       try {
         process.on("SIGPIPE", handler);
-        let stdout = child_process_1.spawnSync(npmCommand, ["config", "get", "prefix"], options2).stdout;
+        let stdout = (0, child_process_1.spawnSync)(npmCommand, ["config", "get", "prefix"], options2).stdout;
         if (!stdout) {
           if (tracer) {
             tracer(`'npm config get prefix' didn't return a value.`);
@@ -7872,7 +9429,7 @@ var require_files = __commonJS({
       };
       try {
         process.on("SIGPIPE", handler);
-        let results = child_process_1.spawnSync(yarnCommand, ["global", "dir", "--json"], options2);
+        let results = (0, child_process_1.spawnSync)(yarnCommand, ["global", "dir", "--json"], options2);
         let stdout = results.stdout;
         if (!stdout) {
           if (tracer) {
@@ -7924,7 +9481,7 @@ var require_files = __commonJS({
         }
       }
       FileSystem2.isParent = isParent;
-    })(FileSystem = exports2.FileSystem || (exports2.FileSystem = {}));
+    })(FileSystem || (exports2.FileSystem = FileSystem = {}));
     function resolveModulePath(workspaceRoot, moduleName, nodePath, tracer) {
       if (nodePath) {
         if (!path.isAbsolute(nodePath)) {
@@ -7947,24 +9504,52 @@ var require_files = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/node.js
+// node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/node.js
 var require_node2 = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.16.0/node_modules/vscode-languageserver-protocol/node.js"(exports2, module2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol/node.js"(exports2, module2) {
     "use strict";
-    module2.exports = require_main2();
+    module2.exports = require_main3();
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/api.js
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/inlineCompletion.proposed.js
+var require_inlineCompletion_proposed = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/inlineCompletion.proposed.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.InlineCompletionFeature = void 0;
+    var vscode_languageserver_protocol_1 = require_main3();
+    var InlineCompletionFeature = (Base) => {
+      return class extends Base {
+        get inlineCompletion() {
+          return {
+            on: (handler) => {
+              return this.connection.onRequest(vscode_languageserver_protocol_1.InlineCompletionRequest.type, (params, cancel) => {
+                return handler(params, cancel, this.attachWorkDoneProgress(params));
+              });
+            }
+          };
+        }
+      };
+    };
+    exports2.InlineCompletionFeature = InlineCompletionFeature;
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/api.js
 var require_api3 = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/common/api.js"(exports2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/common/api.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
@@ -7976,32 +9561,46 @@ var require_api3 = __commonJS({
           __createBinding(exports3, m, p);
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.ProposedFeatures = exports2.SemanticTokensBuilder = void 0;
+    exports2.ProposedFeatures = exports2.NotebookDocuments = exports2.TextDocuments = exports2.SemanticTokensBuilder = void 0;
     var semanticTokens_1 = require_semanticTokens();
     Object.defineProperty(exports2, "SemanticTokensBuilder", { enumerable: true, get: function() {
       return semanticTokens_1.SemanticTokensBuilder;
     } });
-    __exportStar(require_main2(), exports2);
+    var ic = require_inlineCompletion_proposed();
+    __exportStar(require_main3(), exports2);
+    var textDocuments_1 = require_textDocuments();
+    Object.defineProperty(exports2, "TextDocuments", { enumerable: true, get: function() {
+      return textDocuments_1.TextDocuments;
+    } });
+    var notebook_1 = require_notebook();
+    Object.defineProperty(exports2, "NotebookDocuments", { enumerable: true, get: function() {
+      return notebook_1.NotebookDocuments;
+    } });
     __exportStar(require_server(), exports2);
     var ProposedFeatures;
     (function(ProposedFeatures2) {
       ProposedFeatures2.all = {
-        __brand: "features"
+        __brand: "features",
+        languages: ic.InlineCompletionFeature
       };
-    })(ProposedFeatures = exports2.ProposedFeatures || (exports2.ProposedFeatures = {}));
+    })(ProposedFeatures || (exports2.ProposedFeatures = ProposedFeatures = {}));
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/node/main.js
-var require_main3 = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/lib/node/main.js"(exports2) {
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/node/main.js
+var require_main4 = __commonJS({
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/lib/node/main.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
@@ -8014,7 +9613,8 @@ var require_main3 = __commonJS({
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.createConnection = exports2.Files = void 0;
-    var Is3 = require_is();
+    var node_util_1 = require("util");
+    var Is2 = require_is();
     var server_1 = require_server();
     var fm = require_files();
     var node_1 = require_node2();
@@ -8027,7 +9627,7 @@ var require_main3 = __commonJS({
       Files2.resolveGlobalYarnPath = fm.resolveGlobalYarnPath;
       Files2.resolve = fm.resolve;
       Files2.resolveModulePath = fm.resolveModulePath;
-    })(Files = exports2.Files || (exports2.Files = {}));
+    })(Files || (exports2.Files = Files = {}));
     var _protocolConnection;
     function endProtocolConnection() {
       if (_protocolConnection === void 0) {
@@ -8075,7 +9675,7 @@ var require_main3 = __commonJS({
     var watchDog = {
       initialize: (params) => {
         const processId = params.processId;
-        if (Is3.number(processId) && exitTimer === void 0) {
+        if (Is2.number(processId) && exitTimer === void 0) {
           setInterval(() => {
             try {
               process.kill(processId, 0);
@@ -8118,6 +9718,7 @@ var require_main3 = __commonJS({
     }
     exports2.createConnection = createConnection;
     function _createConnection(input, output, options2, factories) {
+      let stdio = false;
       if (!input && !output && process.argv.length > 2) {
         let port = void 0;
         let pipeName = void 0;
@@ -8129,6 +9730,7 @@ var require_main3 = __commonJS({
             output = new node_1.IPCMessageWriter(process);
             break;
           } else if (arg === "--stdio") {
+            stdio = true;
             input = process.stdin;
             output = process.stdout;
             break;
@@ -8150,11 +9752,11 @@ var require_main3 = __commonJS({
           }
         }
         if (port) {
-          let transport = node_1.createServerSocketTransport(port);
+          let transport = (0, node_1.createServerSocketTransport)(port);
           input = transport[0];
           output = transport[1];
         } else if (pipeName) {
-          let transport = node_1.createServerPipeTransport(pipeName);
+          let transport = (0, node_1.createServerPipeTransport)(pipeName);
           input = transport[0];
           output = transport[1];
         }
@@ -8166,7 +9768,7 @@ var require_main3 = __commonJS({
       if (!output) {
         throw new Error("Connection output stream is not set. " + commandLineMessage);
       }
-      if (Is3.func(input.read) && Is3.func(input.on)) {
+      if (Is2.func(input.read) && Is2.func(input.on)) {
         let inputStream = input;
         inputStream.on("end", () => {
           endProtocolConnection();
@@ -8178,19 +9780,78 @@ var require_main3 = __commonJS({
         });
       }
       const connectionFactory = (logger) => {
-        const result = node_1.createProtocolConnection(input, output, logger, options2);
+        const result = (0, node_1.createProtocolConnection)(input, output, logger, options2);
+        if (stdio) {
+          patchConsole(logger);
+        }
         return result;
       };
-      return server_1.createConnection(connectionFactory, watchDog, factories);
+      return (0, server_1.createConnection)(connectionFactory, watchDog, factories);
+    }
+    function patchConsole(logger) {
+      function serialize(args) {
+        return args.map((arg) => typeof arg === "string" ? arg : (0, node_util_1.inspect)(arg)).join(" ");
+      }
+      const counters = /* @__PURE__ */ new Map();
+      console.assert = function assert(assertion, ...args) {
+        if (assertion) {
+          return;
+        }
+        if (args.length === 0) {
+          logger.error("Assertion failed");
+        } else {
+          const [message, ...rest] = args;
+          logger.error(`Assertion failed: ${message} ${serialize(rest)}`);
+        }
+      };
+      console.count = function count(label = "default") {
+        var _a3;
+        const message = String(label);
+        let counter = (_a3 = counters.get(message)) != null ? _a3 : 0;
+        counter += 1;
+        counters.set(message, counter);
+        logger.log(`${message}: ${message}`);
+      };
+      console.countReset = function countReset(label) {
+        if (label === void 0) {
+          counters.clear();
+        } else {
+          counters.delete(String(label));
+        }
+      };
+      console.debug = function debug(...args) {
+        logger.log(serialize(args));
+      };
+      console.dir = function dir(arg, options2) {
+        logger.log((0, node_util_1.inspect)(arg, options2));
+      };
+      console.log = function log(...args) {
+        logger.log(serialize(args));
+      };
+      console.error = function error(...args) {
+        logger.error(serialize(args));
+      };
+      console.trace = function trace(...args) {
+        const stack = new Error().stack.replace(/(.+\n){2}/, "");
+        let message = "Trace";
+        if (args.length !== 0) {
+          message += `: ${serialize(args)}`;
+        }
+        logger.log(`${message}
+${stack}`);
+      };
+      console.warn = function warn(...args) {
+        logger.warn(serialize(args));
+      };
     }
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/node.js
+// node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/node.js
 var require_node3 = __commonJS({
-  "node_modules/.aspect_rules_js/vscode-languageserver@7.0.0/node_modules/vscode-languageserver/node.js"(exports2, module2) {
+  "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/node.js"(exports2, module2) {
     "use strict";
-    module2.exports = require_main3();
+    module2.exports = require_main4();
   }
 });
 
@@ -8259,7 +9920,7 @@ var require_requests = __commonJS({
     }();
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.IsInAngularProject = exports2.GetTcbRequest = exports2.GetTemplateLocationForComponent = exports2.GetComponentsWithTemplateFile = void 0;
-    var lsp = __importStar(require_main2());
+    var lsp = __importStar(require_main3());
     exports2.GetComponentsWithTemplateFile = new lsp.RequestType("angular/getComponentsWithTemplateFile");
     exports2.GetTemplateLocationForComponent = new lsp.RequestType("angular/getTemplateLocationForComponent");
     exports2.GetTcbRequest = new lsp.RequestType("angular/getTcb");
@@ -8755,7 +10416,7 @@ var require_utils = __commonJS({
     exports2.isExternalAngularCore = isExternalAngularCore;
     exports2.isInternalAngularCore = isInternalAngularCore;
     var ts = __importStar(require("typescript/lib/tsserverlibrary"));
-    var lsp = __importStar(require_main3());
+    var lsp = __importStar(require_main4());
     var vscode_uri_1 = require_umd();
     exports2.isDebugMode = process.env["NG_DEBUG"] === "true";
     var Scheme;
@@ -8920,7 +10581,7 @@ var require_utils = __commonJS({
 });
 
 // vscode-ng-language-service/server/src/diagnostic.js
-var require_diagnostic = __commonJS({
+var require_diagnostic2 = __commonJS({
   "vscode-ng-language-service/server/src/diagnostic.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
@@ -8970,7 +10631,7 @@ var require_diagnostic = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.tsDiagnosticToLspDiagnostic = tsDiagnosticToLspDiagnostic;
     var ts = __importStar(require("typescript/lib/tsserverlibrary"));
-    var lsp = __importStar(require_main3());
+    var lsp = __importStar(require_main4());
     var utils_1 = require_utils();
     function tsDiagnosticCategoryToLspDiagnosticSeverity(category) {
       switch (category) {
@@ -9051,7 +10712,7 @@ var require_code_actions = __commonJS({
     exports2.onCodeAction = onCodeAction;
     exports2.onCodeActionResolve = onCodeActionResolve;
     exports2.getCodeFixesAll = getCodeFixesAll;
-    var lsp = __importStar(require_main3());
+    var lsp = __importStar(require_main4());
     var utils_1 = require_utils();
     var defaultFormatOptions = {};
     function onCodeAction(session, params) {
@@ -9227,7 +10888,7 @@ var require_template_info = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.onGetTemplateLocationForComponent = onGetTemplateLocationForComponent;
     exports2.isInAngularProject = isInAngularProject;
-    var lsp = __importStar(require_main3());
+    var lsp = __importStar(require_main4());
     var utils_1 = require_utils();
     function onGetTemplateLocationForComponent(session, params) {
       const lsInfo = session.getLSAndScriptInfo(params.textDocument);
@@ -9318,7 +10979,7 @@ var require_code_lens = __commonJS({
     exports2.onCodeLens = onCodeLens;
     exports2.onCodeLensResolve = onCodeLensResolve;
     exports2.getComponentsWithTemplateFile = getComponentsWithTemplateFile;
-    var lsp = __importStar(require_main3());
+    var lsp = __importStar(require_main4());
     var utils_1 = require_utils();
     var template_info_1 = require_template_info();
     function onCodeLens(session, params) {
@@ -11414,7 +13075,7 @@ var init_cssNodes = __esm({
 });
 
 // node_modules/.aspect_rules_js/@vscode+l10n@0.0.18/node_modules/@vscode/l10n/dist/main.js
-var require_main4 = __commonJS({
+var require_main5 = __commonJS({
   "node_modules/.aspect_rules_js/@vscode+l10n@0.0.18/node_modules/@vscode/l10n/dist/main.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -11434,12 +13095,12 @@ var require_main4 = __commonJS({
       return to;
     };
     var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var main_exports3 = {};
-    __export2(main_exports3, {
+    var main_exports2 = {};
+    __export2(main_exports2, {
       config: () => config,
       t: () => t15
     });
-    module2.exports = __toCommonJS2(main_exports3);
+    module2.exports = __toCommonJS2(main_exports2);
     var import_fs = require("fs");
     var import_promises = require("fs/promises");
     function readFileFromUri(uri) {
@@ -11571,7 +13232,7 @@ var l10n, CSSIssueType, ParseError;
 var init_cssErrors = __esm({
   "node_modules/.aspect_rules_js/vscode-css-languageservice@6.3.9/node_modules/vscode-css-languageservice/lib/esm/parser/cssErrors.js"() {
     "use strict";
-    l10n = __toESM(require_main4());
+    l10n = __toESM(require_main5());
     CSSIssueType = class {
       constructor(id, message) {
         this.id = id;
@@ -11617,8 +13278,8 @@ var init_cssErrors = __esm({
 });
 
 // node_modules/.aspect_rules_js/vscode-languageserver-types@3.17.5/node_modules/vscode-languageserver-types/lib/esm/main.js
-var DocumentUri, URI, integer2, uinteger2, Position2, Range2, Location2, LocationLink2, Color2, ColorInformation2, ColorPresentation2, FoldingRangeKind2, FoldingRange2, DiagnosticRelatedInformation2, DiagnosticSeverity2, DiagnosticTag2, CodeDescription2, Diagnostic2, Command2, TextEdit2, ChangeAnnotation2, ChangeAnnotationIdentifier2, AnnotatedTextEdit2, TextDocumentEdit2, CreateFile2, RenameFile2, DeleteFile2, WorkspaceEdit2, TextDocumentIdentifier2, VersionedTextDocumentIdentifier2, OptionalVersionedTextDocumentIdentifier2, TextDocumentItem2, MarkupKind2, MarkupContent2, CompletionItemKind2, InsertTextFormat2, CompletionItemTag2, InsertReplaceEdit2, InsertTextMode2, CompletionItemLabelDetails, CompletionItem2, CompletionList2, MarkedString2, Hover2, ParameterInformation2, SignatureInformation2, DocumentHighlightKind2, DocumentHighlight2, SymbolKind2, SymbolTag2, SymbolInformation2, WorkspaceSymbol, DocumentSymbol2, CodeActionKind2, CodeActionTriggerKind, CodeActionContext2, CodeAction2, CodeLens2, FormattingOptions2, DocumentLink2, SelectionRange2, SemanticTokenTypes, SemanticTokenModifiers, SemanticTokens, InlineValueText, InlineValueVariableLookup, InlineValueEvaluatableExpression, InlineValueContext, InlayHintKind2, InlayHintLabelPart, InlayHint, StringValue, InlineCompletionItem, InlineCompletionList, InlineCompletionTriggerKind, SelectedCompletionInfo, InlineCompletionContext, WorkspaceFolder, TextDocument2, FullTextDocument2, Is2;
-var init_main2 = __esm({
+var DocumentUri, URI, integer, uinteger, Position, Range, Location, LocationLink, Color, ColorInformation, ColorPresentation, FoldingRangeKind, FoldingRange, DiagnosticRelatedInformation, DiagnosticSeverity, DiagnosticTag, CodeDescription, Diagnostic, Command, TextEdit, ChangeAnnotation, ChangeAnnotationIdentifier, AnnotatedTextEdit, TextDocumentEdit, CreateFile, RenameFile, DeleteFile, WorkspaceEdit, TextDocumentIdentifier, VersionedTextDocumentIdentifier, OptionalVersionedTextDocumentIdentifier, TextDocumentItem, MarkupKind, MarkupContent, CompletionItemKind, InsertTextFormat, CompletionItemTag, InsertReplaceEdit, InsertTextMode, CompletionItemLabelDetails, CompletionItem, CompletionList, MarkedString, Hover, ParameterInformation, SignatureInformation, DocumentHighlightKind, DocumentHighlight, SymbolKind, SymbolTag, SymbolInformation, WorkspaceSymbol, DocumentSymbol, CodeActionKind, CodeActionTriggerKind, CodeActionContext, CodeAction, CodeLens, FormattingOptions, DocumentLink, SelectionRange, SemanticTokenTypes, SemanticTokenModifiers, SemanticTokens, InlineValueText, InlineValueVariableLookup, InlineValueEvaluatableExpression, InlineValueContext, InlayHintKind2, InlayHintLabelPart, InlayHint, StringValue, InlineCompletionItem, InlineCompletionList, InlineCompletionTriggerKind, SelectedCompletionInfo, InlineCompletionContext, WorkspaceFolder, TextDocument, FullTextDocument, Is;
+var init_main = __esm({
   "node_modules/.aspect_rules_js/vscode-languageserver-types@3.17.5/node_modules/vscode-languageserver-types/lib/esm/main.js"() {
     "use strict";
     (function(DocumentUri2) {
@@ -11633,79 +13294,79 @@ var init_main2 = __esm({
       }
       URI3.is = is;
     })(URI || (URI = {}));
-    (function(integer3) {
-      integer3.MIN_VALUE = -2147483648;
-      integer3.MAX_VALUE = 2147483647;
+    (function(integer2) {
+      integer2.MIN_VALUE = -2147483648;
+      integer2.MAX_VALUE = 2147483647;
       function is(value) {
-        return typeof value === "number" && integer3.MIN_VALUE <= value && value <= integer3.MAX_VALUE;
+        return typeof value === "number" && integer2.MIN_VALUE <= value && value <= integer2.MAX_VALUE;
       }
-      integer3.is = is;
-    })(integer2 || (integer2 = {}));
-    (function(uinteger3) {
-      uinteger3.MIN_VALUE = 0;
-      uinteger3.MAX_VALUE = 2147483647;
+      integer2.is = is;
+    })(integer || (integer = {}));
+    (function(uinteger2) {
+      uinteger2.MIN_VALUE = 0;
+      uinteger2.MAX_VALUE = 2147483647;
       function is(value) {
-        return typeof value === "number" && uinteger3.MIN_VALUE <= value && value <= uinteger3.MAX_VALUE;
+        return typeof value === "number" && uinteger2.MIN_VALUE <= value && value <= uinteger2.MAX_VALUE;
       }
-      uinteger3.is = is;
-    })(uinteger2 || (uinteger2 = {}));
-    (function(Position3) {
+      uinteger2.is = is;
+    })(uinteger || (uinteger = {}));
+    (function(Position2) {
       function create(line, character) {
         if (line === Number.MAX_VALUE) {
-          line = uinteger2.MAX_VALUE;
+          line = uinteger.MAX_VALUE;
         }
         if (character === Number.MAX_VALUE) {
-          character = uinteger2.MAX_VALUE;
+          character = uinteger.MAX_VALUE;
         }
         return { line, character };
       }
-      Position3.create = create;
+      Position2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.objectLiteral(candidate) && Is2.uinteger(candidate.line) && Is2.uinteger(candidate.character);
+        return Is.objectLiteral(candidate) && Is.uinteger(candidate.line) && Is.uinteger(candidate.character);
       }
-      Position3.is = is;
-    })(Position2 || (Position2 = {}));
-    (function(Range3) {
+      Position2.is = is;
+    })(Position || (Position = {}));
+    (function(Range2) {
       function create(one, two, three, four) {
-        if (Is2.uinteger(one) && Is2.uinteger(two) && Is2.uinteger(three) && Is2.uinteger(four)) {
-          return { start: Position2.create(one, two), end: Position2.create(three, four) };
-        } else if (Position2.is(one) && Position2.is(two)) {
+        if (Is.uinteger(one) && Is.uinteger(two) && Is.uinteger(three) && Is.uinteger(four)) {
+          return { start: Position.create(one, two), end: Position.create(three, four) };
+        } else if (Position.is(one) && Position.is(two)) {
           return { start: one, end: two };
         } else {
           throw new Error(`Range#create called with invalid arguments[${one}, ${two}, ${three}, ${four}]`);
         }
       }
-      Range3.create = create;
+      Range2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.objectLiteral(candidate) && Position2.is(candidate.start) && Position2.is(candidate.end);
+        return Is.objectLiteral(candidate) && Position.is(candidate.start) && Position.is(candidate.end);
       }
-      Range3.is = is;
-    })(Range2 || (Range2 = {}));
-    (function(Location3) {
+      Range2.is = is;
+    })(Range || (Range = {}));
+    (function(Location2) {
       function create(uri, range) {
         return { uri, range };
       }
-      Location3.create = create;
+      Location2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && (Is2.string(candidate.uri) || Is2.undefined(candidate.uri));
+        return Is.objectLiteral(candidate) && Range.is(candidate.range) && (Is.string(candidate.uri) || Is.undefined(candidate.uri));
       }
-      Location3.is = is;
-    })(Location2 || (Location2 = {}));
-    (function(LocationLink3) {
+      Location2.is = is;
+    })(Location || (Location = {}));
+    (function(LocationLink2) {
       function create(targetUri, targetRange, targetSelectionRange, originSelectionRange) {
         return { targetUri, targetRange, targetSelectionRange, originSelectionRange };
       }
-      LocationLink3.create = create;
+      LocationLink2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.objectLiteral(candidate) && Range2.is(candidate.targetRange) && Is2.string(candidate.targetUri) && Range2.is(candidate.targetSelectionRange) && (Range2.is(candidate.originSelectionRange) || Is2.undefined(candidate.originSelectionRange));
+        return Is.objectLiteral(candidate) && Range.is(candidate.targetRange) && Is.string(candidate.targetUri) && Range.is(candidate.targetSelectionRange) && (Range.is(candidate.originSelectionRange) || Is.undefined(candidate.originSelectionRange));
       }
-      LocationLink3.is = is;
-    })(LocationLink2 || (LocationLink2 = {}));
-    (function(Color3) {
+      LocationLink2.is = is;
+    })(LocationLink || (LocationLink = {}));
+    (function(Color2) {
       function create(red, green, blue, alpha) {
         return {
           red,
@@ -11714,28 +13375,28 @@ var init_main2 = __esm({
           alpha
         };
       }
-      Color3.create = create;
+      Color2.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && Is2.numberRange(candidate.red, 0, 1) && Is2.numberRange(candidate.green, 0, 1) && Is2.numberRange(candidate.blue, 0, 1) && Is2.numberRange(candidate.alpha, 0, 1);
+        return Is.objectLiteral(candidate) && Is.numberRange(candidate.red, 0, 1) && Is.numberRange(candidate.green, 0, 1) && Is.numberRange(candidate.blue, 0, 1) && Is.numberRange(candidate.alpha, 0, 1);
       }
-      Color3.is = is;
-    })(Color2 || (Color2 = {}));
-    (function(ColorInformation3) {
+      Color2.is = is;
+    })(Color || (Color = {}));
+    (function(ColorInformation2) {
       function create(range, color) {
         return {
           range,
           color
         };
       }
-      ColorInformation3.create = create;
+      ColorInformation2.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && Color2.is(candidate.color);
+        return Is.objectLiteral(candidate) && Range.is(candidate.range) && Color.is(candidate.color);
       }
-      ColorInformation3.is = is;
-    })(ColorInformation2 || (ColorInformation2 = {}));
-    (function(ColorPresentation3) {
+      ColorInformation2.is = is;
+    })(ColorInformation || (ColorInformation = {}));
+    (function(ColorPresentation2) {
       function create(label, textEdit, additionalTextEdits) {
         return {
           label,
@@ -11743,136 +13404,136 @@ var init_main2 = __esm({
           additionalTextEdits
         };
       }
-      ColorPresentation3.create = create;
+      ColorPresentation2.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && Is2.string(candidate.label) && (Is2.undefined(candidate.textEdit) || TextEdit2.is(candidate)) && (Is2.undefined(candidate.additionalTextEdits) || Is2.typedArray(candidate.additionalTextEdits, TextEdit2.is));
+        return Is.objectLiteral(candidate) && Is.string(candidate.label) && (Is.undefined(candidate.textEdit) || TextEdit.is(candidate)) && (Is.undefined(candidate.additionalTextEdits) || Is.typedArray(candidate.additionalTextEdits, TextEdit.is));
       }
-      ColorPresentation3.is = is;
-    })(ColorPresentation2 || (ColorPresentation2 = {}));
-    (function(FoldingRangeKind3) {
-      FoldingRangeKind3.Comment = "comment";
-      FoldingRangeKind3.Imports = "imports";
-      FoldingRangeKind3.Region = "region";
-    })(FoldingRangeKind2 || (FoldingRangeKind2 = {}));
-    (function(FoldingRange3) {
+      ColorPresentation2.is = is;
+    })(ColorPresentation || (ColorPresentation = {}));
+    (function(FoldingRangeKind2) {
+      FoldingRangeKind2.Comment = "comment";
+      FoldingRangeKind2.Imports = "imports";
+      FoldingRangeKind2.Region = "region";
+    })(FoldingRangeKind || (FoldingRangeKind = {}));
+    (function(FoldingRange2) {
       function create(startLine, endLine, startCharacter, endCharacter, kind, collapsedText) {
         const result = {
           startLine,
           endLine
         };
-        if (Is2.defined(startCharacter)) {
+        if (Is.defined(startCharacter)) {
           result.startCharacter = startCharacter;
         }
-        if (Is2.defined(endCharacter)) {
+        if (Is.defined(endCharacter)) {
           result.endCharacter = endCharacter;
         }
-        if (Is2.defined(kind)) {
+        if (Is.defined(kind)) {
           result.kind = kind;
         }
-        if (Is2.defined(collapsedText)) {
+        if (Is.defined(collapsedText)) {
           result.collapsedText = collapsedText;
         }
         return result;
       }
-      FoldingRange3.create = create;
+      FoldingRange2.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && Is2.uinteger(candidate.startLine) && Is2.uinteger(candidate.startLine) && (Is2.undefined(candidate.startCharacter) || Is2.uinteger(candidate.startCharacter)) && (Is2.undefined(candidate.endCharacter) || Is2.uinteger(candidate.endCharacter)) && (Is2.undefined(candidate.kind) || Is2.string(candidate.kind));
+        return Is.objectLiteral(candidate) && Is.uinteger(candidate.startLine) && Is.uinteger(candidate.startLine) && (Is.undefined(candidate.startCharacter) || Is.uinteger(candidate.startCharacter)) && (Is.undefined(candidate.endCharacter) || Is.uinteger(candidate.endCharacter)) && (Is.undefined(candidate.kind) || Is.string(candidate.kind));
       }
-      FoldingRange3.is = is;
-    })(FoldingRange2 || (FoldingRange2 = {}));
-    (function(DiagnosticRelatedInformation3) {
+      FoldingRange2.is = is;
+    })(FoldingRange || (FoldingRange = {}));
+    (function(DiagnosticRelatedInformation2) {
       function create(location, message) {
         return {
           location,
           message
         };
       }
-      DiagnosticRelatedInformation3.create = create;
+      DiagnosticRelatedInformation2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.defined(candidate) && Location2.is(candidate.location) && Is2.string(candidate.message);
+        return Is.defined(candidate) && Location.is(candidate.location) && Is.string(candidate.message);
       }
-      DiagnosticRelatedInformation3.is = is;
-    })(DiagnosticRelatedInformation2 || (DiagnosticRelatedInformation2 = {}));
-    (function(DiagnosticSeverity3) {
-      DiagnosticSeverity3.Error = 1;
-      DiagnosticSeverity3.Warning = 2;
-      DiagnosticSeverity3.Information = 3;
-      DiagnosticSeverity3.Hint = 4;
-    })(DiagnosticSeverity2 || (DiagnosticSeverity2 = {}));
-    (function(DiagnosticTag3) {
-      DiagnosticTag3.Unnecessary = 1;
-      DiagnosticTag3.Deprecated = 2;
-    })(DiagnosticTag2 || (DiagnosticTag2 = {}));
-    (function(CodeDescription3) {
+      DiagnosticRelatedInformation2.is = is;
+    })(DiagnosticRelatedInformation || (DiagnosticRelatedInformation = {}));
+    (function(DiagnosticSeverity2) {
+      DiagnosticSeverity2.Error = 1;
+      DiagnosticSeverity2.Warning = 2;
+      DiagnosticSeverity2.Information = 3;
+      DiagnosticSeverity2.Hint = 4;
+    })(DiagnosticSeverity || (DiagnosticSeverity = {}));
+    (function(DiagnosticTag2) {
+      DiagnosticTag2.Unnecessary = 1;
+      DiagnosticTag2.Deprecated = 2;
+    })(DiagnosticTag || (DiagnosticTag = {}));
+    (function(CodeDescription2) {
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && Is2.string(candidate.href);
+        return Is.objectLiteral(candidate) && Is.string(candidate.href);
       }
-      CodeDescription3.is = is;
-    })(CodeDescription2 || (CodeDescription2 = {}));
-    (function(Diagnostic3) {
+      CodeDescription2.is = is;
+    })(CodeDescription || (CodeDescription = {}));
+    (function(Diagnostic2) {
       function create(range, message, severity, code, source, relatedInformation) {
         let result = { range, message };
-        if (Is2.defined(severity)) {
+        if (Is.defined(severity)) {
           result.severity = severity;
         }
-        if (Is2.defined(code)) {
+        if (Is.defined(code)) {
           result.code = code;
         }
-        if (Is2.defined(source)) {
+        if (Is.defined(source)) {
           result.source = source;
         }
-        if (Is2.defined(relatedInformation)) {
+        if (Is.defined(relatedInformation)) {
           result.relatedInformation = relatedInformation;
         }
         return result;
       }
-      Diagnostic3.create = create;
+      Diagnostic2.create = create;
       function is(value) {
         var _a3;
         let candidate = value;
-        return Is2.defined(candidate) && Range2.is(candidate.range) && Is2.string(candidate.message) && (Is2.number(candidate.severity) || Is2.undefined(candidate.severity)) && (Is2.integer(candidate.code) || Is2.string(candidate.code) || Is2.undefined(candidate.code)) && (Is2.undefined(candidate.codeDescription) || Is2.string((_a3 = candidate.codeDescription) === null || _a3 === void 0 ? void 0 : _a3.href)) && (Is2.string(candidate.source) || Is2.undefined(candidate.source)) && (Is2.undefined(candidate.relatedInformation) || Is2.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation2.is));
+        return Is.defined(candidate) && Range.is(candidate.range) && Is.string(candidate.message) && (Is.number(candidate.severity) || Is.undefined(candidate.severity)) && (Is.integer(candidate.code) || Is.string(candidate.code) || Is.undefined(candidate.code)) && (Is.undefined(candidate.codeDescription) || Is.string((_a3 = candidate.codeDescription) === null || _a3 === void 0 ? void 0 : _a3.href)) && (Is.string(candidate.source) || Is.undefined(candidate.source)) && (Is.undefined(candidate.relatedInformation) || Is.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation.is));
       }
-      Diagnostic3.is = is;
-    })(Diagnostic2 || (Diagnostic2 = {}));
-    (function(Command3) {
+      Diagnostic2.is = is;
+    })(Diagnostic || (Diagnostic = {}));
+    (function(Command2) {
       function create(title, command, ...args) {
         let result = { title, command };
-        if (Is2.defined(args) && args.length > 0) {
+        if (Is.defined(args) && args.length > 0) {
           result.arguments = args;
         }
         return result;
       }
-      Command3.create = create;
+      Command2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.defined(candidate) && Is2.string(candidate.title) && Is2.string(candidate.command);
+        return Is.defined(candidate) && Is.string(candidate.title) && Is.string(candidate.command);
       }
-      Command3.is = is;
-    })(Command2 || (Command2 = {}));
-    (function(TextEdit3) {
+      Command2.is = is;
+    })(Command || (Command = {}));
+    (function(TextEdit2) {
       function replace(range, newText) {
         return { range, newText };
       }
-      TextEdit3.replace = replace;
+      TextEdit2.replace = replace;
       function insert(position, newText) {
         return { range: { start: position, end: position }, newText };
       }
-      TextEdit3.insert = insert;
+      TextEdit2.insert = insert;
       function del(range) {
         return { range, newText: "" };
       }
-      TextEdit3.del = del;
+      TextEdit2.del = del;
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && Is2.string(candidate.newText) && Range2.is(candidate.range);
+        return Is.objectLiteral(candidate) && Is.string(candidate.newText) && Range.is(candidate.range);
       }
-      TextEdit3.is = is;
-    })(TextEdit2 || (TextEdit2 = {}));
-    (function(ChangeAnnotation3) {
+      TextEdit2.is = is;
+    })(TextEdit || (TextEdit = {}));
+    (function(ChangeAnnotation2) {
       function create(label, needsConfirmation, description) {
         const result = { label };
         if (needsConfirmation !== void 0) {
@@ -11883,51 +13544,51 @@ var init_main2 = __esm({
         }
         return result;
       }
-      ChangeAnnotation3.create = create;
+      ChangeAnnotation2.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && Is2.string(candidate.label) && (Is2.boolean(candidate.needsConfirmation) || candidate.needsConfirmation === void 0) && (Is2.string(candidate.description) || candidate.description === void 0);
+        return Is.objectLiteral(candidate) && Is.string(candidate.label) && (Is.boolean(candidate.needsConfirmation) || candidate.needsConfirmation === void 0) && (Is.string(candidate.description) || candidate.description === void 0);
       }
-      ChangeAnnotation3.is = is;
-    })(ChangeAnnotation2 || (ChangeAnnotation2 = {}));
-    (function(ChangeAnnotationIdentifier3) {
+      ChangeAnnotation2.is = is;
+    })(ChangeAnnotation || (ChangeAnnotation = {}));
+    (function(ChangeAnnotationIdentifier2) {
       function is(value) {
         const candidate = value;
-        return Is2.string(candidate);
+        return Is.string(candidate);
       }
-      ChangeAnnotationIdentifier3.is = is;
-    })(ChangeAnnotationIdentifier2 || (ChangeAnnotationIdentifier2 = {}));
-    (function(AnnotatedTextEdit3) {
+      ChangeAnnotationIdentifier2.is = is;
+    })(ChangeAnnotationIdentifier || (ChangeAnnotationIdentifier = {}));
+    (function(AnnotatedTextEdit2) {
       function replace(range, newText, annotation) {
         return { range, newText, annotationId: annotation };
       }
-      AnnotatedTextEdit3.replace = replace;
+      AnnotatedTextEdit2.replace = replace;
       function insert(position, newText, annotation) {
         return { range: { start: position, end: position }, newText, annotationId: annotation };
       }
-      AnnotatedTextEdit3.insert = insert;
+      AnnotatedTextEdit2.insert = insert;
       function del(range, annotation) {
         return { range, newText: "", annotationId: annotation };
       }
-      AnnotatedTextEdit3.del = del;
+      AnnotatedTextEdit2.del = del;
       function is(value) {
         const candidate = value;
-        return TextEdit2.is(candidate) && (ChangeAnnotation2.is(candidate.annotationId) || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+        return TextEdit.is(candidate) && (ChangeAnnotation.is(candidate.annotationId) || ChangeAnnotationIdentifier.is(candidate.annotationId));
       }
-      AnnotatedTextEdit3.is = is;
-    })(AnnotatedTextEdit2 || (AnnotatedTextEdit2 = {}));
-    (function(TextDocumentEdit3) {
+      AnnotatedTextEdit2.is = is;
+    })(AnnotatedTextEdit || (AnnotatedTextEdit = {}));
+    (function(TextDocumentEdit2) {
       function create(textDocument, edits) {
         return { textDocument, edits };
       }
-      TextDocumentEdit3.create = create;
+      TextDocumentEdit2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.defined(candidate) && OptionalVersionedTextDocumentIdentifier2.is(candidate.textDocument) && Array.isArray(candidate.edits);
+        return Is.defined(candidate) && OptionalVersionedTextDocumentIdentifier.is(candidate.textDocument) && Array.isArray(candidate.edits);
       }
-      TextDocumentEdit3.is = is;
-    })(TextDocumentEdit2 || (TextDocumentEdit2 = {}));
-    (function(CreateFile3) {
+      TextDocumentEdit2.is = is;
+    })(TextDocumentEdit || (TextDocumentEdit = {}));
+    (function(CreateFile2) {
       function create(uri, options2, annotation) {
         let result = {
           kind: "create",
@@ -11941,14 +13602,14 @@ var init_main2 = __esm({
         }
         return result;
       }
-      CreateFile3.create = create;
+      CreateFile2.create = create;
       function is(value) {
         let candidate = value;
-        return candidate && candidate.kind === "create" && Is2.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is2.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is2.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+        return candidate && candidate.kind === "create" && Is.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier.is(candidate.annotationId));
       }
-      CreateFile3.is = is;
-    })(CreateFile2 || (CreateFile2 = {}));
-    (function(RenameFile3) {
+      CreateFile2.is = is;
+    })(CreateFile || (CreateFile = {}));
+    (function(RenameFile2) {
       function create(oldUri, newUri, options2, annotation) {
         let result = {
           kind: "rename",
@@ -11963,14 +13624,14 @@ var init_main2 = __esm({
         }
         return result;
       }
-      RenameFile3.create = create;
+      RenameFile2.create = create;
       function is(value) {
         let candidate = value;
-        return candidate && candidate.kind === "rename" && Is2.string(candidate.oldUri) && Is2.string(candidate.newUri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is2.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is2.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+        return candidate && candidate.kind === "rename" && Is.string(candidate.oldUri) && Is.string(candidate.newUri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier.is(candidate.annotationId));
       }
-      RenameFile3.is = is;
-    })(RenameFile2 || (RenameFile2 = {}));
-    (function(DeleteFile3) {
+      RenameFile2.is = is;
+    })(RenameFile || (RenameFile = {}));
+    (function(DeleteFile2) {
       function create(uri, options2, annotation) {
         let result = {
           kind: "delete",
@@ -11984,240 +13645,240 @@ var init_main2 = __esm({
         }
         return result;
       }
-      DeleteFile3.create = create;
+      DeleteFile2.create = create;
       function is(value) {
         let candidate = value;
-        return candidate && candidate.kind === "delete" && Is2.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.recursive === void 0 || Is2.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === void 0 || Is2.boolean(candidate.options.ignoreIfNotExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+        return candidate && candidate.kind === "delete" && Is.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.recursive === void 0 || Is.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === void 0 || Is.boolean(candidate.options.ignoreIfNotExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier.is(candidate.annotationId));
       }
-      DeleteFile3.is = is;
-    })(DeleteFile2 || (DeleteFile2 = {}));
-    (function(WorkspaceEdit3) {
+      DeleteFile2.is = is;
+    })(DeleteFile || (DeleteFile = {}));
+    (function(WorkspaceEdit2) {
       function is(value) {
         let candidate = value;
         return candidate && (candidate.changes !== void 0 || candidate.documentChanges !== void 0) && (candidate.documentChanges === void 0 || candidate.documentChanges.every((change) => {
-          if (Is2.string(change.kind)) {
-            return CreateFile2.is(change) || RenameFile2.is(change) || DeleteFile2.is(change);
+          if (Is.string(change.kind)) {
+            return CreateFile.is(change) || RenameFile.is(change) || DeleteFile.is(change);
           } else {
-            return TextDocumentEdit2.is(change);
+            return TextDocumentEdit.is(change);
           }
         }));
       }
-      WorkspaceEdit3.is = is;
-    })(WorkspaceEdit2 || (WorkspaceEdit2 = {}));
-    (function(TextDocumentIdentifier3) {
+      WorkspaceEdit2.is = is;
+    })(WorkspaceEdit || (WorkspaceEdit = {}));
+    (function(TextDocumentIdentifier2) {
       function create(uri) {
         return { uri };
       }
-      TextDocumentIdentifier3.create = create;
+      TextDocumentIdentifier2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.defined(candidate) && Is2.string(candidate.uri);
+        return Is.defined(candidate) && Is.string(candidate.uri);
       }
-      TextDocumentIdentifier3.is = is;
-    })(TextDocumentIdentifier2 || (TextDocumentIdentifier2 = {}));
-    (function(VersionedTextDocumentIdentifier3) {
+      TextDocumentIdentifier2.is = is;
+    })(TextDocumentIdentifier || (TextDocumentIdentifier = {}));
+    (function(VersionedTextDocumentIdentifier2) {
       function create(uri, version) {
         return { uri, version };
       }
-      VersionedTextDocumentIdentifier3.create = create;
+      VersionedTextDocumentIdentifier2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.defined(candidate) && Is2.string(candidate.uri) && Is2.integer(candidate.version);
+        return Is.defined(candidate) && Is.string(candidate.uri) && Is.integer(candidate.version);
       }
-      VersionedTextDocumentIdentifier3.is = is;
-    })(VersionedTextDocumentIdentifier2 || (VersionedTextDocumentIdentifier2 = {}));
-    (function(OptionalVersionedTextDocumentIdentifier3) {
+      VersionedTextDocumentIdentifier2.is = is;
+    })(VersionedTextDocumentIdentifier || (VersionedTextDocumentIdentifier = {}));
+    (function(OptionalVersionedTextDocumentIdentifier2) {
       function create(uri, version) {
         return { uri, version };
       }
-      OptionalVersionedTextDocumentIdentifier3.create = create;
+      OptionalVersionedTextDocumentIdentifier2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.defined(candidate) && Is2.string(candidate.uri) && (candidate.version === null || Is2.integer(candidate.version));
+        return Is.defined(candidate) && Is.string(candidate.uri) && (candidate.version === null || Is.integer(candidate.version));
       }
-      OptionalVersionedTextDocumentIdentifier3.is = is;
-    })(OptionalVersionedTextDocumentIdentifier2 || (OptionalVersionedTextDocumentIdentifier2 = {}));
-    (function(TextDocumentItem3) {
+      OptionalVersionedTextDocumentIdentifier2.is = is;
+    })(OptionalVersionedTextDocumentIdentifier || (OptionalVersionedTextDocumentIdentifier = {}));
+    (function(TextDocumentItem2) {
       function create(uri, languageId, version, text) {
         return { uri, languageId, version, text };
       }
-      TextDocumentItem3.create = create;
+      TextDocumentItem2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.defined(candidate) && Is2.string(candidate.uri) && Is2.string(candidate.languageId) && Is2.integer(candidate.version) && Is2.string(candidate.text);
+        return Is.defined(candidate) && Is.string(candidate.uri) && Is.string(candidate.languageId) && Is.integer(candidate.version) && Is.string(candidate.text);
       }
-      TextDocumentItem3.is = is;
-    })(TextDocumentItem2 || (TextDocumentItem2 = {}));
-    (function(MarkupKind3) {
-      MarkupKind3.PlainText = "plaintext";
-      MarkupKind3.Markdown = "markdown";
+      TextDocumentItem2.is = is;
+    })(TextDocumentItem || (TextDocumentItem = {}));
+    (function(MarkupKind2) {
+      MarkupKind2.PlainText = "plaintext";
+      MarkupKind2.Markdown = "markdown";
       function is(value) {
         const candidate = value;
-        return candidate === MarkupKind3.PlainText || candidate === MarkupKind3.Markdown;
+        return candidate === MarkupKind2.PlainText || candidate === MarkupKind2.Markdown;
       }
-      MarkupKind3.is = is;
-    })(MarkupKind2 || (MarkupKind2 = {}));
-    (function(MarkupContent3) {
+      MarkupKind2.is = is;
+    })(MarkupKind || (MarkupKind = {}));
+    (function(MarkupContent2) {
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(value) && MarkupKind2.is(candidate.kind) && Is2.string(candidate.value);
+        return Is.objectLiteral(value) && MarkupKind.is(candidate.kind) && Is.string(candidate.value);
       }
-      MarkupContent3.is = is;
-    })(MarkupContent2 || (MarkupContent2 = {}));
-    (function(CompletionItemKind3) {
-      CompletionItemKind3.Text = 1;
-      CompletionItemKind3.Method = 2;
-      CompletionItemKind3.Function = 3;
-      CompletionItemKind3.Constructor = 4;
-      CompletionItemKind3.Field = 5;
-      CompletionItemKind3.Variable = 6;
-      CompletionItemKind3.Class = 7;
-      CompletionItemKind3.Interface = 8;
-      CompletionItemKind3.Module = 9;
-      CompletionItemKind3.Property = 10;
-      CompletionItemKind3.Unit = 11;
-      CompletionItemKind3.Value = 12;
-      CompletionItemKind3.Enum = 13;
-      CompletionItemKind3.Keyword = 14;
-      CompletionItemKind3.Snippet = 15;
-      CompletionItemKind3.Color = 16;
-      CompletionItemKind3.File = 17;
-      CompletionItemKind3.Reference = 18;
-      CompletionItemKind3.Folder = 19;
-      CompletionItemKind3.EnumMember = 20;
-      CompletionItemKind3.Constant = 21;
-      CompletionItemKind3.Struct = 22;
-      CompletionItemKind3.Event = 23;
-      CompletionItemKind3.Operator = 24;
-      CompletionItemKind3.TypeParameter = 25;
-    })(CompletionItemKind2 || (CompletionItemKind2 = {}));
-    (function(InsertTextFormat3) {
-      InsertTextFormat3.PlainText = 1;
-      InsertTextFormat3.Snippet = 2;
-    })(InsertTextFormat2 || (InsertTextFormat2 = {}));
-    (function(CompletionItemTag3) {
-      CompletionItemTag3.Deprecated = 1;
-    })(CompletionItemTag2 || (CompletionItemTag2 = {}));
-    (function(InsertReplaceEdit3) {
+      MarkupContent2.is = is;
+    })(MarkupContent || (MarkupContent = {}));
+    (function(CompletionItemKind2) {
+      CompletionItemKind2.Text = 1;
+      CompletionItemKind2.Method = 2;
+      CompletionItemKind2.Function = 3;
+      CompletionItemKind2.Constructor = 4;
+      CompletionItemKind2.Field = 5;
+      CompletionItemKind2.Variable = 6;
+      CompletionItemKind2.Class = 7;
+      CompletionItemKind2.Interface = 8;
+      CompletionItemKind2.Module = 9;
+      CompletionItemKind2.Property = 10;
+      CompletionItemKind2.Unit = 11;
+      CompletionItemKind2.Value = 12;
+      CompletionItemKind2.Enum = 13;
+      CompletionItemKind2.Keyword = 14;
+      CompletionItemKind2.Snippet = 15;
+      CompletionItemKind2.Color = 16;
+      CompletionItemKind2.File = 17;
+      CompletionItemKind2.Reference = 18;
+      CompletionItemKind2.Folder = 19;
+      CompletionItemKind2.EnumMember = 20;
+      CompletionItemKind2.Constant = 21;
+      CompletionItemKind2.Struct = 22;
+      CompletionItemKind2.Event = 23;
+      CompletionItemKind2.Operator = 24;
+      CompletionItemKind2.TypeParameter = 25;
+    })(CompletionItemKind || (CompletionItemKind = {}));
+    (function(InsertTextFormat2) {
+      InsertTextFormat2.PlainText = 1;
+      InsertTextFormat2.Snippet = 2;
+    })(InsertTextFormat || (InsertTextFormat = {}));
+    (function(CompletionItemTag2) {
+      CompletionItemTag2.Deprecated = 1;
+    })(CompletionItemTag || (CompletionItemTag = {}));
+    (function(InsertReplaceEdit2) {
       function create(newText, insert, replace) {
         return { newText, insert, replace };
       }
-      InsertReplaceEdit3.create = create;
+      InsertReplaceEdit2.create = create;
       function is(value) {
         const candidate = value;
-        return candidate && Is2.string(candidate.newText) && Range2.is(candidate.insert) && Range2.is(candidate.replace);
+        return candidate && Is.string(candidate.newText) && Range.is(candidate.insert) && Range.is(candidate.replace);
       }
-      InsertReplaceEdit3.is = is;
-    })(InsertReplaceEdit2 || (InsertReplaceEdit2 = {}));
-    (function(InsertTextMode3) {
-      InsertTextMode3.asIs = 1;
-      InsertTextMode3.adjustIndentation = 2;
-    })(InsertTextMode2 || (InsertTextMode2 = {}));
+      InsertReplaceEdit2.is = is;
+    })(InsertReplaceEdit || (InsertReplaceEdit = {}));
+    (function(InsertTextMode2) {
+      InsertTextMode2.asIs = 1;
+      InsertTextMode2.adjustIndentation = 2;
+    })(InsertTextMode || (InsertTextMode = {}));
     (function(CompletionItemLabelDetails2) {
       function is(value) {
         const candidate = value;
-        return candidate && (Is2.string(candidate.detail) || candidate.detail === void 0) && (Is2.string(candidate.description) || candidate.description === void 0);
+        return candidate && (Is.string(candidate.detail) || candidate.detail === void 0) && (Is.string(candidate.description) || candidate.description === void 0);
       }
       CompletionItemLabelDetails2.is = is;
     })(CompletionItemLabelDetails || (CompletionItemLabelDetails = {}));
-    (function(CompletionItem3) {
+    (function(CompletionItem2) {
       function create(label) {
         return { label };
       }
-      CompletionItem3.create = create;
-    })(CompletionItem2 || (CompletionItem2 = {}));
-    (function(CompletionList3) {
+      CompletionItem2.create = create;
+    })(CompletionItem || (CompletionItem = {}));
+    (function(CompletionList2) {
       function create(items, isIncomplete) {
         return { items: items ? items : [], isIncomplete: !!isIncomplete };
       }
-      CompletionList3.create = create;
-    })(CompletionList2 || (CompletionList2 = {}));
-    (function(MarkedString3) {
+      CompletionList2.create = create;
+    })(CompletionList || (CompletionList = {}));
+    (function(MarkedString2) {
       function fromPlainText(plainText) {
         return plainText.replace(/[\\`*_{}[\]()#+\-.!]/g, "\\$&");
       }
-      MarkedString3.fromPlainText = fromPlainText;
+      MarkedString2.fromPlainText = fromPlainText;
       function is(value) {
         const candidate = value;
-        return Is2.string(candidate) || Is2.objectLiteral(candidate) && Is2.string(candidate.language) && Is2.string(candidate.value);
+        return Is.string(candidate) || Is.objectLiteral(candidate) && Is.string(candidate.language) && Is.string(candidate.value);
       }
-      MarkedString3.is = is;
-    })(MarkedString2 || (MarkedString2 = {}));
-    (function(Hover3) {
+      MarkedString2.is = is;
+    })(MarkedString || (MarkedString = {}));
+    (function(Hover2) {
       function is(value) {
         let candidate = value;
-        return !!candidate && Is2.objectLiteral(candidate) && (MarkupContent2.is(candidate.contents) || MarkedString2.is(candidate.contents) || Is2.typedArray(candidate.contents, MarkedString2.is)) && (value.range === void 0 || Range2.is(value.range));
+        return !!candidate && Is.objectLiteral(candidate) && (MarkupContent.is(candidate.contents) || MarkedString.is(candidate.contents) || Is.typedArray(candidate.contents, MarkedString.is)) && (value.range === void 0 || Range.is(value.range));
       }
-      Hover3.is = is;
-    })(Hover2 || (Hover2 = {}));
-    (function(ParameterInformation3) {
+      Hover2.is = is;
+    })(Hover || (Hover = {}));
+    (function(ParameterInformation2) {
       function create(label, documentation) {
         return documentation ? { label, documentation } : { label };
       }
-      ParameterInformation3.create = create;
-    })(ParameterInformation2 || (ParameterInformation2 = {}));
-    (function(SignatureInformation3) {
+      ParameterInformation2.create = create;
+    })(ParameterInformation || (ParameterInformation = {}));
+    (function(SignatureInformation2) {
       function create(label, documentation, ...parameters) {
         let result = { label };
-        if (Is2.defined(documentation)) {
+        if (Is.defined(documentation)) {
           result.documentation = documentation;
         }
-        if (Is2.defined(parameters)) {
+        if (Is.defined(parameters)) {
           result.parameters = parameters;
         } else {
           result.parameters = [];
         }
         return result;
       }
-      SignatureInformation3.create = create;
-    })(SignatureInformation2 || (SignatureInformation2 = {}));
-    (function(DocumentHighlightKind3) {
-      DocumentHighlightKind3.Text = 1;
-      DocumentHighlightKind3.Read = 2;
-      DocumentHighlightKind3.Write = 3;
-    })(DocumentHighlightKind2 || (DocumentHighlightKind2 = {}));
-    (function(DocumentHighlight3) {
+      SignatureInformation2.create = create;
+    })(SignatureInformation || (SignatureInformation = {}));
+    (function(DocumentHighlightKind2) {
+      DocumentHighlightKind2.Text = 1;
+      DocumentHighlightKind2.Read = 2;
+      DocumentHighlightKind2.Write = 3;
+    })(DocumentHighlightKind || (DocumentHighlightKind = {}));
+    (function(DocumentHighlight2) {
       function create(range, kind) {
         let result = { range };
-        if (Is2.number(kind)) {
+        if (Is.number(kind)) {
           result.kind = kind;
         }
         return result;
       }
-      DocumentHighlight3.create = create;
-    })(DocumentHighlight2 || (DocumentHighlight2 = {}));
-    (function(SymbolKind3) {
-      SymbolKind3.File = 1;
-      SymbolKind3.Module = 2;
-      SymbolKind3.Namespace = 3;
-      SymbolKind3.Package = 4;
-      SymbolKind3.Class = 5;
-      SymbolKind3.Method = 6;
-      SymbolKind3.Property = 7;
-      SymbolKind3.Field = 8;
-      SymbolKind3.Constructor = 9;
-      SymbolKind3.Enum = 10;
-      SymbolKind3.Interface = 11;
-      SymbolKind3.Function = 12;
-      SymbolKind3.Variable = 13;
-      SymbolKind3.Constant = 14;
-      SymbolKind3.String = 15;
-      SymbolKind3.Number = 16;
-      SymbolKind3.Boolean = 17;
-      SymbolKind3.Array = 18;
-      SymbolKind3.Object = 19;
-      SymbolKind3.Key = 20;
-      SymbolKind3.Null = 21;
-      SymbolKind3.EnumMember = 22;
-      SymbolKind3.Struct = 23;
-      SymbolKind3.Event = 24;
-      SymbolKind3.Operator = 25;
-      SymbolKind3.TypeParameter = 26;
-    })(SymbolKind2 || (SymbolKind2 = {}));
-    (function(SymbolTag3) {
-      SymbolTag3.Deprecated = 1;
-    })(SymbolTag2 || (SymbolTag2 = {}));
-    (function(SymbolInformation3) {
+      DocumentHighlight2.create = create;
+    })(DocumentHighlight || (DocumentHighlight = {}));
+    (function(SymbolKind2) {
+      SymbolKind2.File = 1;
+      SymbolKind2.Module = 2;
+      SymbolKind2.Namespace = 3;
+      SymbolKind2.Package = 4;
+      SymbolKind2.Class = 5;
+      SymbolKind2.Method = 6;
+      SymbolKind2.Property = 7;
+      SymbolKind2.Field = 8;
+      SymbolKind2.Constructor = 9;
+      SymbolKind2.Enum = 10;
+      SymbolKind2.Interface = 11;
+      SymbolKind2.Function = 12;
+      SymbolKind2.Variable = 13;
+      SymbolKind2.Constant = 14;
+      SymbolKind2.String = 15;
+      SymbolKind2.Number = 16;
+      SymbolKind2.Boolean = 17;
+      SymbolKind2.Array = 18;
+      SymbolKind2.Object = 19;
+      SymbolKind2.Key = 20;
+      SymbolKind2.Null = 21;
+      SymbolKind2.EnumMember = 22;
+      SymbolKind2.Struct = 23;
+      SymbolKind2.Event = 24;
+      SymbolKind2.Operator = 25;
+      SymbolKind2.TypeParameter = 26;
+    })(SymbolKind || (SymbolKind = {}));
+    (function(SymbolTag2) {
+      SymbolTag2.Deprecated = 1;
+    })(SymbolTag || (SymbolTag = {}));
+    (function(SymbolInformation2) {
       function create(name, kind, range, uri, containerName) {
         let result = {
           name,
@@ -12229,15 +13890,15 @@ var init_main2 = __esm({
         }
         return result;
       }
-      SymbolInformation3.create = create;
-    })(SymbolInformation2 || (SymbolInformation2 = {}));
+      SymbolInformation2.create = create;
+    })(SymbolInformation || (SymbolInformation = {}));
     (function(WorkspaceSymbol2) {
       function create(name, kind, uri, range) {
         return range !== void 0 ? { name, kind, location: { uri, range } } : { name, kind, location: { uri } };
       }
       WorkspaceSymbol2.create = create;
     })(WorkspaceSymbol || (WorkspaceSymbol = {}));
-    (function(DocumentSymbol3) {
+    (function(DocumentSymbol2) {
       function create(name, detail, kind, range, selectionRange, children) {
         let result = {
           name,
@@ -12251,29 +13912,29 @@ var init_main2 = __esm({
         }
         return result;
       }
-      DocumentSymbol3.create = create;
+      DocumentSymbol2.create = create;
       function is(value) {
         let candidate = value;
-        return candidate && Is2.string(candidate.name) && Is2.number(candidate.kind) && Range2.is(candidate.range) && Range2.is(candidate.selectionRange) && (candidate.detail === void 0 || Is2.string(candidate.detail)) && (candidate.deprecated === void 0 || Is2.boolean(candidate.deprecated)) && (candidate.children === void 0 || Array.isArray(candidate.children)) && (candidate.tags === void 0 || Array.isArray(candidate.tags));
+        return candidate && Is.string(candidate.name) && Is.number(candidate.kind) && Range.is(candidate.range) && Range.is(candidate.selectionRange) && (candidate.detail === void 0 || Is.string(candidate.detail)) && (candidate.deprecated === void 0 || Is.boolean(candidate.deprecated)) && (candidate.children === void 0 || Array.isArray(candidate.children)) && (candidate.tags === void 0 || Array.isArray(candidate.tags));
       }
-      DocumentSymbol3.is = is;
-    })(DocumentSymbol2 || (DocumentSymbol2 = {}));
-    (function(CodeActionKind3) {
-      CodeActionKind3.Empty = "";
-      CodeActionKind3.QuickFix = "quickfix";
-      CodeActionKind3.Refactor = "refactor";
-      CodeActionKind3.RefactorExtract = "refactor.extract";
-      CodeActionKind3.RefactorInline = "refactor.inline";
-      CodeActionKind3.RefactorRewrite = "refactor.rewrite";
-      CodeActionKind3.Source = "source";
-      CodeActionKind3.SourceOrganizeImports = "source.organizeImports";
-      CodeActionKind3.SourceFixAll = "source.fixAll";
-    })(CodeActionKind2 || (CodeActionKind2 = {}));
+      DocumentSymbol2.is = is;
+    })(DocumentSymbol || (DocumentSymbol = {}));
+    (function(CodeActionKind2) {
+      CodeActionKind2.Empty = "";
+      CodeActionKind2.QuickFix = "quickfix";
+      CodeActionKind2.Refactor = "refactor";
+      CodeActionKind2.RefactorExtract = "refactor.extract";
+      CodeActionKind2.RefactorInline = "refactor.inline";
+      CodeActionKind2.RefactorRewrite = "refactor.rewrite";
+      CodeActionKind2.Source = "source";
+      CodeActionKind2.SourceOrganizeImports = "source.organizeImports";
+      CodeActionKind2.SourceFixAll = "source.fixAll";
+    })(CodeActionKind || (CodeActionKind = {}));
     (function(CodeActionTriggerKind2) {
       CodeActionTriggerKind2.Invoked = 1;
       CodeActionTriggerKind2.Automatic = 2;
     })(CodeActionTriggerKind || (CodeActionTriggerKind = {}));
-    (function(CodeActionContext3) {
+    (function(CodeActionContext2) {
       function create(diagnostics, only, triggerKind) {
         let result = { diagnostics };
         if (only !== void 0 && only !== null) {
@@ -12284,21 +13945,21 @@ var init_main2 = __esm({
         }
         return result;
       }
-      CodeActionContext3.create = create;
+      CodeActionContext2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.defined(candidate) && Is2.typedArray(candidate.diagnostics, Diagnostic2.is) && (candidate.only === void 0 || Is2.typedArray(candidate.only, Is2.string)) && (candidate.triggerKind === void 0 || candidate.triggerKind === CodeActionTriggerKind.Invoked || candidate.triggerKind === CodeActionTriggerKind.Automatic);
+        return Is.defined(candidate) && Is.typedArray(candidate.diagnostics, Diagnostic.is) && (candidate.only === void 0 || Is.typedArray(candidate.only, Is.string)) && (candidate.triggerKind === void 0 || candidate.triggerKind === CodeActionTriggerKind.Invoked || candidate.triggerKind === CodeActionTriggerKind.Automatic);
       }
-      CodeActionContext3.is = is;
-    })(CodeActionContext2 || (CodeActionContext2 = {}));
-    (function(CodeAction3) {
+      CodeActionContext2.is = is;
+    })(CodeActionContext || (CodeActionContext = {}));
+    (function(CodeAction2) {
       function create(title, kindOrCommandOrEdit, kind) {
         let result = { title };
         let checkKind = true;
         if (typeof kindOrCommandOrEdit === "string") {
           checkKind = false;
           result.kind = kindOrCommandOrEdit;
-        } else if (Command2.is(kindOrCommandOrEdit)) {
+        } else if (Command.is(kindOrCommandOrEdit)) {
           result.command = kindOrCommandOrEdit;
         } else {
           result.edit = kindOrCommandOrEdit;
@@ -12308,61 +13969,61 @@ var init_main2 = __esm({
         }
         return result;
       }
-      CodeAction3.create = create;
+      CodeAction2.create = create;
       function is(value) {
         let candidate = value;
-        return candidate && Is2.string(candidate.title) && (candidate.diagnostics === void 0 || Is2.typedArray(candidate.diagnostics, Diagnostic2.is)) && (candidate.kind === void 0 || Is2.string(candidate.kind)) && (candidate.edit !== void 0 || candidate.command !== void 0) && (candidate.command === void 0 || Command2.is(candidate.command)) && (candidate.isPreferred === void 0 || Is2.boolean(candidate.isPreferred)) && (candidate.edit === void 0 || WorkspaceEdit2.is(candidate.edit));
+        return candidate && Is.string(candidate.title) && (candidate.diagnostics === void 0 || Is.typedArray(candidate.diagnostics, Diagnostic.is)) && (candidate.kind === void 0 || Is.string(candidate.kind)) && (candidate.edit !== void 0 || candidate.command !== void 0) && (candidate.command === void 0 || Command.is(candidate.command)) && (candidate.isPreferred === void 0 || Is.boolean(candidate.isPreferred)) && (candidate.edit === void 0 || WorkspaceEdit.is(candidate.edit));
       }
-      CodeAction3.is = is;
-    })(CodeAction2 || (CodeAction2 = {}));
-    (function(CodeLens3) {
+      CodeAction2.is = is;
+    })(CodeAction || (CodeAction = {}));
+    (function(CodeLens2) {
       function create(range, data) {
         let result = { range };
-        if (Is2.defined(data)) {
+        if (Is.defined(data)) {
           result.data = data;
         }
         return result;
       }
-      CodeLens3.create = create;
+      CodeLens2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.defined(candidate) && Range2.is(candidate.range) && (Is2.undefined(candidate.command) || Command2.is(candidate.command));
+        return Is.defined(candidate) && Range.is(candidate.range) && (Is.undefined(candidate.command) || Command.is(candidate.command));
       }
-      CodeLens3.is = is;
-    })(CodeLens2 || (CodeLens2 = {}));
-    (function(FormattingOptions3) {
+      CodeLens2.is = is;
+    })(CodeLens || (CodeLens = {}));
+    (function(FormattingOptions2) {
       function create(tabSize, insertSpaces) {
         return { tabSize, insertSpaces };
       }
-      FormattingOptions3.create = create;
+      FormattingOptions2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.defined(candidate) && Is2.uinteger(candidate.tabSize) && Is2.boolean(candidate.insertSpaces);
+        return Is.defined(candidate) && Is.uinteger(candidate.tabSize) && Is.boolean(candidate.insertSpaces);
       }
-      FormattingOptions3.is = is;
-    })(FormattingOptions2 || (FormattingOptions2 = {}));
-    (function(DocumentLink3) {
+      FormattingOptions2.is = is;
+    })(FormattingOptions || (FormattingOptions = {}));
+    (function(DocumentLink2) {
       function create(range, target, data) {
         return { range, target, data };
       }
-      DocumentLink3.create = create;
+      DocumentLink2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.defined(candidate) && Range2.is(candidate.range) && (Is2.undefined(candidate.target) || Is2.string(candidate.target));
+        return Is.defined(candidate) && Range.is(candidate.range) && (Is.undefined(candidate.target) || Is.string(candidate.target));
       }
-      DocumentLink3.is = is;
-    })(DocumentLink2 || (DocumentLink2 = {}));
-    (function(SelectionRange3) {
+      DocumentLink2.is = is;
+    })(DocumentLink || (DocumentLink = {}));
+    (function(SelectionRange2) {
       function create(range, parent) {
         return { range, parent };
       }
-      SelectionRange3.create = create;
+      SelectionRange2.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && (candidate.parent === void 0 || SelectionRange3.is(candidate.parent));
+        return Is.objectLiteral(candidate) && Range.is(candidate.range) && (candidate.parent === void 0 || SelectionRange2.is(candidate.parent));
       }
-      SelectionRange3.is = is;
-    })(SelectionRange2 || (SelectionRange2 = {}));
+      SelectionRange2.is = is;
+    })(SelectionRange || (SelectionRange = {}));
     (function(SemanticTokenTypes2) {
       SemanticTokenTypes2["namespace"] = "namespace";
       SemanticTokenTypes2["type"] = "type";
@@ -12403,7 +14064,7 @@ var init_main2 = __esm({
     (function(SemanticTokens2) {
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && (candidate.resultId === void 0 || typeof candidate.resultId === "string") && Array.isArray(candidate.data) && (candidate.data.length === 0 || typeof candidate.data[0] === "number");
+        return Is.objectLiteral(candidate) && (candidate.resultId === void 0 || typeof candidate.resultId === "string") && Array.isArray(candidate.data) && (candidate.data.length === 0 || typeof candidate.data[0] === "number");
       }
       SemanticTokens2.is = is;
     })(SemanticTokens || (SemanticTokens = {}));
@@ -12414,7 +14075,7 @@ var init_main2 = __esm({
       InlineValueText2.create = create;
       function is(value) {
         const candidate = value;
-        return candidate !== void 0 && candidate !== null && Range2.is(candidate.range) && Is2.string(candidate.text);
+        return candidate !== void 0 && candidate !== null && Range.is(candidate.range) && Is.string(candidate.text);
       }
       InlineValueText2.is = is;
     })(InlineValueText || (InlineValueText = {}));
@@ -12425,7 +14086,7 @@ var init_main2 = __esm({
       InlineValueVariableLookup2.create = create;
       function is(value) {
         const candidate = value;
-        return candidate !== void 0 && candidate !== null && Range2.is(candidate.range) && Is2.boolean(candidate.caseSensitiveLookup) && (Is2.string(candidate.variableName) || candidate.variableName === void 0);
+        return candidate !== void 0 && candidate !== null && Range.is(candidate.range) && Is.boolean(candidate.caseSensitiveLookup) && (Is.string(candidate.variableName) || candidate.variableName === void 0);
       }
       InlineValueVariableLookup2.is = is;
     })(InlineValueVariableLookup || (InlineValueVariableLookup = {}));
@@ -12436,7 +14097,7 @@ var init_main2 = __esm({
       InlineValueEvaluatableExpression2.create = create;
       function is(value) {
         const candidate = value;
-        return candidate !== void 0 && candidate !== null && Range2.is(candidate.range) && (Is2.string(candidate.expression) || candidate.expression === void 0);
+        return candidate !== void 0 && candidate !== null && Range.is(candidate.range) && (Is.string(candidate.expression) || candidate.expression === void 0);
       }
       InlineValueEvaluatableExpression2.is = is;
     })(InlineValueEvaluatableExpression || (InlineValueEvaluatableExpression = {}));
@@ -12447,7 +14108,7 @@ var init_main2 = __esm({
       InlineValueContext2.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.defined(candidate) && Range2.is(value.stoppedLocation);
+        return Is.defined(candidate) && Range.is(value.stoppedLocation);
       }
       InlineValueContext2.is = is;
     })(InlineValueContext || (InlineValueContext = {}));
@@ -12466,7 +14127,7 @@ var init_main2 = __esm({
       InlayHintLabelPart2.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && (candidate.tooltip === void 0 || Is2.string(candidate.tooltip) || MarkupContent2.is(candidate.tooltip)) && (candidate.location === void 0 || Location2.is(candidate.location)) && (candidate.command === void 0 || Command2.is(candidate.command));
+        return Is.objectLiteral(candidate) && (candidate.tooltip === void 0 || Is.string(candidate.tooltip) || MarkupContent.is(candidate.tooltip)) && (candidate.location === void 0 || Location.is(candidate.location)) && (candidate.command === void 0 || Command.is(candidate.command));
       }
       InlayHintLabelPart2.is = is;
     })(InlayHintLabelPart || (InlayHintLabelPart = {}));
@@ -12481,7 +14142,7 @@ var init_main2 = __esm({
       InlayHint2.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && Position2.is(candidate.position) && (Is2.string(candidate.label) || Is2.typedArray(candidate.label, InlayHintLabelPart.is)) && (candidate.kind === void 0 || InlayHintKind2.is(candidate.kind)) && candidate.textEdits === void 0 || Is2.typedArray(candidate.textEdits, TextEdit2.is) && (candidate.tooltip === void 0 || Is2.string(candidate.tooltip) || MarkupContent2.is(candidate.tooltip)) && (candidate.paddingLeft === void 0 || Is2.boolean(candidate.paddingLeft)) && (candidate.paddingRight === void 0 || Is2.boolean(candidate.paddingRight));
+        return Is.objectLiteral(candidate) && Position.is(candidate.position) && (Is.string(candidate.label) || Is.typedArray(candidate.label, InlayHintLabelPart.is)) && (candidate.kind === void 0 || InlayHintKind2.is(candidate.kind)) && candidate.textEdits === void 0 || Is.typedArray(candidate.textEdits, TextEdit.is) && (candidate.tooltip === void 0 || Is.string(candidate.tooltip) || MarkupContent.is(candidate.tooltip)) && (candidate.paddingLeft === void 0 || Is.boolean(candidate.paddingLeft)) && (candidate.paddingRight === void 0 || Is.boolean(candidate.paddingRight));
       }
       InlayHint2.is = is;
     })(InlayHint || (InlayHint = {}));
@@ -12522,20 +14183,20 @@ var init_main2 = __esm({
     (function(WorkspaceFolder2) {
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && URI.is(candidate.uri) && Is2.string(candidate.name);
+        return Is.objectLiteral(candidate) && URI.is(candidate.uri) && Is.string(candidate.name);
       }
       WorkspaceFolder2.is = is;
     })(WorkspaceFolder || (WorkspaceFolder = {}));
-    (function(TextDocument4) {
+    (function(TextDocument3) {
       function create(uri, languageId, version, content) {
-        return new FullTextDocument2(uri, languageId, version, content);
+        return new FullTextDocument(uri, languageId, version, content);
       }
-      TextDocument4.create = create;
+      TextDocument3.create = create;
       function is(value) {
         let candidate = value;
-        return Is2.defined(candidate) && Is2.string(candidate.uri) && (Is2.undefined(candidate.languageId) || Is2.string(candidate.languageId)) && Is2.uinteger(candidate.lineCount) && Is2.func(candidate.getText) && Is2.func(candidate.positionAt) && Is2.func(candidate.offsetAt) ? true : false;
+        return Is.defined(candidate) && Is.string(candidate.uri) && (Is.undefined(candidate.languageId) || Is.string(candidate.languageId)) && Is.uinteger(candidate.lineCount) && Is.func(candidate.getText) && Is.func(candidate.positionAt) && Is.func(candidate.offsetAt) ? true : false;
       }
-      TextDocument4.is = is;
+      TextDocument3.is = is;
       function applyEdits(document, edits) {
         let text = document.getText();
         let sortedEdits = mergeSort2(edits, (a2, b) => {
@@ -12559,7 +14220,7 @@ var init_main2 = __esm({
         }
         return text;
       }
-      TextDocument4.applyEdits = applyEdits;
+      TextDocument3.applyEdits = applyEdits;
       function mergeSort2(data, compare) {
         if (data.length <= 1) {
           return data;
@@ -12588,8 +14249,8 @@ var init_main2 = __esm({
         }
         return data;
       }
-    })(TextDocument2 || (TextDocument2 = {}));
-    FullTextDocument2 = class {
+    })(TextDocument || (TextDocument = {}));
+    FullTextDocument = class {
       constructor(uri, languageId, version, content) {
         this._uri = uri;
         this._languageId = languageId;
@@ -12647,7 +14308,7 @@ var init_main2 = __esm({
         let lineOffsets = this.getLineOffsets();
         let low = 0, high = lineOffsets.length;
         if (high === 0) {
-          return Position2.create(0, offset);
+          return Position.create(0, offset);
         }
         while (low < high) {
           let mid = Math.floor((low + high) / 2);
@@ -12658,7 +14319,7 @@ var init_main2 = __esm({
           }
         }
         let line = low - 1;
-        return Position2.create(line, offset - lineOffsets[line]);
+        return Position.create(line, offset - lineOffsets[line]);
       }
       offsetAt(position) {
         let lineOffsets = this.getLineOffsets();
@@ -12675,60 +14336,60 @@ var init_main2 = __esm({
         return this.getLineOffsets().length;
       }
     };
-    (function(Is3) {
+    (function(Is2) {
       const toString = Object.prototype.toString;
       function defined(value) {
         return typeof value !== "undefined";
       }
-      Is3.defined = defined;
+      Is2.defined = defined;
       function undefined2(value) {
         return typeof value === "undefined";
       }
-      Is3.undefined = undefined2;
+      Is2.undefined = undefined2;
       function boolean(value) {
         return value === true || value === false;
       }
-      Is3.boolean = boolean;
+      Is2.boolean = boolean;
       function string(value) {
         return toString.call(value) === "[object String]";
       }
-      Is3.string = string;
+      Is2.string = string;
       function number(value) {
         return toString.call(value) === "[object Number]";
       }
-      Is3.number = number;
+      Is2.number = number;
       function numberRange(value, min, max) {
         return toString.call(value) === "[object Number]" && min <= value && value <= max;
       }
-      Is3.numberRange = numberRange;
-      function integer3(value) {
+      Is2.numberRange = numberRange;
+      function integer2(value) {
         return toString.call(value) === "[object Number]" && -2147483648 <= value && value <= 2147483647;
       }
-      Is3.integer = integer3;
-      function uinteger3(value) {
+      Is2.integer = integer2;
+      function uinteger2(value) {
         return toString.call(value) === "[object Number]" && 0 <= value && value <= 2147483647;
       }
-      Is3.uinteger = uinteger3;
+      Is2.uinteger = uinteger2;
       function func(value) {
         return toString.call(value) === "[object Function]";
       }
-      Is3.func = func;
+      Is2.func = func;
       function objectLiteral(value) {
         return value !== null && typeof value === "object";
       }
-      Is3.objectLiteral = objectLiteral;
+      Is2.objectLiteral = objectLiteral;
       function typedArray(value, check) {
         return Array.isArray(value) && value.every(check);
       }
-      Is3.typedArray = typedArray;
-    })(Is2 || (Is2 = {}));
+      Is2.typedArray = typedArray;
+    })(Is || (Is = {}));
   }
 });
 
 // node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.12/node_modules/vscode-languageserver-textdocument/lib/esm/main.js
-var main_exports2 = {};
-__export(main_exports2, {
-  TextDocument: () => TextDocument3
+var main_exports = {};
+__export(main_exports, {
+  TextDocument: () => TextDocument2
 });
 function mergeSort(data, compare) {
   if (data.length <= 1) {
@@ -12789,11 +14450,11 @@ function getWellformedEdit(textEdit) {
   }
   return textEdit;
 }
-var FullTextDocument3, TextDocument3;
-var init_main3 = __esm({
+var FullTextDocument2, TextDocument2;
+var init_main2 = __esm({
   "node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.12/node_modules/vscode-languageserver-textdocument/lib/esm/main.js"() {
     "use strict";
-    FullTextDocument3 = class _FullTextDocument {
+    FullTextDocument2 = class _FullTextDocument {
       constructor(uri, languageId, version, content) {
         this._uri = uri;
         this._languageId = languageId;
@@ -12913,20 +14574,20 @@ var init_main3 = __esm({
         return candidate !== void 0 && candidate !== null && typeof candidate.text === "string" && candidate.range === void 0 && candidate.rangeLength === void 0;
       }
     };
-    (function(TextDocument4) {
+    (function(TextDocument3) {
       function create(uri, languageId, version, content) {
-        return new FullTextDocument3(uri, languageId, version, content);
+        return new FullTextDocument2(uri, languageId, version, content);
       }
-      TextDocument4.create = create;
+      TextDocument3.create = create;
       function update(document, changes, version) {
-        if (document instanceof FullTextDocument3) {
+        if (document instanceof FullTextDocument2) {
           document.update(changes, version);
           return document;
         } else {
           throw new Error("TextDocument.update: document must be created by TextDocument.create");
         }
       }
-      TextDocument4.update = update;
+      TextDocument3.update = update;
       function applyEdits(document, edits) {
         const text = document.getText();
         const sortedEdits = mergeSort(edits.map(getWellformedEdit), (a2, b) => {
@@ -12953,8 +14614,8 @@ var init_main3 = __esm({
         spans.push(text.substr(lastModifiedOffset));
         return spans.join("");
       }
-      TextDocument4.applyEdits = applyEdits;
-    })(TextDocument3 || (TextDocument3 = {}));
+      TextDocument3.applyEdits = applyEdits;
+    })(TextDocument2 || (TextDocument2 = {}));
   }
 });
 
@@ -12963,18 +14624,18 @@ var ClientCapabilities, FileType;
 var init_cssLanguageTypes = __esm({
   "node_modules/.aspect_rules_js/vscode-css-languageservice@6.3.9/node_modules/vscode-css-languageservice/lib/esm/cssLanguageTypes.js"() {
     "use strict";
+    init_main();
     init_main2();
-    init_main3();
     (function(ClientCapabilities3) {
       ClientCapabilities3.LATEST = {
         textDocument: {
           completion: {
             completionItem: {
-              documentationFormat: [MarkupKind2.Markdown, MarkupKind2.PlainText]
+              documentationFormat: [MarkupKind.Markdown, MarkupKind.PlainText]
             }
           },
           hover: {
-            contentFormat: [MarkupKind2.Markdown, MarkupKind2.PlainText]
+            contentFormat: [MarkupKind.Markdown, MarkupKind.PlainText]
           }
         }
       };
@@ -13101,7 +14762,7 @@ function getEntryMarkdownDescription(entry, settings) {
     if (typeof entry.description === "string") {
       result += textToMarkedString(entry.description);
     } else {
-      result += entry.description.kind === MarkupKind2.Markdown ? entry.description.value : textToMarkedString(entry.description.value);
+      result += entry.description.kind === MarkupKind.Markdown ? entry.description.value : textToMarkedString(entry.description.value);
     }
     if (entry.baseline && !status) {
       result += `
@@ -13717,7 +15378,7 @@ var l10n2, hexColorRegExp, colorFunctions, colorFunctionNameRegExp, colors, colo
 var init_colors = __esm({
   "node_modules/.aspect_rules_js/vscode-css-languageservice@6.3.9/node_modules/vscode-css-languageservice/lib/esm/languageFacts/colors.js"() {
     init_cssNodes();
-    l10n2 = __toESM(require_main4());
+    l10n2 = __toESM(require_main5());
     hexColorRegExp = /(^#([0-9A-F]{3}){1,2}$)|(^#([0-9A-F]{4}){1,2}$)/i;
     colorFunctions = [
       {
@@ -16814,7 +18475,7 @@ function pathToReplaceRange(valueBeforeCursor, fullValue, fullValueRange) {
     } else {
       endPos = fullValueRange.end;
     }
-    replaceRange = Range2.create(startPos, endPos);
+    replaceRange = Range.create(startPos, endPos);
   }
   return replaceRange;
 }
@@ -16823,8 +18484,8 @@ function createCompletionItem(name, isDir, replaceRange) {
     name = name + "/";
     return {
       label: escapePath(name),
-      kind: CompletionItemKind2.Folder,
-      textEdit: TextEdit2.replace(replaceRange, escapePath(name)),
+      kind: CompletionItemKind.Folder,
+      textEdit: TextEdit.replace(replaceRange, escapePath(name)),
       command: {
         title: "Suggest",
         command: "editor.action.triggerSuggest"
@@ -16833,8 +18494,8 @@ function createCompletionItem(name, isDir, replaceRange) {
   } else {
     return {
       label: escapePath(name),
-      kind: CompletionItemKind2.File,
-      textEdit: TextEdit2.replace(replaceRange, escapePath(name))
+      kind: CompletionItemKind.File,
+      textEdit: TextEdit.replace(replaceRange, escapePath(name))
     };
   }
 }
@@ -16842,12 +18503,12 @@ function escapePath(p) {
   return p.replace(/(\s|\(|\)|,|"|')/g, "\\$1");
 }
 function shiftPosition(pos, offset) {
-  return Position2.create(pos.line, pos.character + offset);
+  return Position.create(pos.line, pos.character + offset);
 }
 function shiftRange(range, startOffset, endOffset) {
   const start = shiftPosition(range.start, startOffset);
   const end = shiftPosition(range.end, endOffset);
-  return Range2.create(start, end);
+  return Range.create(start, end);
 }
 var PathCompletionParticipant, CharCode_dot;
 var init_pathCompletion = __esm({
@@ -16993,10 +18654,10 @@ var init_cssCompletion = __esm({
     init_facts();
     init_strings();
     init_cssLanguageTypes();
-    l10n3 = __toESM(require_main4());
+    l10n3 = __toESM(require_main5());
     init_objects();
     init_pathCompletion();
-    SnippetFormat = InsertTextFormat2.Snippet;
+    SnippetFormat = InsertTextFormat.Snippet;
     retriggerCommand = {
       title: "Suggest",
       command: "editor.action.triggerSuggest"
@@ -17052,7 +18713,7 @@ var init_cssCompletion = __esm({
         this.offset = document.offsetAt(position);
         this.position = position;
         this.currentWord = getCurrentWord(document, this.offset);
-        this.defaultReplaceRange = Range2.create(Position2.create(this.position.line, this.position.character - this.currentWord.length), this.position);
+        this.defaultReplaceRange = Range.create(Position.create(this.position.line, this.position.character - this.currentWord.length), this.position);
         this.textDocument = document;
         this.styleSheet = styleSheet;
         this.documentSettings = documentSettings;
@@ -17191,10 +18852,10 @@ var init_cssCompletion = __esm({
           const item = {
             label: entry.name,
             documentation: getEntryDescription(entry, this.doesSupportMarkdown()),
-            tags: isDeprecated(entry) ? [CompletionItemTag2.Deprecated] : [],
-            textEdit: TextEdit2.replace(range, insertText),
-            insertTextFormat: InsertTextFormat2.Snippet,
-            kind: CompletionItemKind2.Property
+            tags: isDeprecated(entry) ? [CompletionItemTag.Deprecated] : [],
+            textEdit: TextEdit.replace(range, insertText),
+            insertTextFormat: InsertTextFormat.Snippet,
+            kind: CompletionItemKind.Property
           };
           if (triggerPropertyValueCompletion && retrigger) {
             item.command = retriggerCommand;
@@ -17284,8 +18945,8 @@ var init_cssCompletion = __esm({
           for (const existingValue of existingValues.getEntries()) {
             result.items.push({
               label: existingValue,
-              textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), existingValue),
-              kind: CompletionItemKind2.Value
+              textEdit: TextEdit.replace(this.getCompletionRange(existingNode), existingValue),
+              kind: CompletionItemKind.Value
             });
           }
         }
@@ -17312,10 +18973,10 @@ var init_cssCompletion = __esm({
             const item = {
               label: value.name,
               documentation: getEntryDescription(value, this.doesSupportMarkdown()),
-              tags: isDeprecated(entry) ? [CompletionItemTag2.Deprecated] : [],
-              textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), insertString),
+              tags: isDeprecated(entry) ? [CompletionItemTag.Deprecated] : [],
+              textEdit: TextEdit.replace(this.getCompletionRange(existingNode), insertString),
               sortText,
-              kind: CompletionItemKind2.Value,
+              kind: CompletionItemKind.Value,
               insertTextFormat
             };
             result.items.push(item);
@@ -17328,8 +18989,8 @@ var init_cssCompletion = __esm({
           result.items.push({
             label: keywords,
             documentation: cssWideKeywords[keywords],
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), keywords),
-            kind: CompletionItemKind2.Value
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), keywords),
+            kind: CompletionItemKind.Value
           });
         }
         for (const func in cssWideFunctions) {
@@ -17337,8 +18998,8 @@ var init_cssCompletion = __esm({
           result.items.push({
             label: func,
             documentation: cssWideFunctions[func],
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), insertText),
-            kind: CompletionItemKind2.Function,
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), insertText),
+            kind: CompletionItemKind.Function,
             insertTextFormat: SnippetFormat,
             command: startsWith(func, "var") ? retriggerCommand : void 0
           });
@@ -17358,12 +19019,12 @@ var init_cssCompletion = __esm({
           const completionItem = {
             label: symbol.name,
             documentation: symbol.value ? getLimitedString(symbol.value) : symbol.value,
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), insertText),
-            kind: CompletionItemKind2.Variable,
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), insertText),
+            kind: CompletionItemKind.Variable,
             sortText: SortTexts.Variable
           };
           if (typeof completionItem.documentation === "string" && isColorString(completionItem.documentation)) {
-            completionItem.kind = CompletionItemKind2.Color;
+            completionItem.kind = CompletionItemKind.Color;
           }
           if (symbol.node.type === NodeType.FunctionParameter) {
             const mixinNode = symbol.node.getParent();
@@ -17384,11 +19045,11 @@ var init_cssCompletion = __esm({
             const completionItem = {
               label: symbol.name,
               documentation: symbol.value ? getLimitedString(symbol.value) : symbol.value,
-              textEdit: TextEdit2.replace(this.getCompletionRange(null), symbol.name),
-              kind: CompletionItemKind2.Variable
+              textEdit: TextEdit.replace(this.getCompletionRange(null), symbol.name),
+              kind: CompletionItemKind.Variable
             };
             if (typeof completionItem.documentation === "string" && isColorString(completionItem.documentation)) {
-              completionItem.kind = CompletionItemKind2.Color;
+              completionItem.kind = CompletionItemKind.Color;
             }
             result.items.push(completionItem);
           }
@@ -17398,8 +19059,8 @@ var init_cssCompletion = __esm({
           if (startsWith(name, "--")) {
             const completionItem = {
               label: name,
-              textEdit: TextEdit2.replace(this.getCompletionRange(null), name),
-              kind: CompletionItemKind2.Variable
+              textEdit: TextEdit.replace(this.getCompletionRange(null), name),
+              kind: CompletionItemKind.Variable
             };
             result.items.push(completionItem);
           }
@@ -17428,8 +19089,8 @@ var init_cssCompletion = __esm({
                 const insertText = currentWord + unit;
                 result.items.push({
                   label: insertText,
-                  textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), insertText),
-                  kind: CompletionItemKind2.Unit
+                  textEdit: TextEdit.replace(this.getCompletionRange(existingNode), insertText),
+                  kind: CompletionItemKind.Unit
                 });
               }
             }
@@ -17442,7 +19103,7 @@ var init_cssCompletion = __esm({
           const end = existingNode.end !== -1 ? this.textDocument.positionAt(existingNode.end) : this.position;
           const start = this.textDocument.positionAt(existingNode.offset);
           if (start.line === end.line) {
-            return Range2.create(start, end);
+            return Range.create(start, end);
           }
         }
         return this.defaultReplaceRange;
@@ -17452,16 +19113,16 @@ var init_cssCompletion = __esm({
           result.items.push({
             label: color,
             documentation: colors[color],
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), color),
-            kind: CompletionItemKind2.Color
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), color),
+            kind: CompletionItemKind.Color
           });
         }
         for (const color in colorKeywords) {
           result.items.push({
             label: color,
             documentation: colorKeywords[color],
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), color),
-            kind: CompletionItemKind2.Value
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), color),
+            kind: CompletionItemKind.Value
           });
         }
         const colorValues = new Set2();
@@ -17469,8 +19130,8 @@ var init_cssCompletion = __esm({
         for (const color of colorValues.getEntries()) {
           result.items.push({
             label: color,
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), color),
-            kind: CompletionItemKind2.Color
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), color),
+            kind: CompletionItemKind.Color
           });
         }
         for (const p of colorFunctions) {
@@ -17478,9 +19139,9 @@ var init_cssCompletion = __esm({
             label: p.label,
             detail: p.func,
             documentation: p.desc,
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), p.insertText),
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), p.insertText),
             insertTextFormat: SnippetFormat,
-            kind: CompletionItemKind2.Function
+            kind: CompletionItemKind.Function
           });
         }
         return result;
@@ -17490,8 +19151,8 @@ var init_cssCompletion = __esm({
           result.items.push({
             label: position,
             documentation: positionKeywords[position],
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), position),
-            kind: CompletionItemKind2.Value
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), position),
+            kind: CompletionItemKind.Value
           });
         }
         return result;
@@ -17501,8 +19162,8 @@ var init_cssCompletion = __esm({
           result.items.push({
             label: repeat3,
             documentation: repeatStyleKeywords[repeat3],
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), repeat3),
-            kind: CompletionItemKind2.Value
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), repeat3),
+            kind: CompletionItemKind.Value
           });
         }
         return result;
@@ -17512,8 +19173,8 @@ var init_cssCompletion = __esm({
           result.items.push({
             label: lineStyle,
             documentation: lineStyleKeywords[lineStyle],
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), lineStyle),
-            kind: CompletionItemKind2.Value
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), lineStyle),
+            kind: CompletionItemKind.Value
           });
         }
         return result;
@@ -17522,8 +19183,8 @@ var init_cssCompletion = __esm({
         for (const lineWidth of lineWidthKeywords) {
           result.items.push({
             label: lineWidth,
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), lineWidth),
-            kind: CompletionItemKind2.Value
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), lineWidth),
+            kind: CompletionItemKind.Value
           });
         }
         return result;
@@ -17533,8 +19194,8 @@ var init_cssCompletion = __esm({
           result.items.push({
             label: box,
             documentation: geometryBoxKeywords[box],
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), box),
-            kind: CompletionItemKind2.Value
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), box),
+            kind: CompletionItemKind.Value
           });
         }
         return result;
@@ -17544,8 +19205,8 @@ var init_cssCompletion = __esm({
           result.items.push({
             label: box,
             documentation: boxKeywords[box],
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), box),
-            kind: CompletionItemKind2.Value
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), box),
+            kind: CompletionItemKind.Value
           });
         }
         return result;
@@ -17556,8 +19217,8 @@ var init_cssCompletion = __esm({
           result.items.push({
             label: image,
             documentation: imageFunctions[image],
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), insertText),
-            kind: CompletionItemKind2.Function,
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), insertText),
+            kind: CompletionItemKind.Function,
             insertTextFormat: image !== insertText ? SnippetFormat : void 0
           });
         }
@@ -17569,8 +19230,8 @@ var init_cssCompletion = __esm({
           result.items.push({
             label: timing,
             documentation: transitionTimingFunctions[timing],
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), insertText),
-            kind: CompletionItemKind2.Function,
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), insertText),
+            kind: CompletionItemKind.Function,
             insertTextFormat: timing !== insertText ? SnippetFormat : void 0
           });
         }
@@ -17582,8 +19243,8 @@ var init_cssCompletion = __esm({
           result.items.push({
             label: shape,
             documentation: basicShapeFunctions[shape],
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), insertText),
-            kind: CompletionItemKind2.Function,
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), insertText),
+            kind: CompletionItemKind.Function,
             insertTextFormat: shape !== insertText ? SnippetFormat : void 0
           });
         }
@@ -17606,10 +19267,10 @@ var init_cssCompletion = __esm({
         this.cssDataManager.getAtDirectives().forEach((entry) => {
           result.items.push({
             label: entry.name,
-            textEdit: TextEdit2.replace(this.getCompletionRange(null), entry.name),
+            textEdit: TextEdit.replace(this.getCompletionRange(null), entry.name),
             documentation: getEntryDescription(entry, this.doesSupportMarkdown()),
-            tags: isDeprecated(entry) ? [CompletionItemTag2.Deprecated] : [],
-            kind: CompletionItemKind2.Keyword
+            tags: isDeprecated(entry) ? [CompletionItemTag.Deprecated] : [],
+            kind: CompletionItemKind.Keyword
           });
         });
         this.getCompletionsForSelector(null, false, result);
@@ -17634,17 +19295,17 @@ var init_cssCompletion = __esm({
           if (this.hasCharacterAtPosition(this.offset - this.currentWord.length - 1, ":")) {
             this.currentWord = ":" + this.currentWord;
           }
-          this.defaultReplaceRange = Range2.create(Position2.create(this.position.line, this.position.character - this.currentWord.length), this.position);
+          this.defaultReplaceRange = Range.create(Position.create(this.position.line, this.position.character - this.currentWord.length), this.position);
         }
         const pseudoClasses = this.cssDataManager.getPseudoClasses();
         pseudoClasses.forEach((entry) => {
           const insertText = moveCursorInsideParenthesis(entry.name);
           const item = {
             label: entry.name,
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), insertText),
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), insertText),
             documentation: getEntryDescription(entry, this.doesSupportMarkdown()),
-            tags: isDeprecated(entry) ? [CompletionItemTag2.Deprecated] : [],
-            kind: CompletionItemKind2.Function,
+            tags: isDeprecated(entry) ? [CompletionItemTag.Deprecated] : [],
+            kind: CompletionItemKind.Function,
             insertTextFormat: entry.name !== insertText ? SnippetFormat : void 0
           };
           if (startsWith(entry.name, ":-")) {
@@ -17657,10 +19318,10 @@ var init_cssCompletion = __esm({
           const insertText = moveCursorInsideParenthesis(entry.name);
           const item = {
             label: entry.name,
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), insertText),
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), insertText),
             documentation: getEntryDescription(entry, this.doesSupportMarkdown()),
-            tags: isDeprecated(entry) ? [CompletionItemTag2.Deprecated] : [],
-            kind: CompletionItemKind2.Function,
+            tags: isDeprecated(entry) ? [CompletionItemTag.Deprecated] : [],
+            kind: CompletionItemKind.Function,
             insertTextFormat: entry.name !== insertText ? SnippetFormat : void 0
           };
           if (startsWith(entry.name, "::-")) {
@@ -17672,15 +19333,15 @@ var init_cssCompletion = __esm({
           for (const entry of html5Tags) {
             result.items.push({
               label: entry,
-              textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), entry),
-              kind: CompletionItemKind2.Keyword
+              textEdit: TextEdit.replace(this.getCompletionRange(existingNode), entry),
+              kind: CompletionItemKind.Keyword
             });
           }
           for (const entry of svgElements) {
             result.items.push({
               label: entry,
-              textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), entry),
-              kind: CompletionItemKind2.Keyword
+              textEdit: TextEdit.replace(this.getCompletionRange(existingNode), entry),
+              kind: CompletionItemKind.Keyword
             });
           }
         }
@@ -17694,8 +19355,8 @@ var init_cssCompletion = __esm({
               visited[selector] = true;
               result.items.push({
                 label: selector,
-                textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), selector),
-                kind: CompletionItemKind2.Keyword
+                textEdit: TextEdit.replace(this.getCompletionRange(existingNode), selector),
+                kind: CompletionItemKind.Keyword
               });
             }
             return false;
@@ -17818,9 +19479,9 @@ var init_cssCompletion = __esm({
         return {
           label: symbol.name,
           detail: symbol.name + "(" + params.join(", ") + ")",
-          textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), insertText),
+          textEdit: TextEdit.replace(this.getCompletionRange(existingNode), insertText),
           insertTextFormat: SnippetFormat,
-          kind: CompletionItemKind2.Function,
+          kind: CompletionItemKind.Function,
           sortText: SortTexts.Term
         };
       }
@@ -17883,10 +19544,10 @@ var init_cssCompletion = __esm({
           }
           result.items.push({
             label: descriptor.name,
-            textEdit: TextEdit2.replace(this.getCompletionRange(null), text),
+            textEdit: TextEdit.replace(this.getCompletionRange(null), text),
             documentation: getEntryDescription(descriptor, this.doesSupportMarkdown()),
-            tags: isDeprecated(descriptor) ? [CompletionItemTag2.Deprecated] : [],
-            kind: CompletionItemKind2.Keyword,
+            tags: isDeprecated(descriptor) ? [CompletionItemTag.Deprecated] : [],
+            kind: CompletionItemKind.Keyword,
             command
           });
         }
@@ -17903,7 +19564,7 @@ var init_cssCompletion = __esm({
           uriValue = "";
           position = this.position;
           const emptyURIValuePosition = this.textDocument.positionAt(uriLiteralNode.offset + "url(".length);
-          range = Range2.create(emptyURIValuePosition, emptyURIValuePosition);
+          range = Range.create(emptyURIValuePosition, emptyURIValuePosition);
         } else {
           const uriValueNode = uriLiteralNode.getChild(0);
           uriValue = uriValueNode.getText();
@@ -17945,7 +19606,7 @@ var init_cssCompletion = __esm({
             return this.supportsMarkdown;
           }
           const documentationFormat = (_c = (_b = (_a3 = this.lsOptions.clientCapabilities.textDocument) == null ? void 0 : _a3.completion) == null ? void 0 : _b.completionItem) == null ? void 0 : _c.documentationFormat;
-          this.supportsMarkdown = Array.isArray(documentationFormat) && documentationFormat.indexOf(MarkupKind2.Markdown) !== -1;
+          this.supportsMarkdown = Array.isArray(documentationFormat) && documentationFormat.indexOf(MarkupKind.Markdown) !== -1;
         }
         return this.supportsMarkdown;
       }
@@ -18130,7 +19791,7 @@ var init_selectorPrinting = __esm({
     "use strict";
     init_cssNodes();
     init_cssScanner();
-    l10n4 = __toESM(require_main4());
+    l10n4 = __toESM(require_main5());
     init_cssParser();
     Element = class _Element {
       constructor() {
@@ -18538,7 +20199,7 @@ var init_cssHover = __esm({
       }
       doHover(document, position, stylesheet, settings = this.defaultSettings) {
         function getRange2(node) {
-          return Range2.create(document.positionAt(node.offset), document.positionAt(node.end));
+          return Range.create(document.positionAt(node.offset), document.positionAt(node.end));
         }
         const offset = document.offsetAt(position);
         const nodepath = getNodePath(stylesheet, offset);
@@ -18656,7 +20317,7 @@ var init_cssHover = __esm({
             return this.supportsMarkdown;
           }
           const hover = this.clientCapabilities.textDocument && this.clientCapabilities.textDocument.hover;
-          this.supportsMarkdown = hover && hover.contentFormat && Array.isArray(hover.contentFormat) && hover.contentFormat.indexOf(MarkupKind2.Markdown) !== -1;
+          this.supportsMarkdown = hover && hover.contentFormat && Array.isArray(hover.contentFormat) && hover.contentFormat.indexOf(MarkupKind.Markdown) !== -1;
         }
         return this.supportsMarkdown;
       }
@@ -18674,7 +20335,7 @@ function getColorInformation(node, document) {
   return null;
 }
 function getRange(node, document) {
-  return Range2.create(document.positionAt(node.offset), document.positionAt(node.end));
+  return Range.create(document.positionAt(node.offset), document.positionAt(node.end));
 }
 function containsRange(range, otherRange) {
   const otherStartLine = otherRange.start.line, otherEndLine = otherRange.end.line;
@@ -18695,12 +20356,12 @@ function containsRange(range, otherRange) {
 }
 function getHighlightKind(node) {
   if (node.type === NodeType.Selector) {
-    return DocumentHighlightKind2.Write;
+    return DocumentHighlightKind.Write;
   }
   if (node instanceof Identifier) {
     if (node.parent && node.parent instanceof Property) {
       if (node.isCustomProperty) {
-        return DocumentHighlightKind2.Write;
+        return DocumentHighlightKind.Write;
       }
     }
   }
@@ -18711,10 +20372,10 @@ function getHighlightKind(node) {
       case NodeType.Keyframe:
       case NodeType.VariableDeclaration:
       case NodeType.FunctionParameter:
-        return DocumentHighlightKind2.Write;
+        return DocumentHighlightKind.Write;
     }
   }
-  return DocumentHighlightKind2.Read;
+  return DocumentHighlightKind.Read;
 }
 function toTwoDigitHex(n) {
   const r = n.toString(16);
@@ -18739,7 +20400,7 @@ var init_cssNavigation = __esm({
   "node_modules/.aspect_rules_js/vscode-css-languageservice@6.3.9/node_modules/vscode-css-languageservice/lib/esm/services/cssNavigation.js"() {
     "use strict";
     init_cssLanguageTypes();
-    l10n5 = __toESM(require_main4());
+    l10n5 = __toESM(require_main5());
     init_cssNodes();
     init_cssSymbolScope();
     init_facts();
@@ -18902,7 +20563,7 @@ var init_cssNavigation = __esm({
           const entry = {
             name: name || l10n5.t("<undefined>"),
             kind,
-            location: Location2.create(document.uri, range)
+            location: Location.create(document.uri, range)
           };
           result.push(entry);
         };
@@ -18916,7 +20577,7 @@ var init_cssNavigation = __esm({
           const range = symbolNodeOrRange instanceof Node ? getRange(symbolNodeOrRange, document) : symbolNodeOrRange;
           let selectionRange = nameNodeOrRange instanceof Node ? getRange(nameNodeOrRange, document) : nameNodeOrRange;
           if (!selectionRange || !containsRange(range, selectionRange)) {
-            selectionRange = Range2.create(range.start, range.start);
+            selectionRange = Range.create(range.start, range.start);
           }
           const entry = {
             name: name || l10n5.t("<undefined>"),
@@ -18950,27 +20611,27 @@ var init_cssNavigation = __esm({
           if (node instanceof RuleSet) {
             for (const selector of node.getSelectors().getChildren()) {
               if (selector instanceof Selector) {
-                const range = Range2.create(document.positionAt(selector.offset), document.positionAt(node.end));
-                collect(selector.getText(), SymbolKind2.Class, range, selector, node.getDeclarations());
+                const range = Range.create(document.positionAt(selector.offset), document.positionAt(node.end));
+                collect(selector.getText(), SymbolKind.Class, range, selector, node.getDeclarations());
               }
             }
           } else if (node instanceof VariableDeclaration) {
-            collect(node.getName(), SymbolKind2.Variable, node, node.getVariable(), void 0);
+            collect(node.getName(), SymbolKind.Variable, node, node.getVariable(), void 0);
           } else if (node instanceof MixinDeclaration) {
-            collect(node.getName(), SymbolKind2.Method, node, node.getIdentifier(), node.getDeclarations());
+            collect(node.getName(), SymbolKind.Method, node, node.getIdentifier(), node.getDeclarations());
           } else if (node instanceof FunctionDeclaration) {
-            collect(node.getName(), SymbolKind2.Function, node, node.getIdentifier(), node.getDeclarations());
+            collect(node.getName(), SymbolKind.Function, node, node.getIdentifier(), node.getDeclarations());
           } else if (node instanceof Keyframe) {
             const name = l10n5.t("@keyframes {0}", node.getName());
-            collect(name, SymbolKind2.Class, node, node.getIdentifier(), node.getDeclarations());
+            collect(name, SymbolKind.Class, node, node.getIdentifier(), node.getDeclarations());
           } else if (node instanceof FontFace) {
             const name = l10n5.t("@font-face");
-            collect(name, SymbolKind2.Class, node, void 0, node.getDeclarations());
+            collect(name, SymbolKind.Class, node, void 0, node.getDeclarations());
           } else if (node instanceof Media) {
             const mediaList = node.getChild(0);
             if (mediaList instanceof Medialist) {
               const name = "@media " + mediaList.getText();
-              collect(name, SymbolKind2.Module, node, mediaList, node.getDeclarations());
+              collect(name, SymbolKind.Module, node, mediaList, node.getDeclarations());
             }
           } else if (node instanceof Scope) {
             let scopeName = "";
@@ -18978,7 +20639,7 @@ var init_cssNavigation = __esm({
             if (scopeLimits instanceof ScopeLimits) {
               scopeName = `${scopeLimits.getName()}`;
             }
-            collect(`@scope${scopeName ? ` ${scopeName}` : ""}`, SymbolKind2.Module, node, scopeLimits != null ? scopeLimits : void 0, node.getDeclarations());
+            collect(`@scope${scopeName ? ` ${scopeName}` : ""}`, SymbolKind.Module, node, scopeLimits != null ? scopeLimits : void 0, node.getDeclarations());
           }
           return true;
         });
@@ -19003,58 +20664,58 @@ var init_cssNavigation = __esm({
         } else {
           label = `rgba(${red256}, ${green256}, ${blue256}, ${color.alpha})`;
         }
-        result.push({ label, textEdit: TextEdit2.replace(range, label) });
+        result.push({ label, textEdit: TextEdit.replace(range, label) });
         if (color.alpha === 1) {
           label = `#${toTwoDigitHex(red256)}${toTwoDigitHex(green256)}${toTwoDigitHex(blue256)}`;
         } else {
           label = `#${toTwoDigitHex(red256)}${toTwoDigitHex(green256)}${toTwoDigitHex(blue256)}${toTwoDigitHex(Math.round(color.alpha * 255))}`;
         }
-        result.push({ label, textEdit: TextEdit2.replace(range, label) });
+        result.push({ label, textEdit: TextEdit.replace(range, label) });
         const hsl = hslFromColor(color);
         if (hsl.a === 1) {
           label = `hsl(${hsl.h}, ${Math.round(hsl.s * 100)}%, ${Math.round(hsl.l * 100)}%)`;
         } else {
           label = `hsla(${hsl.h}, ${Math.round(hsl.s * 100)}%, ${Math.round(hsl.l * 100)}%, ${hsl.a})`;
         }
-        result.push({ label, textEdit: TextEdit2.replace(range, label) });
+        result.push({ label, textEdit: TextEdit.replace(range, label) });
         const hwb = hwbFromColor(color);
         if (hwb.a === 1) {
           label = `hwb(${hwb.h} ${Math.round(hwb.w * 100)}% ${Math.round(hwb.b * 100)}%)`;
         } else {
           label = `hwb(${hwb.h} ${Math.round(hwb.w * 100)}% ${Math.round(hwb.b * 100)}% / ${hwb.a})`;
         }
-        result.push({ label, textEdit: TextEdit2.replace(range, label) });
+        result.push({ label, textEdit: TextEdit.replace(range, label) });
         const lab = labFromColor(color);
         if (lab.alpha === 1) {
           label = `lab(${lab.l}% ${lab.a} ${lab.b})`;
         } else {
           label = `lab(${lab.l}% ${lab.a} ${lab.b} / ${lab.alpha})`;
         }
-        result.push({ label, textEdit: TextEdit2.replace(range, label) });
+        result.push({ label, textEdit: TextEdit.replace(range, label) });
         const lch = lchFromColor(color);
         if (lch.alpha === 1) {
           label = `lch(${lch.l}% ${lch.c} ${lch.h})`;
         } else {
           label = `lch(${lch.l}% ${lch.c} ${lch.h} / ${lch.alpha})`;
         }
-        result.push({ label, textEdit: TextEdit2.replace(range, label) });
+        result.push({ label, textEdit: TextEdit.replace(range, label) });
         const oklab = oklabFromColor(color);
         label = oklab.alpha === 1 ? `oklab(${oklab.l}% ${oklab.a} ${oklab.b})` : `oklab(${oklab.l}% ${oklab.a} ${oklab.b} / ${oklab.alpha})`;
-        result.push({ label, textEdit: TextEdit2.replace(range, label) });
+        result.push({ label, textEdit: TextEdit.replace(range, label) });
         const oklch = oklchFromColor(color);
         label = oklch.alpha === 1 ? `oklch(${oklch.l}% ${oklch.c} ${oklch.h})` : `oklch(${oklch.l}% ${oklch.c} ${oklch.h} / ${oklch.alpha})`;
-        result.push({ label, textEdit: TextEdit2.replace(range, label) });
+        result.push({ label, textEdit: TextEdit.replace(range, label) });
         return result;
       }
       prepareRename(document, position, stylesheet) {
         const node = this.getHighlightNode(document, position, stylesheet);
         if (node) {
-          return Range2.create(document.positionAt(node.offset), document.positionAt(node.end));
+          return Range.create(document.positionAt(node.offset), document.positionAt(node.end));
         }
       }
       doRename(document, position, newName, stylesheet) {
         const highlights = this.findDocumentHighlights(document, position, stylesheet);
-        const edits = highlights.map((h) => TextEdit2.replace(h.range, newName));
+        const edits = highlights.map((h) => TextEdit.replace(h.range, newName));
         return {
           changes: { [document.uri]: edits }
         };
@@ -19175,7 +20836,7 @@ var init_lintRules = __esm({
   "node_modules/.aspect_rules_js/vscode-css-languageservice@6.3.9/node_modules/vscode-css-languageservice/lib/esm/services/lintRules.js"() {
     "use strict";
     init_cssNodes();
-    l10n6 = __toESM(require_main4());
+    l10n6 = __toESM(require_main5());
     Warning = Level.Warning;
     Error2 = Level.Error;
     Ignore = Level.Ignore;
@@ -19246,7 +20907,7 @@ var init_cssCodeActions = __esm({
     init_strings();
     init_lintRules();
     init_cssLanguageTypes();
-    l10n7 = __toESM(require_main4());
+    l10n7 = __toESM(require_main5());
     CSSCodeActions = class {
       constructor(cssDataManager) {
         this.cssDataManager = cssDataManager;
@@ -19254,7 +20915,7 @@ var init_cssCodeActions = __esm({
       doCodeActions(document, range, context, stylesheet) {
         return this.doCodeActions2(document, range, context, stylesheet).map((ca) => {
           const textDocumentEdit = ca.edit && ca.edit.documentChanges && ca.edit.documentChanges[0];
-          return Command2.create(ca.title, "_css.applyCodeAction", document.uri, document.version, textDocumentEdit && textDocumentEdit.edits);
+          return Command.create(ca.title, "_css.applyCodeAction", document.uri, document.version, textDocumentEdit && textDocumentEdit.edits);
         });
       }
       doCodeActions2(document, range, context, stylesheet) {
@@ -19282,10 +20943,10 @@ var init_cssCodeActions = __esm({
         for (const candidate of candidates) {
           const propertyName2 = candidate.property;
           const title = l10n7.t("Rename to '{0}'", propertyName2);
-          const edit = TextEdit2.replace(marker.range, propertyName2);
-          const documentIdentifier = VersionedTextDocumentIdentifier2.create(document.uri, document.version);
-          const workspaceEdit = { documentChanges: [TextDocumentEdit2.create(documentIdentifier, [edit])] };
-          const codeAction = CodeAction2.create(title, workspaceEdit, CodeActionKind2.QuickFix);
+          const edit = TextEdit.replace(marker.range, propertyName2);
+          const documentIdentifier = VersionedTextDocumentIdentifier.create(document.uri, document.version);
+          const workspaceEdit = { documentChanges: [TextDocumentEdit.create(documentIdentifier, [edit])] };
+          const codeAction = CodeAction.create(title, workspaceEdit, CodeActionKind.QuickFix);
           codeAction.diagnostics = [marker];
           result.push(codeAction);
           if (--maxActions <= 0) {
@@ -19502,7 +21163,7 @@ var l10n8, NodesByRootMap, LintVisitor;
 var init_lint = __esm({
   "node_modules/.aspect_rules_js/vscode-css-languageservice@6.3.9/node_modules/vscode-css-languageservice/lib/esm/services/lint.js"() {
     "use strict";
-    l10n8 = __toESM(require_main4());
+    l10n8 = __toESM(require_main5());
     init_facts();
     init_cssNodes();
     init_arrays();
@@ -20042,13 +21703,13 @@ var init_cssValidation = __esm({
           ruleIds.push(Rules[r].id);
         }
         function toDiagnostic(marker) {
-          const range = Range2.create(document.positionAt(marker.getOffset()), document.positionAt(marker.getOffset() + marker.getLength()));
+          const range = Range.create(document.positionAt(marker.getOffset()), document.positionAt(marker.getOffset() + marker.getLength()));
           const source = document.languageId;
           return {
             code: marker.getRule().id,
             source,
             message: marker.getMessage(),
-            severity: marker.getLevel() === Level.Warning ? DiagnosticSeverity2.Warning : DiagnosticSeverity2.Error,
+            severity: marker.getLevel() === Level.Warning ? DiagnosticSeverity.Warning : DiagnosticSeverity.Error,
             range
           };
         }
@@ -20152,7 +21813,7 @@ var l10n9, SCSSIssueType, SCSSParseError;
 var init_scssErrors = __esm({
   "node_modules/.aspect_rules_js/vscode-css-languageservice@6.3.9/node_modules/vscode-css-languageservice/lib/esm/parser/scssErrors.js"() {
     "use strict";
-    l10n9 = __toESM(require_main4());
+    l10n9 = __toESM(require_main5());
     SCSSIssueType = class {
       constructor(id, message) {
         this.id = id;
@@ -20917,7 +22578,7 @@ var init_scssCompletion = __esm({
     init_cssCompletion();
     init_cssNodes();
     init_cssLanguageTypes();
-    l10n10 = __toESM(require_main4());
+    l10n10 = __toESM(require_main5());
     sassDocumentationName = l10n10.t("Sass documentation");
     SCSSCompletion = class _SCSSCompletion extends CSSCompletion {
       constructor(lsServiceOptions, cssDataManager) {
@@ -20935,8 +22596,8 @@ var init_scssCompletion = __esm({
             const item = {
               label: p.label,
               documentation: p.documentation,
-              textEdit: TextEdit2.replace(this.getCompletionRange(importPathNode), `'${p.label}'`),
-              kind: CompletionItemKind2.Module
+              textEdit: TextEdit.replace(this.getCompletionRange(importPathNode), `'${p.label}'`),
+              kind: CompletionItemKind.Module
             };
             result.items.push(item);
           }
@@ -20957,9 +22618,9 @@ var init_scssCompletion = __esm({
             label,
             detail: p.func,
             documentation: p.desc,
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), insertText),
-            insertTextFormat: InsertTextFormat2.Snippet,
-            kind: CompletionItemKind2.Function
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), insertText),
+            insertTextFormat: InsertTextFormat.Snippet,
+            kind: CompletionItemKind.Function
           };
           if (sortToEnd) {
             item.sortText = "z";
@@ -20994,8 +22655,8 @@ var init_scssCompletion = __esm({
         for (const symbol of symbols) {
           const suggest = {
             label: symbol.name,
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), symbol.name),
-            kind: CompletionItemKind2.Function
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), symbol.name),
+            kind: CompletionItemKind.Function
           };
           result.items.push(suggest);
         }
@@ -21119,72 +22780,72 @@ var init_scssCompletion = __esm({
       {
         label: "@extend",
         documentation: l10n10.t("Inherits the styles of another selector."),
-        kind: CompletionItemKind2.Keyword
+        kind: CompletionItemKind.Keyword
       },
       {
         label: "@at-root",
         documentation: l10n10.t("Causes one or more rules to be emitted at the root of the document."),
-        kind: CompletionItemKind2.Keyword
+        kind: CompletionItemKind.Keyword
       },
       {
         label: "@debug",
         documentation: l10n10.t("Prints the value of an expression to the standard error output stream. Useful for debugging complicated Sass files."),
-        kind: CompletionItemKind2.Keyword
+        kind: CompletionItemKind.Keyword
       },
       {
         label: "@warn",
         documentation: l10n10.t("Prints the value of an expression to the standard error output stream. Useful for libraries that need to warn users of deprecations or recovering from minor mixin usage mistakes. Warnings can be turned off with the `--quiet` command-line option or the `:quiet` Sass option."),
-        kind: CompletionItemKind2.Keyword
+        kind: CompletionItemKind.Keyword
       },
       {
         label: "@error",
         documentation: l10n10.t("Throws the value of an expression as a fatal error with stack trace. Useful for validating arguments to mixins and functions."),
-        kind: CompletionItemKind2.Keyword
+        kind: CompletionItemKind.Keyword
       },
       {
         label: "@if",
         documentation: l10n10.t("Includes the body if the expression does not evaluate to `false` or `null`."),
         insertText: "@if ${1:expr} {\n	$0\n}",
-        insertTextFormat: InsertTextFormat2.Snippet,
-        kind: CompletionItemKind2.Keyword
+        insertTextFormat: InsertTextFormat.Snippet,
+        kind: CompletionItemKind.Keyword
       },
       {
         label: "@for",
         documentation: l10n10.t("For loop that repeatedly outputs a set of styles for each `$var` in the `from/through` or `from/to` clause."),
         insertText: "@for \\$${1:var} from ${2:start} ${3|to,through|} ${4:end} {\n	$0\n}",
-        insertTextFormat: InsertTextFormat2.Snippet,
-        kind: CompletionItemKind2.Keyword
+        insertTextFormat: InsertTextFormat.Snippet,
+        kind: CompletionItemKind.Keyword
       },
       {
         label: "@each",
         documentation: l10n10.t("Each loop that sets `$var` to each item in the list or map, then outputs the styles it contains using that value of `$var`."),
         insertText: "@each \\$${1:var} in ${2:list} {\n	$0\n}",
-        insertTextFormat: InsertTextFormat2.Snippet,
-        kind: CompletionItemKind2.Keyword
+        insertTextFormat: InsertTextFormat.Snippet,
+        kind: CompletionItemKind.Keyword
       },
       {
         label: "@while",
         documentation: l10n10.t("While loop that takes an expression and repeatedly outputs the nested styles until the statement evaluates to `false`."),
         insertText: "@while ${1:condition} {\n	$0\n}",
-        insertTextFormat: InsertTextFormat2.Snippet,
-        kind: CompletionItemKind2.Keyword
+        insertTextFormat: InsertTextFormat.Snippet,
+        kind: CompletionItemKind.Keyword
       },
       {
         label: "@mixin",
         documentation: l10n10.t("Defines styles that can be re-used throughout the stylesheet with `@include`."),
         insertText: "@mixin ${1:name} {\n	$0\n}",
-        insertTextFormat: InsertTextFormat2.Snippet,
-        kind: CompletionItemKind2.Keyword
+        insertTextFormat: InsertTextFormat.Snippet,
+        kind: CompletionItemKind.Keyword
       },
       {
         label: "@include",
         documentation: l10n10.t("Includes the styles defined by another mixin into the current rule."),
-        kind: CompletionItemKind2.Keyword
+        kind: CompletionItemKind.Keyword
       },
       {
         label: "@function",
         documentation: l10n10.t("Defines complex operations that can be re-used throughout stylesheets."),
-        kind: CompletionItemKind2.Keyword
+        kind: CompletionItemKind.Keyword
       }
     ];
     SCSSCompletion.scssModuleLoaders = [
@@ -21193,16 +22854,16 @@ var init_scssCompletion = __esm({
         documentation: l10n10.t("Loads mixins, functions, and variables from other Sass stylesheets as 'modules', and combines CSS from multiple stylesheets together."),
         references: [{ name: sassDocumentationName, url: "https://sass-lang.com/documentation/at-rules/use" }],
         insertText: "@use $0;",
-        insertTextFormat: InsertTextFormat2.Snippet,
-        kind: CompletionItemKind2.Keyword
+        insertTextFormat: InsertTextFormat.Snippet,
+        kind: CompletionItemKind.Keyword
       },
       {
         label: "@forward",
         documentation: l10n10.t("Loads a Sass stylesheet and makes its mixins, functions, and variables available when this stylesheet is loaded with the @use rule."),
         references: [{ name: sassDocumentationName, url: "https://sass-lang.com/documentation/at-rules/forward" }],
         insertText: "@forward $0;",
-        insertTextFormat: InsertTextFormat2.Snippet,
-        kind: CompletionItemKind2.Keyword
+        insertTextFormat: InsertTextFormat.Snippet,
+        kind: CompletionItemKind.Keyword
       }
     ];
     SCSSCompletion.scssModuleBuiltIns = [
@@ -21965,7 +23626,7 @@ var init_lessCompletion = __esm({
     "use strict";
     init_cssCompletion();
     init_cssLanguageTypes();
-    l10n11 = __toESM(require_main4());
+    l10n11 = __toESM(require_main5());
     LESSCompletion = class _LESSCompletion extends CSSCompletion {
       constructor(lsOptions, cssDataManager) {
         super("@", lsOptions, cssDataManager);
@@ -21976,9 +23637,9 @@ var init_lessCompletion = __esm({
             label: p.name,
             detail: p.example,
             documentation: p.description,
-            textEdit: TextEdit2.replace(this.getCompletionRange(existingNode), p.name + "($0)"),
-            insertTextFormat: InsertTextFormat2.Snippet,
-            kind: CompletionItemKind2.Function
+            textEdit: TextEdit.replace(this.getCompletionRange(existingNode), p.name + "($0)"),
+            insertTextFormat: InsertTextFormat.Snippet,
+            kind: CompletionItemKind.Function
           };
           if (sortToEnd) {
             item.sortText = "z";
@@ -23621,12 +25282,12 @@ function format(document, range, options2) {
     if (extendedEnd === value.length || isEOL2(value, extendedEnd)) {
       endOffset = extendedEnd;
     }
-    range = Range2.create(document.positionAt(startOffset), document.positionAt(endOffset));
+    range = Range.create(document.positionAt(startOffset), document.positionAt(endOffset));
     inRule = isInRule(value, startOffset);
     includesEnd = endOffset === value.length;
     value = value.substring(startOffset, endOffset);
     if (startOffset !== 0) {
-      const startOfLineOffset = document.offsetAt(Position2.create(range.start.line, 0));
+      const startOfLineOffset = document.offsetAt(Position.create(range.start.line, 0));
       initialIndentLevel = computeIndentLevel(document.getText(), startOfLineOffset, options2);
     }
     if (inRule) {
@@ -23634,7 +25295,7 @@ function format(document, range, options2) {
 ${trimLeft(value)}`;
     }
   } else {
-    range = Range2.create(Position2.create(0, 0), document.positionAt(value.length));
+    range = Range.create(Position.create(0, 0), document.positionAt(value.length));
   }
   const cssOptions = {
     indent_size: tabSize,
@@ -57699,10 +59360,10 @@ function getSelectionRanges(document, positions, stylesheet) {
     const applicableRanges = getApplicableRanges(position);
     let current = void 0;
     for (let index = applicableRanges.length - 1; index >= 0; index--) {
-      current = SelectionRange2.create(Range2.create(document.positionAt(applicableRanges[index][0]), document.positionAt(applicableRanges[index][1])), current);
+      current = SelectionRange.create(Range.create(document.positionAt(applicableRanges[index][0]), document.positionAt(applicableRanges[index][1])), current);
     }
     if (!current) {
-      current = SelectionRange2.create(Range2.create(position, position));
+      current = SelectionRange.create(Range.create(position, position));
     }
     return current;
   }
@@ -57875,43 +59536,43 @@ var init_scssNavigation = __esm({
 var cssLanguageService_exports = {};
 __export(cssLanguageService_exports, {
   ClientCapabilities: () => ClientCapabilities,
-  CodeAction: () => CodeAction2,
-  CodeActionContext: () => CodeActionContext2,
-  CodeActionKind: () => CodeActionKind2,
-  Color: () => Color2,
-  ColorInformation: () => ColorInformation2,
-  ColorPresentation: () => ColorPresentation2,
-  Command: () => Command2,
-  CompletionItem: () => CompletionItem2,
-  CompletionItemKind: () => CompletionItemKind2,
-  CompletionItemTag: () => CompletionItemTag2,
-  CompletionList: () => CompletionList2,
-  Diagnostic: () => Diagnostic2,
-  DiagnosticSeverity: () => DiagnosticSeverity2,
-  DocumentHighlight: () => DocumentHighlight2,
-  DocumentHighlightKind: () => DocumentHighlightKind2,
-  DocumentLink: () => DocumentLink2,
-  DocumentSymbol: () => DocumentSymbol2,
+  CodeAction: () => CodeAction,
+  CodeActionContext: () => CodeActionContext,
+  CodeActionKind: () => CodeActionKind,
+  Color: () => Color,
+  ColorInformation: () => ColorInformation,
+  ColorPresentation: () => ColorPresentation,
+  Command: () => Command,
+  CompletionItem: () => CompletionItem,
+  CompletionItemKind: () => CompletionItemKind,
+  CompletionItemTag: () => CompletionItemTag,
+  CompletionList: () => CompletionList,
+  Diagnostic: () => Diagnostic,
+  DiagnosticSeverity: () => DiagnosticSeverity,
+  DocumentHighlight: () => DocumentHighlight,
+  DocumentHighlightKind: () => DocumentHighlightKind,
+  DocumentLink: () => DocumentLink,
+  DocumentSymbol: () => DocumentSymbol,
   DocumentUri: () => DocumentUri,
   FileType: () => FileType,
-  FoldingRange: () => FoldingRange2,
-  FoldingRangeKind: () => FoldingRangeKind2,
-  Hover: () => Hover2,
-  InsertTextFormat: () => InsertTextFormat2,
-  Location: () => Location2,
-  MarkedString: () => MarkedString2,
-  MarkupContent: () => MarkupContent2,
-  MarkupKind: () => MarkupKind2,
-  Position: () => Position2,
-  Range: () => Range2,
-  SelectionRange: () => SelectionRange2,
-  SymbolInformation: () => SymbolInformation2,
-  SymbolKind: () => SymbolKind2,
-  TextDocument: () => TextDocument3,
-  TextDocumentEdit: () => TextDocumentEdit2,
-  TextEdit: () => TextEdit2,
-  VersionedTextDocumentIdentifier: () => VersionedTextDocumentIdentifier2,
-  WorkspaceEdit: () => WorkspaceEdit2,
+  FoldingRange: () => FoldingRange,
+  FoldingRangeKind: () => FoldingRangeKind,
+  Hover: () => Hover,
+  InsertTextFormat: () => InsertTextFormat,
+  Location: () => Location,
+  MarkedString: () => MarkedString,
+  MarkupContent: () => MarkupContent,
+  MarkupKind: () => MarkupKind,
+  Position: () => Position,
+  Range: () => Range,
+  SelectionRange: () => SelectionRange,
+  SymbolInformation: () => SymbolInformation,
+  SymbolKind: () => SymbolKind,
+  TextDocument: () => TextDocument2,
+  TextDocumentEdit: () => TextDocumentEdit,
+  TextEdit: () => TextEdit,
+  VersionedTextDocumentIdentifier: () => VersionedTextDocumentIdentifier,
+  WorkspaceEdit: () => WorkspaceEdit,
   getCSSLanguageService: () => getCSSLanguageService,
   getDefaultCSSDataProvider: () => getDefaultCSSDataProvider,
   getLESSLanguageService: () => getLESSLanguageService,
@@ -273419,10 +275080,10 @@ var require_completions = __commonJS({
     exports2.onCompletion = onCompletion;
     exports2.onCompletionResolve = onCompletionResolve;
     exports2.readNgCompletionData = readNgCompletionData;
-    var lsp = __importStar(require_main3());
+    var lsp = __importStar(require_main4());
     var ts = __importStar(require("typescript/lib/tsserverlibrary"));
     var vscode_css_languageservice_1 = (init_cssLanguageService(), __toCommonJS(cssLanguageService_exports));
-    var vscode_languageserver_textdocument_1 = (init_main3(), __toCommonJS(main_exports2));
+    var vscode_languageserver_textdocument_1 = (init_main2(), __toCommonJS(main_exports));
     var embedded_support_1 = require_embedded_support();
     var utils_1 = require_utils();
     var text_render_1 = require_text_render();
@@ -273685,7 +275346,7 @@ var require_definitions = __commonJS({
     exports2.onDefinition = onDefinition;
     exports2.onTypeDefinition = onTypeDefinition;
     exports2.onReferences = onReferences;
-    var lsp = __importStar(require_main3());
+    var lsp = __importStar(require_main4());
     var utils_1 = require_utils();
     var EMPTY_RANGE = lsp.Range.create(0, 0, 0, 0);
     function onDefinition(session, params) {
@@ -273800,8 +275461,8 @@ var require_definitions = __commonJS({
 var TokenType2, ScannerState, ClientCapabilities2, FileType2;
 var init_htmlLanguageTypes = __esm({
   "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/htmlLanguageTypes.js"() {
+    init_main();
     init_main2();
-    init_main3();
     (function(TokenType3) {
       TokenType3[TokenType3["StartCommentTag"] = 0] = "StartCommentTag";
       TokenType3[TokenType3["Comment"] = 1] = "Comment";
@@ -273844,11 +275505,11 @@ var init_htmlLanguageTypes = __esm({
         textDocument: {
           completion: {
             completionItem: {
-              documentationFormat: [MarkupKind2.Markdown, MarkupKind2.PlainText]
+              documentationFormat: [MarkupKind.Markdown, MarkupKind.PlainText]
             }
           },
           hover: {
-            contentFormat: [MarkupKind2.Markdown, MarkupKind2.PlainText]
+            contentFormat: [MarkupKind.Markdown, MarkupKind.PlainText]
           }
         }
       };
@@ -274125,7 +275786,7 @@ function createScanner(input, initialOffset = 0, initialState = ScannerState.Wit
 var l10n12, MultiLineStream2, _BNG3, _MIN2, _LAN3, _RAN3, _FSL4, _EQS3, _DQO2, _SQO2, _NWL4, _CAR4, _LFD4, _WSP2, _TAB2, htmlScriptContents;
 var init_htmlScanner = __esm({
   "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.1/node_modules/vscode-html-languageservice/lib/esm/parser/htmlScanner.js"() {
-    l10n12 = __toESM(require_main4());
+    l10n12 = __toESM(require_main5());
     init_htmlLanguageTypes();
     MultiLineStream2 = class {
       constructor(source, position) {
@@ -277027,7 +278688,7 @@ function pathToReplaceRange2(valueBeforeCursor, fullValue, range) {
     } else {
       endPos = shiftPosition2(range.end, -1);
     }
-    replaceRange = Range2.create(startPos, endPos);
+    replaceRange = Range.create(startPos, endPos);
   }
   return replaceRange;
 }
@@ -277036,8 +278697,8 @@ function createCompletionItem2(p, isDir, replaceRange) {
     p = p + "/";
     return {
       label: p,
-      kind: CompletionItemKind2.Folder,
-      textEdit: TextEdit2.replace(replaceRange, p),
+      kind: CompletionItemKind.Folder,
+      textEdit: TextEdit.replace(replaceRange, p),
       command: {
         title: "Suggest",
         command: "editor.action.triggerSuggest"
@@ -277046,18 +278707,18 @@ function createCompletionItem2(p, isDir, replaceRange) {
   } else {
     return {
       label: p,
-      kind: CompletionItemKind2.File,
-      textEdit: TextEdit2.replace(replaceRange, p)
+      kind: CompletionItemKind.File,
+      textEdit: TextEdit.replace(replaceRange, p)
     };
   }
 }
 function shiftPosition2(pos, offset) {
-  return Position2.create(pos.line, pos.character + offset);
+  return Position.create(pos.line, pos.character + offset);
 }
 function shiftRange2(range, startOffset, endOffset) {
   const start = shiftPosition2(range.start, startOffset);
   const end = shiftPosition2(range.end, endOffset);
-  return Range2.create(start, end);
+  return Range.create(start, end);
 }
 var PathCompletionParticipant2, CharCode_dot2;
 var init_pathCompletion2 = __esm({
@@ -277200,7 +278861,7 @@ var init_htmlCompletion = __esm({
     init_htmlScanner();
     init_htmlLanguageTypes();
     init_htmlEntities();
-    l10n13 = __toESM(require_main4());
+    l10n13 = __toESM(require_main5());
     init_strings2();
     init_object();
     init_dataProvider2();
@@ -277268,10 +278929,10 @@ var init_htmlCompletion = __esm({
             provider.provideTags().forEach((tag) => {
               result.items.push({
                 label: tag.name,
-                kind: CompletionItemKind2.Property,
+                kind: CompletionItemKind.Property,
                 documentation: generateDocumentation(tag, void 0, doesSupportMarkdown),
-                textEdit: TextEdit2.replace(range, tag.name),
-                insertTextFormat: InsertTextFormat2.PlainText
+                textEdit: TextEdit.replace(range, tag.name),
+                insertTextFormat: InsertTextFormat.PlainText
               });
             });
           });
@@ -277306,16 +278967,16 @@ var init_htmlCompletion = __esm({
             if (tag && (!curr.closed || curr.endTagStart && curr.endTagStart > offset)) {
               const item = {
                 label: "/" + tag,
-                kind: CompletionItemKind2.Property,
+                kind: CompletionItemKind.Property,
                 filterText: "/" + tag,
-                textEdit: TextEdit2.replace(range, "/" + tag + closeTag),
-                insertTextFormat: InsertTextFormat2.PlainText
+                textEdit: TextEdit.replace(range, "/" + tag + closeTag),
+                insertTextFormat: InsertTextFormat.PlainText
               };
               const startIndent = getLineIndent(curr.start);
               const endIndent = getLineIndent(afterOpenBracket - 1);
               if (startIndent !== null && endIndent !== null && startIndent !== endIndent) {
                 const insertText = startIndent + "</" + tag + closeTag;
-                item.textEdit = TextEdit2.replace(getReplaceRange(afterOpenBracket - 1 - endIndent.length), insertText);
+                item.textEdit = TextEdit.replace(getReplaceRange(afterOpenBracket - 1 - endIndent.length), insertText);
                 item.filterText = endIndent + "</" + tag;
               }
               result.items.push(item);
@@ -277330,11 +278991,11 @@ var init_htmlCompletion = __esm({
             provider.provideTags().forEach((tag) => {
               result.items.push({
                 label: "/" + tag.name,
-                kind: CompletionItemKind2.Property,
+                kind: CompletionItemKind.Property,
                 documentation: generateDocumentation(tag, void 0, doesSupportMarkdown),
                 filterText: "/" + tag.name + closeTag,
-                textEdit: TextEdit2.replace(range, "/" + tag.name + closeTag),
-                insertTextFormat: InsertTextFormat2.PlainText
+                textEdit: TextEdit.replace(range, "/" + tag.name + closeTag),
+                insertTextFormat: InsertTextFormat.PlainText
               });
             });
           });
@@ -277349,10 +279010,10 @@ var init_htmlCompletion = __esm({
             const pos = document.positionAt(tagCloseEnd);
             result.items.push({
               label: "</" + tag + ">",
-              kind: CompletionItemKind2.Property,
+              kind: CompletionItemKind.Property,
               filterText: "</" + tag + ">",
-              textEdit: TextEdit2.insert(pos, "$0</" + tag + ">"),
-              insertTextFormat: InsertTextFormat2.Snippet
+              textEdit: TextEdit.insert(pos, "$0</" + tag + ">"),
+              insertTextFormat: InsertTextFormat.Snippet
             });
           }
           return result;
@@ -277409,10 +279070,10 @@ var init_htmlCompletion = __esm({
               }
               result.items.push({
                 label: attr.name,
-                kind: attr.valueSet === "handler" ? CompletionItemKind2.Function : CompletionItemKind2.Value,
+                kind: attr.valueSet === "handler" ? CompletionItemKind.Function : CompletionItemKind.Value,
                 documentation: generateDocumentation(attr, void 0, doesSupportMarkdown),
-                textEdit: TextEdit2.replace(range, codeSnippet),
-                insertTextFormat: InsertTextFormat2.Snippet,
+                textEdit: TextEdit.replace(range, codeSnippet),
+                insertTextFormat: InsertTextFormat.Snippet,
                 command
               });
             });
@@ -277437,9 +279098,9 @@ var init_htmlCompletion = __esm({
           }
           Object.keys(dataAttributes).forEach((attr) => result.items.push({
             label: attr,
-            kind: CompletionItemKind2.Value,
-            textEdit: TextEdit2.replace(range, dataAttributes[attr]),
-            insertTextFormat: InsertTextFormat2.Snippet
+            kind: CompletionItemKind.Value,
+            textEdit: TextEdit.replace(range, dataAttributes[attr]),
+            insertTextFormat: InsertTextFormat.Snippet
           }));
         }
         function collectAttributeValueSuggestions(valueStart, valueEnd = offset) {
@@ -277478,10 +279139,10 @@ var init_htmlCompletion = __esm({
               result.items.push({
                 label: value.name,
                 filterText: insertText,
-                kind: CompletionItemKind2.Unit,
+                kind: CompletionItemKind.Unit,
                 documentation: generateDocumentation(value, void 0, doesSupportMarkdown),
-                textEdit: TextEdit2.replace(range, insertText),
-                insertTextFormat: InsertTextFormat2.PlainText
+                textEdit: TextEdit.replace(range, insertText),
+                insertTextFormat: InsertTextFormat.PlainText
               });
             });
           });
@@ -277513,16 +279174,16 @@ var init_htmlCompletion = __esm({
             characterStart--;
           }
           if (k >= 0 && text[k] === "&") {
-            const range = Range2.create(Position2.create(position.line, characterStart - 1), position);
+            const range = Range.create(Position.create(position.line, characterStart - 1), position);
             for (const entity in entities) {
               if (endsWith2(entity, ";")) {
                 const label = "&" + entity;
                 result.items.push({
                   label,
-                  kind: CompletionItemKind2.Keyword,
+                  kind: CompletionItemKind.Keyword,
                   documentation: l10n13.t("Character entity representing '{0}'", entities[entity]),
-                  textEdit: TextEdit2.replace(range, label),
-                  insertTextFormat: InsertTextFormat2.PlainText
+                  textEdit: TextEdit.replace(range, label),
+                  insertTextFormat: InsertTextFormat.PlainText
                 });
               }
             }
@@ -277533,10 +279194,10 @@ var init_htmlCompletion = __esm({
           const range = getReplaceRange(replaceStart, replaceEnd);
           result.items.push({
             label: "!DOCTYPE",
-            kind: CompletionItemKind2.Property,
+            kind: CompletionItemKind.Property,
             documentation: "A preamble for an HTML document.",
-            textEdit: TextEdit2.replace(range, "!DOCTYPE html>"),
-            insertTextFormat: InsertTextFormat2.PlainText
+            textEdit: TextEdit.replace(range, "!DOCTYPE html>"),
+            insertTextFormat: InsertTextFormat.PlainText
           });
         }
         let token = scanner.scan();
@@ -277736,7 +279397,7 @@ var init_htmlCompletion = __esm({
             return this.supportsMarkdown;
           }
           const documentationFormat = (_c = (_b = (_a3 = this.lsOptions.clientCapabilities.textDocument) == null ? void 0 : _a3.completion) == null ? void 0 : _b.completionItem) == null ? void 0 : _c.documentationFormat;
-          this.supportsMarkdown = Array.isArray(documentationFormat) && documentationFormat.indexOf(MarkupKind2.Markdown) !== -1;
+          this.supportsMarkdown = Array.isArray(documentationFormat) && documentationFormat.indexOf(MarkupKind.Markdown) !== -1;
         }
         return this.supportsMarkdown;
       }
@@ -277766,7 +279427,7 @@ var init_htmlHover = __esm({
     init_dataProvider2();
     init_htmlEntities();
     init_strings2();
-    l10n14 = __toESM(require_main4());
+    l10n14 = __toESM(require_main5());
     HTMLHover = class {
       constructor(lsOptions, dataManager) {
         this.lsOptions = lsOptions;
@@ -277902,9 +279563,9 @@ var init_htmlHover = __esm({
           if (k >= 0 && text[k] === "&") {
             let range = null;
             if (text[n] === ";") {
-              range = Range2.create(Position2.create(position.line, characterStart), Position2.create(position.line, characterEnd + 1));
+              range = Range.create(Position.create(position.line, characterStart), Position.create(position.line, characterEnd + 1));
             } else {
-              range = Range2.create(Position2.create(position.line, characterStart), Position2.create(position.line, characterEnd));
+              range = Range.create(Position.create(position.line, characterStart), Position.create(position.line, characterEnd));
             }
             return range;
           }
@@ -277995,7 +279656,7 @@ var init_htmlHover = __esm({
             return this.supportsMarkdown;
           }
           const contentFormat = (_c = (_b = (_a3 = this.lsOptions.clientCapabilities) == null ? void 0 : _a3.textDocument) == null ? void 0 : _b.hover) == null ? void 0 : _c.contentFormat;
-          this.supportsMarkdown = Array.isArray(contentFormat) && contentFormat.indexOf(MarkupKind2.Markdown) !== -1;
+          this.supportsMarkdown = Array.isArray(contentFormat) && contentFormat.indexOf(MarkupKind.Markdown) !== -1;
         }
         return this.supportsMarkdown;
       }
@@ -281272,7 +282933,7 @@ function format2(document, range, options2) {
     if (extendedEnd === value.length || isEOL3(value, extendedEnd)) {
       endOffset = extendedEnd;
     }
-    range = Range2.create(document.positionAt(startOffset), document.positionAt(endOffset));
+    range = Range.create(document.positionAt(startOffset), document.positionAt(endOffset));
     const firstHalf = value.substring(0, startOffset);
     if (new RegExp(/.*[<][^>]*$/).test(firstHalf)) {
       value = value.substring(startOffset, endOffset);
@@ -281284,11 +282945,11 @@ function format2(document, range, options2) {
     includesEnd = endOffset === value.length;
     value = value.substring(startOffset, endOffset);
     if (startOffset !== 0) {
-      const startOfLineOffset = document.offsetAt(Position2.create(range.start.line, 0));
+      const startOfLineOffset = document.offsetAt(Position.create(range.start.line, 0));
       initialIndentLevel = computeIndentLevel2(document.getText(), startOfLineOffset, options2);
     }
   } else {
-    range = Range2.create(Position2.create(0, 0), document.positionAt(value.length));
+    range = Range.create(Position.create(0, 0), document.positionAt(value.length));
   }
   const htmlOptions = {
     indent_size: tabSize,
@@ -281444,7 +283105,7 @@ function createLink(document, documentContext, attributeValue, startOffset, endO
   }
   const target = validateAndCleanURI(workspaceUrl, document);
   return {
-    range: Range2.create(document.positionAt(startOffset), document.positionAt(endOffset)),
+    range: Range.create(document.positionAt(startOffset), document.positionAt(endOffset)),
     target
   };
 }
@@ -281557,10 +283218,10 @@ function findDocumentHighlights(document, position, htmlDocument) {
   const endTagRange = typeof node.endTagStart === "number" && getTagNameRange(TokenType2.EndTag, document, node.endTagStart);
   if (startTagRange && covers(startTagRange, position) || endTagRange && covers(endTagRange, position)) {
     if (startTagRange) {
-      result.push({ kind: DocumentHighlightKind2.Read, range: startTagRange });
+      result.push({ kind: DocumentHighlightKind.Read, range: startTagRange });
     }
     if (endTagRange) {
-      result.push({ kind: DocumentHighlightKind2.Read, range: endTagRange });
+      result.push({ kind: DocumentHighlightKind.Read, range: endTagRange });
     }
   }
   return result;
@@ -281599,7 +283260,7 @@ function findDocumentSymbols(document, htmlDocument) {
   return symbols;
   function walk(node, parent) {
     var _a3;
-    const symbol = SymbolInformation2.create(node.name, node.kind, node.range, document.uri, parent == null ? void 0 : parent.name);
+    const symbol = SymbolInformation.create(node.name, node.kind, node.range, document.uri, parent == null ? void 0 : parent.name);
     (_a3 = symbol.containerName) != null ? _a3 : symbol.containerName = "";
     symbols.push(symbol);
     if (node.children) {
@@ -281618,8 +283279,8 @@ function findDocumentSymbols2(document, htmlDocument) {
 }
 function provideFileSymbolsInternal(document, node, symbols) {
   const name = nodeToName(node);
-  const range = Range2.create(document.positionAt(node.start), document.positionAt(node.end));
-  const symbol = DocumentSymbol2.create(name, void 0, SymbolKind2.Field, range, range);
+  const range = Range.create(document.positionAt(node.start), document.positionAt(node.end));
+  const symbol = DocumentSymbol.create(name, void 0, SymbolKind.Field, range, range);
   symbols.push(symbol);
   node.children.forEach((child) => {
     var _a3;
@@ -281735,8 +283396,8 @@ function findLinkedEditingRanges(document, position, htmlDocument) {
     node.endTagStart + "</".length <= offset && offset <= node.endTagStart + "</".length + tagLength
   ) {
     return [
-      Range2.create(document.positionAt(node.start + "<".length), document.positionAt(node.start + "<".length + tagLength)),
-      Range2.create(document.positionAt(node.endTagStart + "</".length), document.positionAt(node.endTagStart + "</".length + tagLength))
+      Range.create(document.positionAt(node.start + "<".length), document.positionAt(node.start + "<".length + tagLength)),
+      Range.create(document.positionAt(node.endTagStart + "</".length), document.positionAt(node.endTagStart + "</".length + tagLength))
     ];
   }
   return null;
@@ -281891,14 +283552,14 @@ var init_htmlFolding = __esm({
                     const endLine = startLine;
                     startLine = stackElement.startLine;
                     if (endLine > startLine && prevStart !== startLine) {
-                      addRange({ startLine, endLine, kind: FoldingRangeKind2.Region });
+                      addRange({ startLine, endLine, kind: FoldingRangeKind.Region });
                     }
                   }
                 }
               } else {
                 const endLine = document.positionAt(scanner.getTokenOffset() + scanner.getTokenLength()).line;
                 if (startLine < endLine) {
-                  addRange({ startLine, endLine, kind: FoldingRangeKind2.Comment });
+                  addRange({ startLine, endLine, kind: FoldingRangeKind.Comment });
                 }
               }
               break;
@@ -281937,12 +283598,12 @@ var init_htmlSelectionRange = __esm({
         for (let index = applicableRanges.length - 1; index >= 0; index--) {
           const range = applicableRanges[index];
           if (!prev || range[0] !== prev[0] || range[1] !== prev[1]) {
-            current = SelectionRange2.create(Range2.create(document.positionAt(applicableRanges[index][0]), document.positionAt(applicableRanges[index][1])), current);
+            current = SelectionRange.create(Range.create(document.positionAt(applicableRanges[index][0]), document.positionAt(applicableRanges[index][1])), current);
           }
           prev = range;
         }
         if (!current) {
-          current = SelectionRange2.create(Range2.create(position, position));
+          current = SelectionRange.create(Range.create(position, position));
         }
         return current;
       }
@@ -281954,7 +283615,7 @@ var init_htmlSelectionRange = __esm({
           if (currNode.startTagEnd !== currNode.end) {
             return [[currNode.start, currNode.end]];
           }
-          const closeRange = Range2.create(document.positionAt(currNode.startTagEnd - 2), document.positionAt(currNode.startTagEnd));
+          const closeRange = Range.create(document.positionAt(currNode.startTagEnd - 2), document.positionAt(currNode.startTagEnd));
           const closeText = document.getText(closeRange);
           if (closeText === "/>") {
             result.unshift([currNode.start + 1, currNode.startTagEnd - 2]);
@@ -282005,7 +283666,7 @@ var init_htmlSelectionRange = __esm({
         ];
       }
       getAttributeLevelRanges(document, currNode, currOffset) {
-        const currNodeRange = Range2.create(document.positionAt(currNode.start), document.positionAt(currNode.end));
+        const currNodeRange = Range.create(document.positionAt(currNode.start), document.positionAt(currNode.end));
         const currNodeText = document.getText(currNodeRange);
         const relativeOffset = currOffset - currNode.start;
         const scanner = createScanner(currNodeText);
@@ -294028,42 +295689,42 @@ var init_dataManager2 = __esm({
 var htmlLanguageService_exports = {};
 __export(htmlLanguageService_exports, {
   ClientCapabilities: () => ClientCapabilities2,
-  Color: () => Color2,
-  ColorInformation: () => ColorInformation2,
-  ColorPresentation: () => ColorPresentation2,
-  Command: () => Command2,
-  CompletionItem: () => CompletionItem2,
-  CompletionItemKind: () => CompletionItemKind2,
-  CompletionItemTag: () => CompletionItemTag2,
-  CompletionList: () => CompletionList2,
-  Diagnostic: () => Diagnostic2,
-  DocumentHighlight: () => DocumentHighlight2,
-  DocumentHighlightKind: () => DocumentHighlightKind2,
-  DocumentLink: () => DocumentLink2,
-  DocumentSymbol: () => DocumentSymbol2,
+  Color: () => Color,
+  ColorInformation: () => ColorInformation,
+  ColorPresentation: () => ColorPresentation,
+  Command: () => Command,
+  CompletionItem: () => CompletionItem,
+  CompletionItemKind: () => CompletionItemKind,
+  CompletionItemTag: () => CompletionItemTag,
+  CompletionList: () => CompletionList,
+  Diagnostic: () => Diagnostic,
+  DocumentHighlight: () => DocumentHighlight,
+  DocumentHighlightKind: () => DocumentHighlightKind,
+  DocumentLink: () => DocumentLink,
+  DocumentSymbol: () => DocumentSymbol,
   DocumentUri: () => DocumentUri,
   FileType: () => FileType2,
-  FoldingRange: () => FoldingRange2,
-  FoldingRangeKind: () => FoldingRangeKind2,
-  FormattingOptions: () => FormattingOptions2,
-  Hover: () => Hover2,
-  InsertReplaceEdit: () => InsertReplaceEdit2,
-  InsertTextFormat: () => InsertTextFormat2,
-  InsertTextMode: () => InsertTextMode2,
-  Location: () => Location2,
-  MarkedString: () => MarkedString2,
-  MarkupContent: () => MarkupContent2,
-  MarkupKind: () => MarkupKind2,
-  Position: () => Position2,
-  Range: () => Range2,
+  FoldingRange: () => FoldingRange,
+  FoldingRangeKind: () => FoldingRangeKind,
+  FormattingOptions: () => FormattingOptions,
+  Hover: () => Hover,
+  InsertReplaceEdit: () => InsertReplaceEdit,
+  InsertTextFormat: () => InsertTextFormat,
+  InsertTextMode: () => InsertTextMode,
+  Location: () => Location,
+  MarkedString: () => MarkedString,
+  MarkupContent: () => MarkupContent,
+  MarkupKind: () => MarkupKind,
+  Position: () => Position,
+  Range: () => Range,
   ScannerState: () => ScannerState,
-  SelectionRange: () => SelectionRange2,
-  SymbolInformation: () => SymbolInformation2,
-  SymbolKind: () => SymbolKind2,
-  TextDocument: () => TextDocument3,
-  TextEdit: () => TextEdit2,
+  SelectionRange: () => SelectionRange,
+  SymbolInformation: () => SymbolInformation,
+  SymbolKind: () => SymbolKind,
+  TextDocument: () => TextDocument2,
+  TextEdit: () => TextEdit,
   TokenType: () => TokenType2,
-  WorkspaceEdit: () => WorkspaceEdit2,
+  WorkspaceEdit: () => WorkspaceEdit,
   getDefaultHTMLDataProvider: () => getDefaultHTMLDataProvider,
   getLanguageService: () => getLanguageService,
   newHTMLDataProvider: () => newHTMLDataProvider
@@ -294179,10 +295840,10 @@ var require_folding = __commonJS({
     }();
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.onFoldingRanges = onFoldingRanges;
-    var lsp = __importStar(require_main3());
+    var lsp = __importStar(require_main4());
     var vscode_html_languageservice_1 = (init_htmlLanguageService(), __toCommonJS(htmlLanguageService_exports));
     var vscode_css_languageservice_1 = (init_cssLanguageService(), __toCommonJS(cssLanguageService_exports));
-    var vscode_languageserver_textdocument_1 = (init_main3(), __toCommonJS(main_exports2));
+    var vscode_languageserver_textdocument_1 = (init_main2(), __toCommonJS(main_exports));
     var embedded_support_1 = require_embedded_support();
     var utils_1 = require_utils();
     var htmlLS = (0, vscode_html_languageservice_1.getLanguageService)();
@@ -294230,7 +295891,7 @@ var require_hover = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.onHover = onHover;
     var vscode_css_languageservice_1 = (init_cssLanguageService(), __toCommonJS(cssLanguageService_exports));
-    var vscode_languageserver_textdocument_1 = (init_main3(), __toCommonJS(main_exports2));
+    var vscode_languageserver_textdocument_1 = (init_main2(), __toCommonJS(main_exports));
     var embedded_support_1 = require_embedded_support();
     var utils_1 = require_utils();
     var text_render_1 = require_text_render();
@@ -294334,7 +295995,7 @@ var require_initialization = __commonJS({
     }();
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.onInitialize = onInitialize;
-    var lsp = __importStar(require_main3());
+    var lsp = __importStar(require_main4());
     function onInitialize(session, params) {
       var _a3, _b, _c;
       session.snippetSupport = (_c = (_b = (_a3 = params.capabilities.textDocument) === null || _a3 === void 0 ? void 0 : _a3.completion) === null || _b === void 0 ? void 0 : _b.completionItem) === null || _c === void 0 ? void 0 : _c.snippetSupport;
@@ -294473,7 +296134,7 @@ var require_signature = __commonJS({
         return null;
       }
       return {
-        activeParameter: help.argumentCount > 0 ? help.argumentIndex : null,
+        activeParameter: help.argumentCount > 0 ? help.argumentIndex : void 0,
         activeSignature: help.selectedItemIndex,
         signatures: help.items.map((item) => {
           let label = (0, utils_1.tsDisplayPartsToText)(item.prefixDisplayParts);
@@ -294592,7 +296253,7 @@ var require_session = __commonJS({
     var lsp = __importStar(require_node3());
     var notifications_1 = require_notifications();
     var requests_1 = require_requests();
-    var diagnostic_1 = require_diagnostic();
+    var diagnostic_1 = require_diagnostic2();
     var utils_1 = require_utils();
     var code_actions_1 = require_code_actions();
     var code_lens_1 = require_code_lens();
