@@ -67,7 +67,8 @@ var require_cmdline_utils = __commonJS({
         disableBlockSyntax: hasArgument(argv, "--disableBlockSyntax"),
         disableLetSyntax: hasArgument(argv, "--disableLetSyntax"),
         angularCoreVersion: findArgument(argv, "--angularCoreVersion"),
-        suppressAngularDiagnosticCodes: findArgument(argv, "--suppressAngularDiagnosticCodes")
+        suppressAngularDiagnosticCodes: findArgument(argv, "--suppressAngularDiagnosticCodes"),
+        useClientSideFileWatcher: hasArgument(argv, "--useClientSideFileWatcher")
       };
     }
     function generateHelpMessage(argv) {
@@ -567,7 +568,8 @@ var require_cmdline_utils = __commonJS({
         disableBlockSyntax: hasArgument(argv, "--disableBlockSyntax"),
         disableLetSyntax: hasArgument(argv, "--disableLetSyntax"),
         angularCoreVersion: findArgument(argv, "--angularCoreVersion"),
-        suppressAngularDiagnosticCodes: findArgument(argv, "--suppressAngularDiagnosticCodes")
+        suppressAngularDiagnosticCodes: findArgument(argv, "--suppressAngularDiagnosticCodes"),
+        useClientSideFileWatcher: hasArgument(argv, "--useClientSideFileWatcher")
       };
     }
     function generateHelpMessage(argv) {
@@ -737,234 +739,6 @@ var require_logger = __commonJS({
         }
       }
     };
-  }
-});
-
-// vscode-ng-language-service/server/src/server_host.js
-var require_server_host = __commonJS({
-  "vscode-ng-language-service/server/src/server_host.js"(exports2) {
-    "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      var desc = Object.getOwnPropertyDescriptor(m, k);
-      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-        desc = { enumerable: true, get: function() {
-          return m[k];
-        } };
-      }
-      Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
-      Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
-      o["default"] = v;
-    });
-    var __importStar = exports2 && exports2.__importStar || /* @__PURE__ */ function() {
-      var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function(o2) {
-          var ar = [];
-          for (var k in o2)
-            if (Object.prototype.hasOwnProperty.call(o2, k))
-              ar[ar.length] = k;
-          return ar;
-        };
-        return ownKeys(o);
-      };
-      return function(mod) {
-        if (mod && mod.__esModule)
-          return mod;
-        var result = {};
-        if (mod != null) {
-          for (var k = ownKeys(mod), i = 0; i < k.length; i++)
-            if (k[i] !== "default")
-              __createBinding(result, mod, k[i]);
-        }
-        __setModuleDefault(result, mod);
-        return result;
-      };
-    }();
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.ServerHost = void 0;
-    var ts = __importStar(require("typescript/lib/tsserverlibrary"));
-    var NOOP_WATCHER = {
-      close() {
-      }
-    };
-    var ServerHost = class {
-      constructor(isG3) {
-        this.isG3 = isG3;
-        this.args = ts.sys.args;
-        this.newLine = ts.sys.newLine;
-        this.useCaseSensitiveFileNames = ts.sys.useCaseSensitiveFileNames;
-      }
-      write(s) {
-        ts.sys.write(s);
-      }
-      writeOutputIsTTY() {
-        return ts.sys.writeOutputIsTTY();
-      }
-      readFile(path, encoding) {
-        return ts.sys.readFile(path, encoding);
-      }
-      getFileSize(path) {
-        return ts.sys.getFileSize(path);
-      }
-      writeFile(path, data, writeByteOrderMark) {
-        return ts.sys.writeFile(path, data, writeByteOrderMark);
-      }
-      /**
-       * @pollingInterval - this parameter is used in polling-based watchers and
-       * ignored in watchers that use native OS file watching
-       */
-      watchFile(path, callback, pollingInterval, options2) {
-        return ts.sys.watchFile(path, callback, pollingInterval, options2);
-      }
-      watchDirectory(path, callback, recursive, options2) {
-        if (this.isG3 && path.startsWith("/google/src")) {
-          return NOOP_WATCHER;
-        }
-        return ts.sys.watchDirectory(path, callback, recursive, options2);
-      }
-      resolvePath(path) {
-        return ts.sys.resolvePath(path);
-      }
-      fileExists(path) {
-        if (path.endsWith(".ngtypecheck.ts")) {
-          return true;
-        }
-        return ts.sys.fileExists(path);
-      }
-      directoryExists(path) {
-        return ts.sys.directoryExists(path);
-      }
-      createDirectory(path) {
-        return ts.sys.createDirectory(path);
-      }
-      getExecutingFilePath() {
-        return ts.sys.getExecutingFilePath();
-      }
-      getCurrentDirectory() {
-        return ts.sys.getCurrentDirectory();
-      }
-      getDirectories(path) {
-        return ts.sys.getDirectories(path);
-      }
-      readDirectory(path, extensions, exclude, include, depth) {
-        return ts.sys.readDirectory(path, extensions, exclude, include, depth);
-      }
-      getModifiedTime(path) {
-        return ts.sys.getModifiedTime(path);
-      }
-      setModifiedTime(path, time) {
-        return ts.sys.setModifiedTime(path, time);
-      }
-      deleteFile(path) {
-        return ts.sys.deleteFile(path);
-      }
-      /**
-       * A good implementation is node.js' `crypto.createHash`.
-       * (https://nodejs.org/api/crypto.html#crypto_crypto_createhash_algorithm)
-       */
-      createHash(data) {
-        return ts.sys.createHash(data);
-      }
-      /**
-       * This must be cryptographically secure. Only implement this method using
-       * `crypto.createHash("sha256")`.
-       */
-      createSHA256Hash(data) {
-        return ts.sys.createSHA256Hash(data);
-      }
-      getMemoryUsage() {
-        return ts.sys.getMemoryUsage();
-      }
-      exit(exitCode) {
-        return ts.sys.exit(exitCode);
-      }
-      realpath(path) {
-        return ts.sys.realpath(path);
-      }
-      setTimeout(callback, ms, ...args) {
-        return ts.sys.setTimeout(callback, ms, ...args);
-      }
-      clearTimeout(timeoutId) {
-        return ts.sys.clearTimeout(timeoutId);
-      }
-      clearScreen() {
-        return ts.sys.clearScreen();
-      }
-      base64decode(input) {
-        return ts.sys.base64decode(input);
-      }
-      base64encode(input) {
-        return ts.sys.base64encode(input);
-      }
-      setImmediate(callback, ...args) {
-        return setImmediate(callback, ...args);
-      }
-      clearImmediate(timeoutId) {
-        return clearImmediate(timeoutId);
-      }
-      require(initialPath, moduleName) {
-        if (moduleName !== "@angular/language-service") {
-          return {
-            module: void 0,
-            error: new Error(`Angular server will not load plugin '${moduleName}'.`)
-          };
-        }
-        try {
-          const modulePath = require.resolve(moduleName, {
-            paths: [initialPath]
-          });
-          return {
-            module: require(modulePath),
-            error: void 0
-          };
-        } catch (e) {
-          return {
-            module: void 0,
-            error: e
-          };
-        }
-      }
-    };
-    exports2.ServerHost = ServerHost;
-  }
-});
-
-// node_modules/.aspect_rules_js/@angular+language-service@0.0.0/node_modules/@angular/language-service/api_bundle.js
-var require_api_bundle = __commonJS({
-  "node_modules/.aspect_rules_js/@angular+language-service@0.0.0/node_modules/@angular/language-service/api_bundle.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var api_exports = {};
-    __export2(api_exports, {
-      isNgLanguageService: () => isNgLanguageService
-    });
-    module2.exports = __toCommonJS2(api_exports);
-    function isNgLanguageService(ls) {
-      return "getTcb" in ls;
-    }
   }
 });
 
@@ -9852,6 +9626,294 @@ var require_node3 = __commonJS({
   "node_modules/.aspect_rules_js/vscode-languageserver@9.0.1/node_modules/vscode-languageserver/node.js"(exports2, module2) {
     "use strict";
     module2.exports = require_main4();
+  }
+});
+
+// vscode-ng-language-service/server/src/server_host.js
+var require_server_host = __commonJS({
+  "vscode-ng-language-service/server/src/server_host.js"(exports2) {
+    "use strict";
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    } : function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m[k];
+    });
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar = exports2 && exports2.__importStar || /* @__PURE__ */ function() {
+      var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function(o2) {
+          var ar = [];
+          for (var k in o2)
+            if (Object.prototype.hasOwnProperty.call(o2, k))
+              ar[ar.length] = k;
+          return ar;
+        };
+        return ownKeys(o);
+      };
+      return function(mod) {
+        if (mod && mod.__esModule)
+          return mod;
+        var result = {};
+        if (mod != null) {
+          for (var k = ownKeys(mod), i = 0; i < k.length; i++)
+            if (k[i] !== "default")
+              __createBinding(result, mod, k[i]);
+        }
+        __setModuleDefault(result, mod);
+        return result;
+      };
+    }();
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.ServerHost = void 0;
+    var ts = __importStar(require("typescript/lib/tsserverlibrary"));
+    var path = __importStar(require("path"));
+    var lsp = __importStar(require_node3());
+    var NOOP_WATCHER = {
+      close() {
+      }
+    };
+    var ServerHost = class {
+      constructor(isG3, useClientSideFileWatcher) {
+        this.isG3 = isG3;
+        this.useClientSideFileWatcher = useClientSideFileWatcher;
+        this.fileWatchers = /* @__PURE__ */ new Map();
+        this.directoryWatchers = /* @__PURE__ */ new Map();
+        this.args = ts.sys.args;
+        this.newLine = ts.sys.newLine;
+        this.useCaseSensitiveFileNames = ts.sys.useCaseSensitiveFileNames;
+      }
+      write(s) {
+        ts.sys.write(s);
+      }
+      writeOutputIsTTY() {
+        return ts.sys.writeOutputIsTTY();
+      }
+      readFile(path2, encoding) {
+        return ts.sys.readFile(path2, encoding);
+      }
+      getFileSize(path2) {
+        return ts.sys.getFileSize(path2);
+      }
+      writeFile(path2, data, writeByteOrderMark) {
+        return ts.sys.writeFile(path2, data, writeByteOrderMark);
+      }
+      /**
+       * @pollingInterval - this parameter is used in polling-based watchers and
+       * ignored in watchers that use native OS file watching
+       */
+      watchFile(path2, callback, pollingInterval, options2) {
+        var _a3;
+        if (!this.useClientSideFileWatcher) {
+          return ts.sys.watchFile(path2, callback, pollingInterval, options2);
+        }
+        const callbacks = (_a3 = this.fileWatchers.get(path2)) !== null && _a3 !== void 0 ? _a3 : /* @__PURE__ */ new Set();
+        callbacks.add(callback);
+        this.fileWatchers.set(path2, callbacks);
+        return {
+          close: () => {
+            const callbacks2 = this.fileWatchers.get(path2);
+            if (callbacks2) {
+              callbacks2.delete(callback);
+              if (callbacks2.size === 0) {
+                this.fileWatchers.delete(path2);
+              }
+            }
+          }
+        };
+      }
+      watchDirectory(path2, callback, recursive, options2) {
+        var _a3;
+        if (this.isG3 && path2.startsWith("/google/src")) {
+          return NOOP_WATCHER;
+        }
+        if (!this.useClientSideFileWatcher) {
+          return ts.sys.watchDirectory(path2, callback, recursive, options2);
+        }
+        const callbacks = (_a3 = this.directoryWatchers.get(path2)) !== null && _a3 !== void 0 ? _a3 : /* @__PURE__ */ new Set();
+        const watcher = { callback, recursive: !!recursive };
+        callbacks.add(watcher);
+        this.directoryWatchers.set(path2, callbacks);
+        return {
+          close: () => {
+            const callbacks2 = this.directoryWatchers.get(path2);
+            if (callbacks2) {
+              callbacks2.delete(watcher);
+              if (callbacks2.size === 0) {
+                this.directoryWatchers.delete(path2);
+              }
+            }
+          }
+        };
+      }
+      notifyFileChange(fileName, type) {
+        if (!this.useClientSideFileWatcher) {
+          return;
+        }
+        const callbacks = this.fileWatchers.get(fileName);
+        if (callbacks) {
+          callbacks.forEach((callback) => callback(fileName, type === lsp.FileChangeType.Deleted ? ts.FileWatcherEventKind.Deleted : ts.FileWatcherEventKind.Changed));
+        }
+        for (const [dirPath, watchers] of this.directoryWatchers) {
+          if (fileName.startsWith(dirPath)) {
+            const relative = path.relative(dirPath, fileName);
+            const isDirectChild = !relative.includes(path.sep);
+            for (const watcher of watchers) {
+              if (watcher.recursive || isDirectChild) {
+                watcher.callback(fileName);
+              }
+            }
+          }
+        }
+      }
+      resolvePath(path2) {
+        return ts.sys.resolvePath(path2);
+      }
+      fileExists(path2) {
+        if (path2.endsWith(".ngtypecheck.ts")) {
+          return true;
+        }
+        return ts.sys.fileExists(path2);
+      }
+      directoryExists(path2) {
+        return ts.sys.directoryExists(path2);
+      }
+      createDirectory(path2) {
+        return ts.sys.createDirectory(path2);
+      }
+      getExecutingFilePath() {
+        return ts.sys.getExecutingFilePath();
+      }
+      getCurrentDirectory() {
+        return ts.sys.getCurrentDirectory();
+      }
+      getDirectories(path2) {
+        return ts.sys.getDirectories(path2);
+      }
+      readDirectory(path2, extensions, exclude, include, depth) {
+        return ts.sys.readDirectory(path2, extensions, exclude, include, depth);
+      }
+      getModifiedTime(path2) {
+        return ts.sys.getModifiedTime(path2);
+      }
+      setModifiedTime(path2, time) {
+        return ts.sys.setModifiedTime(path2, time);
+      }
+      deleteFile(path2) {
+        return ts.sys.deleteFile(path2);
+      }
+      /**
+       * A good implementation is node.js' `crypto.createHash`.
+       * (https://nodejs.org/api/crypto.html#crypto_crypto_createhash_algorithm)
+       */
+      createHash(data) {
+        return ts.sys.createHash(data);
+      }
+      /**
+       * This must be cryptographically secure. Only implement this method using
+       * `crypto.createHash("sha256")`.
+       */
+      createSHA256Hash(data) {
+        return ts.sys.createSHA256Hash(data);
+      }
+      getMemoryUsage() {
+        return ts.sys.getMemoryUsage();
+      }
+      exit(exitCode) {
+        return ts.sys.exit(exitCode);
+      }
+      realpath(path2) {
+        return ts.sys.realpath(path2);
+      }
+      setTimeout(callback, ms, ...args) {
+        return ts.sys.setTimeout(callback, ms, ...args);
+      }
+      clearTimeout(timeoutId) {
+        return ts.sys.clearTimeout(timeoutId);
+      }
+      clearScreen() {
+        return ts.sys.clearScreen();
+      }
+      base64decode(input) {
+        return ts.sys.base64decode(input);
+      }
+      base64encode(input) {
+        return ts.sys.base64encode(input);
+      }
+      setImmediate(callback, ...args) {
+        return setImmediate(callback, ...args);
+      }
+      clearImmediate(timeoutId) {
+        return clearImmediate(timeoutId);
+      }
+      require(initialPath, moduleName) {
+        if (moduleName !== "@angular/language-service") {
+          return {
+            module: void 0,
+            error: new Error(`Angular server will not load plugin '${moduleName}'.`)
+          };
+        }
+        try {
+          const modulePath = require.resolve(moduleName, {
+            paths: [initialPath]
+          });
+          return {
+            module: require(modulePath),
+            error: void 0
+          };
+        } catch (e) {
+          return {
+            module: void 0,
+            error: e
+          };
+        }
+      }
+    };
+    exports2.ServerHost = ServerHost;
+  }
+});
+
+// node_modules/.aspect_rules_js/@angular+language-service@0.0.0/node_modules/@angular/language-service/api_bundle.js
+var require_api_bundle = __commonJS({
+  "node_modules/.aspect_rules_js/@angular+language-service@0.0.0/node_modules/@angular/language-service/api_bundle.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var api_exports = {};
+    __export2(api_exports, {
+      isNgLanguageService: () => isNgLanguageService
+    });
+    module2.exports = __toCommonJS2(api_exports);
+    function isNgLanguageService(ls) {
+      return "getTcb" in ls;
+    }
   }
 });
 
@@ -296197,6 +296259,23 @@ var require_tcb = __commonJS({
   }
 });
 
+// vscode-ng-language-service/server/src/handlers/did_change_watched_files.js
+var require_did_change_watched_files = __commonJS({
+  "vscode-ng-language-service/server/src/handlers/did_change_watched_files.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.onDidChangeWatchedFiles = onDidChangeWatchedFiles;
+    var utils_1 = require_utils();
+    function onDidChangeWatchedFiles(params, logger, host) {
+      for (const change of params.changes) {
+        const filePath = (0, utils_1.uriToFilePath)(change.uri);
+        logger.info(`Received file change event for ${filePath} type ${change.type}`);
+        host.notifyFileChange(filePath, change.type);
+      }
+    }
+  }
+});
+
 // vscode-ng-language-service/server/src/session.js
 var require_session = __commonJS({
   "vscode-ng-language-service/server/src/session.js"(exports2) {
@@ -296266,12 +296345,12 @@ var require_session = __commonJS({
     var signature_1 = require_signature();
     var tcb_1 = require_tcb();
     var template_info_1 = require_template_info();
+    var did_change_watched_files_1 = require_did_change_watched_files();
     var LanguageId;
     (function(LanguageId2) {
       LanguageId2["TS"] = "typescript";
       LanguageId2["HTML"] = "html";
     })(LanguageId || (LanguageId = {}));
-    var EMPTY_RANGE = lsp.Range.create(0, 0, 0, 0);
     var setImmediateP = (0, util_1.promisify)(setImmediate);
     var alwaysSuppressDiagnostics = [
       // Diagnostics codes whose errors should always be suppressed, regardless of the options
@@ -296289,6 +296368,7 @@ var require_session = __commonJS({
         this.includeCompletionsWithSnippetText = options2.includeCompletionsWithSnippetText;
         this.includeCompletionsForModuleExports = options2.includeCompletionsForModuleExports;
         this.logger = options2.logger;
+        this.host = options2.host;
         this.logToConsole = options2.logToConsole;
         this.defaultPreferences = Object.assign(Object.assign({}, this.defaultPreferences), { includeCompletionsForModuleExports: options2.includeCompletionsForModuleExports });
         this.connection = lsp.createConnection({
@@ -296389,6 +296469,7 @@ var require_session = __commonJS({
       }
       addProtocolHandlers(conn) {
         conn.onInitialize((p) => (0, initialization_1.onInitialize)(this, p));
+        conn.onDidChangeWatchedFiles((p) => (0, did_change_watched_files_1.onDidChangeWatchedFiles)(p, this.logger, this.host));
         conn.onDidOpenTextDocument((p) => this.onDidOpenTextDocument(p));
         conn.onDidCloseTextDocument((p) => this.onDidCloseTextDocument(p));
         conn.onDidChangeTextDocument((p) => this.onDidChangeTextDocument(p));
@@ -297082,7 +297163,7 @@ var server_host_1 = require_server_host();
 var session_1 = require_session();
 var version_provider_1 = require_version_provider();
 function main() {
-  var _a3, _b;
+  var _a3, _b, _c;
   const logger = (0, logger_1.createLogger)({
     logFile: options.logFile,
     logVerbosity: options.logVerbosity
@@ -297090,7 +297171,7 @@ function main() {
   const ts = (0, version_provider_1.resolveTsServer)(options.tsProbeLocations, options.tsdk);
   const ng = (0, version_provider_1.resolveNgLangSvc)(options.ngProbeLocations);
   const isG3 = ts.resolvedPath.includes("/google3/");
-  const host = new server_host_1.ServerHost(isG3);
+  const host = new server_host_1.ServerHost(isG3, (_a3 = options.useClientSideFileWatcher) !== null && _a3 !== void 0 ? _a3 : false);
   const session = new session_1.Session({
     host,
     logger,
@@ -297104,8 +297185,8 @@ function main() {
     forceStrictTemplates: isG3 || options.forceStrictTemplates,
     disableBlockSyntax: options.disableBlockSyntax,
     disableLetSyntax: options.disableLetSyntax,
-    angularCoreVersion: (_a3 = options.angularCoreVersion) !== null && _a3 !== void 0 ? _a3 : null,
-    suppressAngularDiagnosticCodes: (_b = options.suppressAngularDiagnosticCodes) !== null && _b !== void 0 ? _b : null
+    angularCoreVersion: (_b = options.angularCoreVersion) !== null && _b !== void 0 ? _b : null,
+    suppressAngularDiagnosticCodes: (_c = options.suppressAngularDiagnosticCodes) !== null && _c !== void 0 ? _c : null
   });
   session.info(`Angular language server process ID: ${process.pid}`);
   session.info(`Imported typescript/lib/tsserverlibrary is version ${tsserverlibrary_1.version}.`);
