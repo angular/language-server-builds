@@ -296086,6 +296086,7 @@ var require_initialization = __commonJS({
             triggerCharacters: ["(", ","],
             retriggerCharacters: [","]
           },
+          linkedEditingRangeProvider: true,
           workspace: {
             workspaceFolders: { supported: true }
           },
@@ -296102,6 +296103,33 @@ var require_initialization = __commonJS({
           }
         },
         serverOptions
+      };
+    }
+  }
+});
+
+// vscode-ng-language-service/server/src/handlers/linked_editing_range.js
+var require_linked_editing_range = __commonJS({
+  "vscode-ng-language-service/server/src/handlers/linked_editing_range.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.onLinkedEditingRange = onLinkedEditingRange;
+    var utils_1 = require_utils();
+    function onLinkedEditingRange(session, params) {
+      const lsInfo = session.getLSAndScriptInfo(params.textDocument);
+      if (lsInfo === null) {
+        return null;
+      }
+      const { languageService, scriptInfo } = lsInfo;
+      const offset = (0, utils_1.lspPositionToTsPosition)(scriptInfo, params.position);
+      const linkedEditingRanges = languageService.getLinkedEditingRangeAtPosition(scriptInfo.fileName, offset);
+      if (!linkedEditingRanges || linkedEditingRanges.ranges.length === 0) {
+        return null;
+      }
+      const ranges = linkedEditingRanges.ranges.map((span) => (0, utils_1.tsTextSpanToLspRange)(scriptInfo, span));
+      return {
+        ranges,
+        wordPattern: linkedEditingRanges.wordPattern
       };
     }
   }
@@ -296341,6 +296369,7 @@ var require_session = __commonJS({
     var folding_1 = require_folding();
     var hover_1 = require_hover();
     var initialization_1 = require_initialization();
+    var linked_editing_range_1 = require_linked_editing_range();
     var rename_1 = require_rename();
     var signature_1 = require_signature();
     var tcb_1 = require_tcb();
@@ -296481,6 +296510,7 @@ var require_session = __commonJS({
         conn.onPrepareRename((p) => (0, rename_1.onPrepareRename)(this, p));
         conn.onHover((p) => (0, hover_1.onHover)(this, p));
         conn.onFoldingRanges((p) => (0, folding_1.onFoldingRanges)(this, p));
+        conn.languages.onLinkedEditingRange((p) => (0, linked_editing_range_1.onLinkedEditingRange)(this, p));
         conn.onCompletion((p) => (0, completions_1.onCompletion)(this, p));
         conn.onCompletionResolve((p) => (0, completions_1.onCompletionResolve)(this, p));
         conn.onRequest(requests_1.GetComponentsWithTemplateFile, (p) => (0, code_lens_1.getComponentsWithTemplateFile)(this, p));
