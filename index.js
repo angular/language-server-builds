@@ -297328,12 +297328,15 @@ var require_session = __commonJS({
         if (!project.hasRoots()) {
           return;
         }
-        const fileName = project.getRootScriptInfos()[0].fileName;
-        const label = `Global analysis - getSemanticDiagnostics for ${fileName}`;
+        const languageService = project.getLanguageService();
+        if (!(0, api_1.isNgLanguageService)(languageService)) {
+          return;
+        }
+        const label = `Global analysis - ensureProjectAnalyzed for ${project.getProjectName()}`;
         if (utils_1.isDebugMode) {
           console.time(label);
         }
-        project.getLanguageService().getSemanticDiagnostics(fileName);
+        languageService.ensureProjectAnalyzed();
         if (utils_1.isDebugMode) {
           console.timeEnd(label);
         }
