@@ -307880,6 +307880,11 @@ var require_initialization = __commonJS({
             // Find more info
             // [here](https://github.com/angular/vscode-ng-language-service/issues/1828)
             codeActionKinds: [lsp.CodeActionKind.QuickFix]
+          },
+          // Inlay hints provider (LSP 3.17)
+          // Provides type annotations for template variables, $event types, etc.
+          inlayHintProvider: {
+            resolveProvider: true
           }
         },
         serverOptions
@@ -308084,6 +308089,314 @@ var require_did_change_watched_files = __commonJS({
   }
 });
 
+// vscode-ng-language-service/server/src/config.js
+var require_config = __commonJS({
+  "vscode-ng-language-service/server/src/config.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getWorkspaceConfiguration = getWorkspaceConfiguration;
+    exports2.getWorkspaceConfigurationCached = getWorkspaceConfigurationCached;
+    exports2.clearWorkspaceConfigurationCache = clearWorkspaceConfigurationCache;
+    exports2.flattenConfiguration = flattenConfiguration;
+    var workspaceConfigCache = /* @__PURE__ */ new WeakMap();
+    function getWorkspaceConfiguration(connection, items) {
+      return __async(this, null, function* () {
+        try {
+          return yield connection.workspace.getConfiguration(items);
+        } catch (error) {
+          return items.map(() => ({}));
+        }
+      });
+    }
+    function getWorkspaceConfigurationCached(connection, items) {
+      return __async(this, null, function* () {
+        const key = JSON.stringify(items);
+        let cache = workspaceConfigCache.get(connection);
+        if (!cache) {
+          cache = /* @__PURE__ */ new Map();
+          workspaceConfigCache.set(connection, cache);
+        }
+        const cached = cache.get(key);
+        if (cached !== void 0) {
+          return cached;
+        }
+        const value = yield getWorkspaceConfiguration(connection, items);
+        cache.set(key, value);
+        return value;
+      });
+    }
+    function clearWorkspaceConfigurationCache(connection) {
+      workspaceConfigCache.delete(connection);
+    }
+    function flattenConfiguration(config, prefix) {
+      const result = {};
+      function flatten(obj, currentPrefix) {
+        for (const [key, value] of Object.entries(obj)) {
+          const newKey = `${currentPrefix}.${key}`;
+          if (value !== null && typeof value === "object" && !Array.isArray(value)) {
+            flatten(value, newKey);
+          } else {
+            result[newKey] = value;
+          }
+        }
+      }
+      flatten(config, prefix);
+      return result;
+    }
+  }
+});
+
+// vscode-ng-language-service/server/src/handlers/inlay_hints.js
+var require_inlay_hints = __commonJS({
+  "vscode-ng-language-service/server/src/handlers/inlay_hints.js"(exports2) {
+    "use strict";
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    } : function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m[k];
+    });
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar = exports2 && exports2.__importStar || /* @__PURE__ */ function() {
+      var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function(o2) {
+          var ar = [];
+          for (var k in o2)
+            if (Object.prototype.hasOwnProperty.call(o2, k))
+              ar[ar.length] = k;
+          return ar;
+        };
+        return ownKeys(o);
+      };
+      return function(mod) {
+        if (mod && mod.__esModule)
+          return mod;
+        var result = {};
+        if (mod != null) {
+          for (var k = ownKeys(mod), i = 0; i < k.length; i++)
+            if (k[i] !== "default")
+              __createBinding(result, mod, k[i]);
+        }
+        __setModuleDefault(result, mod);
+        return result;
+      };
+    }();
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.onInlayHint = onInlayHint;
+    exports2.onInlayHintResolve = onInlayHintResolve;
+    var lsp = __importStar(require_node3());
+    var ts = __importStar(require("typescript/lib/tsserverlibrary"));
+    var utils_1 = require_utils();
+    var utils_2 = require_utils();
+    var config_1 = require_config();
+    var api_1 = require_api_bundle();
+    function isEditorInlayHintsEnabled(vsCodeConfig) {
+      const editorEnabled = vsCodeConfig["editor.inlayHints.enabled"];
+      return !(editorEnabled === "off" || editorEnabled === false);
+    }
+    function mapAngularInlayHintsConfig(vsCodeConfig) {
+      const config = {};
+      const getConfigValue = (...keys) => {
+        for (const key of keys) {
+          if (vsCodeConfig[key] !== void 0 && vsCodeConfig[key] !== null) {
+            return vsCodeConfig[key];
+          }
+        }
+        return void 0;
+      };
+      const forLoopVariableTypes = getConfigValue("angular.inlayHints.variableTypes.forLoopVariableTypes");
+      if (forLoopVariableTypes !== void 0)
+        config.forLoopVariableTypes = forLoopVariableTypes;
+      const ifAliasTypes = getConfigValue("angular.inlayHints.variableTypes.ifAliasTypes");
+      if (ifAliasTypes !== void 0)
+        config.ifAliasTypes = ifAliasTypes;
+      const letDeclarationTypes = getConfigValue("angular.inlayHints.variableTypes.letDeclarationTypes");
+      if (letDeclarationTypes !== void 0)
+        config.letDeclarationTypes = letDeclarationTypes;
+      const referenceVariableTypes = getConfigValue("angular.inlayHints.variableTypes.referenceVariableTypes");
+      if (referenceVariableTypes !== void 0)
+        config.referenceVariableTypes = referenceVariableTypes;
+      const suppressWhenTypeMatchesName = getConfigValue("angular.inlayHints.variableTypes.suppressWhenTypeMatchesName");
+      if (suppressWhenTypeMatchesName !== void 0) {
+        config.variableTypeHintsWhenTypeMatchesName = !suppressWhenTypeMatchesName;
+      }
+      const arrowFunctionParameterTypes = getConfigValue("angular.inlayHints.functionTypes.arrowFunctionParameterTypes");
+      if (arrowFunctionParameterTypes !== void 0) {
+        config.arrowFunctionParameterTypes = arrowFunctionParameterTypes;
+      }
+      const arrowFunctionReturnTypes = getConfigValue("angular.inlayHints.functionTypes.arrowFunctionReturnTypes");
+      if (arrowFunctionReturnTypes !== void 0) {
+        config.arrowFunctionReturnTypes = arrowFunctionReturnTypes;
+      }
+      const parameterNameHints = getConfigValue("angular.inlayHints.parameterHints.nameHints");
+      if (parameterNameHints !== void 0)
+        config.parameterNameHints = parameterNameHints;
+      const suppressWhenArgumentMatchesName = getConfigValue("angular.inlayHints.parameterHints.suppressWhenArgumentMatchesName");
+      if (suppressWhenArgumentMatchesName !== void 0) {
+        config.parameterNameHintsWhenArgumentMatchesName = !suppressWhenArgumentMatchesName;
+      }
+      const eventParameterTypes = getConfigValue("angular.inlayHints.eventHints.parameterTypes");
+      if (eventParameterTypes !== void 0)
+        config.eventParameterTypes = eventParameterTypes;
+      const propertyBindingTypes = getConfigValue("angular.inlayHints.bindingHints.propertyBindingTypes");
+      if (propertyBindingTypes !== void 0)
+        config.propertyBindingTypes = propertyBindingTypes;
+      const pipeOutputTypes = getConfigValue("angular.inlayHints.bindingHints.pipeOutputTypes");
+      if (pipeOutputTypes !== void 0)
+        config.pipeOutputTypes = pipeOutputTypes;
+      const twoWayBindingSignalTypes = getConfigValue("angular.inlayHints.bindingHints.twoWayBindingSignalTypes");
+      if (twoWayBindingSignalTypes !== void 0) {
+        config.twoWayBindingSignalTypes = twoWayBindingSignalTypes;
+      }
+      const requiredInputIndicator = getConfigValue("angular.inlayHints.bindingHints.requiredInputIndicator");
+      if (requiredInputIndicator !== void 0) {
+        config.requiredInputIndicator = requiredInputIndicator;
+      }
+      const interactiveInlayHints = getConfigValue("angular.inlayHints.interaction.interactiveInlayHints");
+      if (interactiveInlayHints !== void 0)
+        config.interactiveInlayHints = interactiveInlayHints;
+      const hostListenerArgumentTypes = getConfigValue("angular.inlayHints.eventHints.hostListenerArgumentTypes");
+      if (hostListenerArgumentTypes !== void 0) {
+        config.hostListenerArgumentTypes = hostListenerArgumentTypes;
+      }
+      const switchExpressionTypes = getConfigValue("angular.inlayHints.controlFlowHints.switchExpressionTypes");
+      if (switchExpressionTypes !== void 0)
+        config.switchExpressionTypes = switchExpressionTypes;
+      const deferTriggerTypes = getConfigValue("angular.inlayHints.controlFlowHints.deferTriggerTypes");
+      if (deferTriggerTypes !== void 0)
+        config.deferTriggerTypes = deferTriggerTypes;
+      return config;
+    }
+    function onInlayHint(session, params) {
+      return __async(this, null, function* () {
+        var _a3, _b;
+        const lsInfo = session.getLSAndScriptInfo(params.textDocument);
+        if (!lsInfo) {
+          return null;
+        }
+        const { languageService, scriptInfo } = lsInfo;
+        const hints = [];
+        const [startOffset, endOffset] = (0, utils_1.lspRangeToTsPositions)(scriptInfo, params.range);
+        const span = { start: startOffset, length: endOffset - startOffset };
+        let angularConfig = {};
+        try {
+          const configResult = yield (0, config_1.getWorkspaceConfigurationCached)(session.connection, [
+            { section: "angular.inlayHints", scopeUri: params.textDocument.uri },
+            { section: "editor.inlayHints", scopeUri: params.textDocument.uri }
+          ]);
+          if (configResult && configResult.length >= 2) {
+            const flatConfig = Object.assign(Object.assign({}, (0, config_1.flattenConfiguration)((_a3 = configResult[0]) !== null && _a3 !== void 0 ? _a3 : {}, "angular.inlayHints")), (0, config_1.flattenConfiguration)((_b = configResult[1]) !== null && _b !== void 0 ? _b : {}, "editor.inlayHints"));
+            if (!isEditorInlayHintsEnabled(flatConfig)) {
+              return null;
+            }
+            angularConfig = mapAngularInlayHintsConfig(flatConfig);
+          }
+        } catch (_c) {
+        }
+        if ((0, api_1.isNgLanguageService)(languageService)) {
+          try {
+            const angularHints = languageService.getAngularInlayHints(scriptInfo.fileName, span, angularConfig);
+            for (const angularHint of angularHints) {
+              const position = scriptInfo.positionToLineOffset(angularHint.position);
+              hints.push(convertAngularInlayHint(session, angularHint, position));
+            }
+          } catch (e) {
+          }
+        }
+        return hints.length > 0 ? hints : null;
+      });
+    }
+    function onInlayHintResolve(session, hint) {
+      return hint;
+    }
+    function convertAngularInlayHint(session, angularHint, position) {
+      const lspPosition = {
+        line: position.line - 1,
+        character: position.offset - 1
+      };
+      const kind = angularHint.kind === "Type" ? lsp.InlayHintKind.Type : lsp.InlayHintKind.Parameter;
+      let label;
+      if (angularHint.displayParts && angularHint.displayParts.length > 0) {
+        label = angularHint.displayParts.map((part) => {
+          const labelPart = {
+            value: part.text
+          };
+          const location = getDisplayPartLocation(session, part);
+          if (location) {
+            labelPart.location = location;
+          }
+          return labelPart;
+        });
+      } else {
+        label = angularHint.text;
+      }
+      const hint = {
+        position: lspPosition,
+        label,
+        kind,
+        paddingLeft: angularHint.paddingLeft,
+        paddingRight: angularHint.paddingRight
+      };
+      if (angularHint.tooltip) {
+        hint.tooltip = angularHint.tooltip;
+      }
+      return hint;
+    }
+    function getDisplayPartLocation(session, part) {
+      if (!part.span || !part.file) {
+        return void 0;
+      }
+      const scriptInfo = session.projectService.getScriptInfo(part.file);
+      if (scriptInfo) {
+        const start2 = scriptInfo.positionToLineOffset(part.span.start);
+        const end2 = scriptInfo.positionToLineOffset(part.span.start + part.span.length);
+        return {
+          uri: (0, utils_2.filePathToUri)(part.file),
+          range: {
+            start: { line: start2.line - 1, character: start2.offset - 1 },
+            end: { line: end2.line - 1, character: end2.offset - 1 }
+          }
+        };
+      }
+      const text = readFileText(session, part.file);
+      if (text === void 0) {
+        return void 0;
+      }
+      const sourceFile = ts.createSourceFile(part.file, text, ts.ScriptTarget.Latest, true);
+      const start = ts.getLineAndCharacterOfPosition(sourceFile, part.span.start);
+      const end = ts.getLineAndCharacterOfPosition(sourceFile, part.span.start + part.span.length);
+      return {
+        uri: (0, utils_2.filePathToUri)(part.file),
+        range: {
+          start: { line: start.line, character: start.character },
+          end: { line: end.line, character: end.character }
+        }
+      };
+    }
+    function readFileText(session, fileName) {
+      const scriptInfo = session.projectService.getScriptInfo(fileName);
+      if (scriptInfo) {
+        const snapshot = scriptInfo.getSnapshot();
+        return snapshot.getText(0, snapshot.getLength());
+      }
+      return ts.sys.readFile(fileName);
+    }
+  }
+});
+
 // vscode-ng-language-service/server/src/session.js
 var require_session = __commonJS({
   "vscode-ng-language-service/server/src/session.js"(exports2) {
@@ -308155,6 +308468,8 @@ var require_session = __commonJS({
     var tcb_1 = require_tcb();
     var template_info_1 = require_template_info();
     var did_change_watched_files_1 = require_did_change_watched_files();
+    var inlay_hints_1 = require_inlay_hints();
+    var config_1 = require_config();
     var LanguageId;
     (function(LanguageId2) {
       LanguageId2["TS"] = "typescript";
@@ -308173,6 +308488,7 @@ var require_session = __commonJS({
         this.renameDisabledProjects = /* @__PURE__ */ new WeakSet();
         this.clientCapabilities = {};
         this.defaultPreferences = {};
+        this.inlayHintsConfig = {};
         this.includeAutomaticOptionalChainCompletions = options2.includeAutomaticOptionalChainCompletions;
         this.includeCompletionsWithSnippetText = options2.includeCompletionsWithSnippetText;
         this.includeCompletionsForModuleExports = options2.includeCompletionsForModuleExports;
@@ -308283,6 +308599,11 @@ var require_session = __commonJS({
         conn.onDidCloseTextDocument((p) => this.onDidCloseTextDocument(p));
         conn.onDidChangeTextDocument((p) => this.onDidChangeTextDocument(p));
         conn.onDidSaveTextDocument((p) => this.onDidSaveTextDocument(p));
+        conn.onDidChangeConfiguration(() => {
+          (0, config_1.clearWorkspaceConfigurationCache)(this.connection);
+          void this.connection.languages.inlayHint.refresh().catch(() => {
+          });
+        });
         conn.onDefinition((p) => (0, definitions_1.onDefinition)(this, p));
         conn.onTypeDefinition((p) => (0, definitions_1.onTypeDefinition)(this, p));
         conn.onReferences((p) => (0, definitions_1.onReferences)(this, p));
@@ -308304,6 +308625,8 @@ var require_session = __commonJS({
         conn.onCodeActionResolve((p) => __async(this, null, function* () {
           return yield (0, code_actions_1.onCodeActionResolve)(this, p);
         }));
+        conn.onRequest(lsp.InlayHintRequest.type, (p) => (0, inlay_hints_1.onInlayHint)(this, p));
+        conn.onRequest(lsp.InlayHintResolveRequest.type, (p) => (0, inlay_hints_1.onInlayHintResolve)(this, p));
       }
       enableLanguageServiceForProject(project) {
         const projectName = project.getProjectName();
