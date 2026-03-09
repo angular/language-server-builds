@@ -72987,9 +72987,9 @@ var require_source_map_support = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/typescript@6.0.0-beta/node_modules/typescript/lib/typescript.js
+// node_modules/.aspect_rules_js/typescript@6.0.1-rc/node_modules/typescript/lib/typescript.js
 var require_typescript = __commonJS({
-  "node_modules/.aspect_rules_js/typescript@6.0.0-beta/node_modules/typescript/lib/typescript.js"(exports2, module2) {
+  "node_modules/.aspect_rules_js/typescript@6.0.1-rc/node_modules/typescript/lib/typescript.js"(exports2, module2) {
     var ts = {};
     ((module3) => {
       "use strict";
@@ -75263,7 +75263,7 @@ var require_typescript = __commonJS({
       });
       module3.exports = __toCommonJS2(typescript_exports);
       var versionMajorMinor = "6.0";
-      var version = "6.0.0-beta";
+      var version = "6.0.1-rc";
       var Comparison = ((Comparison3) => {
         Comparison3[Comparison3["LessThan"] = -1] = "LessThan";
         Comparison3[Comparison3["EqualTo"] = 0] = "EqualTo";
@@ -83637,6 +83637,7 @@ ${lanes.join("\n")}
         Import_assertions_have_been_replaced_by_import_attributes_Use_with_instead_of_assert: diag(2880, 1, "Import_assertions_have_been_replaced_by_import_attributes_Use_with_instead_of_assert_2880", "Import assertions have been replaced by import attributes. Use 'with' instead of 'assert'."),
         This_expression_is_never_nullish: diag(2881, 1, "This_expression_is_never_nullish_2881", "This expression is never nullish."),
         Cannot_find_module_or_type_declarations_for_side_effect_import_of_0: diag(2882, 1, "Cannot_find_module_or_type_declarations_for_side_effect_import_of_0_2882", "Cannot find module or type declarations for side-effect import of '{0}'."),
+        The_inferred_type_of_0_cannot_be_named_without_a_reference_to_2_from_1_This_is_likely_not_portable_A_type_annotation_is_necessary: diag(2883, 1, "The_inferred_type_of_0_cannot_be_named_without_a_reference_to_2_from_1_This_is_likely_not_portable_A_2883", "The inferred type of '{0}' cannot be named without a reference to '{2}' from '{1}'. This is likely not portable. A type annotation is necessary."),
         Import_declaration_0_is_using_private_name_1: diag(4e3, 1, "Import_declaration_0_is_using_private_name_1_4000", "Import declaration '{0}' is using private name '{1}'."),
         Type_parameter_0_of_exported_class_has_or_is_using_private_name_1: diag(4002, 1, "Type_parameter_0_of_exported_class_has_or_is_using_private_name_1_4002", "Type parameter '{0}' of exported class has or is using private name '{1}'."),
         Type_parameter_0_of_exported_interface_has_or_is_using_private_name_1: diag(4004, 1, "Type_parameter_0_of_exported_interface_has_or_is_using_private_name_1_4004", "Type parameter '{0}' of exported interface has or is using private name '{1}'."),
@@ -132863,7 +132864,7 @@ ${lanes.join("\n")}
                 if (name.includes("/node_modules/")) {
                   context.encounteredError = true;
                   if (context.tracker.reportLikelyUnsafeImportRequiredError) {
-                    context.tracker.reportLikelyUnsafeImportRequiredError(name);
+                    context.tracker.reportLikelyUnsafeImportRequiredError(name, nodeSymbol ? unescapeLeadingUnderscores(nodeSymbol.escapedName) : void 0);
                   }
                 }
                 if (name !== originalName) {
@@ -134763,8 +134764,8 @@ ${lanes.join("\n")}
               reportInaccessibleUniqueSymbolError() {
                 markError(() => oldTracker.reportInaccessibleUniqueSymbolError());
               },
-              reportLikelyUnsafeImportRequiredError(specifier) {
-                markError(() => oldTracker.reportLikelyUnsafeImportRequiredError(specifier));
+              reportLikelyUnsafeImportRequiredError(specifier, symbolName2) {
+                markError(() => oldTracker.reportLikelyUnsafeImportRequiredError(specifier, symbolName2));
               },
               reportNonSerializableProperty(name) {
                 markError(() => oldTracker.reportNonSerializableProperty(name));
@@ -135357,7 +135358,7 @@ ${lanes.join("\n")}
                 if (!attributes) {
                   context.encounteredError = true;
                   if (context.tracker.reportLikelyUnsafeImportRequiredError) {
-                    context.tracker.reportLikelyUnsafeImportRequiredError(oldSpecifier);
+                    context.tracker.reportLikelyUnsafeImportRequiredError(oldSpecifier, unescapeLeadingUnderscores(symbol.escapedName));
                   }
                 }
               }
@@ -150116,8 +150117,11 @@ ${lanes.join("\n")}
             if (relation === identityRelation) {
               return signaturesIdenticalTo(source2, target2, kind);
             }
-            if (target2 === anyFunctionType || source2 === anyFunctionType) {
+            if (source2 === anyFunctionType) {
               return -1;
+            }
+            if (target2 === anyFunctionType) {
+              return 0;
             }
             const sourceIsJSConstructor = source2.symbol && isJSConstructor(source2.symbol.valueDeclaration);
             const targetIsJSConstructor = target2.symbol && isJSConstructor(target2.symbol.valueDeclaration);
@@ -158261,7 +158265,7 @@ ${lanes.join("\n")}
                 spread,
                 createAnonymousType(attributesSymbol, childPropMap, emptyArray, emptyArray, emptyArray),
                 attributesSymbol,
-                objectFlags,
+                objectFlags | getPropagatingFlagsOfTypes(childrenTypes),
                 /*readonly*/
                 false
               );
@@ -161833,6 +161837,14 @@ ${lanes.join("\n")}
                 4
                 /* Undefined */
               ), node.arguments[1]);
+            }
+            if (compilerOptions.ignoreDeprecations !== "6.0" && isObjectLiteralExpression(node.arguments[1])) {
+              for (const prop of node.arguments[1].properties) {
+                if (isPropertyAssignment(prop) && isIdentifier(prop.name) && prop.name.escapedText === "assert") {
+                  grammarErrorOnNode(prop.name, Diagnostics.Import_assertions_have_been_replaced_by_import_attributes_Use_with_instead_of_assert);
+                  break;
+                }
+              }
             }
           }
           const moduleSymbol = resolveExternalModuleName(node, specifier);
@@ -166520,6 +166532,9 @@ ${lanes.join("\n")}
         function checkImportType(node) {
           checkSourceElement(node.argument);
           if (node.attributes) {
+            if (node.attributes.token !== 118 && compilerOptions.ignoreDeprecations !== "6.0") {
+              grammarErrorOnFirstToken(node.attributes, Diagnostics.Import_assertions_have_been_replaced_by_import_attributes_Use_with_instead_of_assert);
+            }
             getResolutionModeOverride(node.attributes, grammarErrorOnNode);
           }
           checkTypeReferenceOrImport(node);
@@ -176136,11 +176151,11 @@ ${lanes.join("\n")}
             this.inner.reportCyclicStructureError();
           }
         }
-        reportLikelyUnsafeImportRequiredError(specifier) {
+        reportLikelyUnsafeImportRequiredError(specifier, symbolName2) {
           var _a3;
           if ((_a3 = this.inner) == null ? void 0 : _a3.reportLikelyUnsafeImportRequiredError) {
             this.onDiagnosticReported();
-            this.inner.reportLikelyUnsafeImportRequiredError(specifier);
+            this.inner.reportLikelyUnsafeImportRequiredError(specifier, symbolName2);
           }
         }
         reportTruncationError() {
@@ -201680,9 +201695,13 @@ ${lanes.join("\n")}
             context.addDiagnostic(createDiagnosticForNode(errorNameNode || errorFallbackNode, Diagnostics.The_inferred_type_of_0_references_an_inaccessible_1_type_A_type_annotation_is_necessary, errorDeclarationNameWithFallback(), "this"));
           }
         }
-        function reportLikelyUnsafeImportRequiredError(specifier) {
+        function reportLikelyUnsafeImportRequiredError(specifier, symbolName2) {
           if (errorNameNode || errorFallbackNode) {
-            context.addDiagnostic(createDiagnosticForNode(errorNameNode || errorFallbackNode, Diagnostics.The_inferred_type_of_0_cannot_be_named_without_a_reference_to_1_This_is_likely_not_portable_A_type_annotation_is_necessary, errorDeclarationNameWithFallback(), specifier));
+            if (symbolName2) {
+              context.addDiagnostic(createDiagnosticForNode(errorNameNode || errorFallbackNode, Diagnostics.The_inferred_type_of_0_cannot_be_named_without_a_reference_to_2_from_1_This_is_likely_not_portable_A_type_annotation_is_necessary, errorDeclarationNameWithFallback(), specifier, symbolName2));
+            } else {
+              context.addDiagnostic(createDiagnosticForNode(errorNameNode || errorFallbackNode, Diagnostics.The_inferred_type_of_0_cannot_be_named_without_a_reference_to_1_This_is_likely_not_portable_A_type_annotation_is_necessary, errorDeclarationNameWithFallback(), specifier));
+            }
           }
         }
         function reportTruncationError() {
@@ -202970,6 +202989,7 @@ ${lanes.join("\n")}
                         continue;
                       if (isBindingPattern(elem.name)) {
                         elems = concatenate(elems, walkBindingPattern(elem.name));
+                        continue;
                       }
                       elems = elems || [];
                       elems.push(factory2.createPropertyDeclaration(
