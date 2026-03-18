@@ -9908,9 +9908,19 @@ var require_api_bundle = __commonJS({
     var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
     var api_exports = {};
     __export2(api_exports, {
+      AngularSymbolKind: () => AngularSymbolKind,
       isNgLanguageService: () => isNgLanguageService
     });
     module2.exports = __toCommonJS2(api_exports);
+    var AngularSymbolKind = ((AngularSymbolKind2) => {
+      AngularSymbolKind2[AngularSymbolKind2["Namespace"] = 3] = "Namespace";
+      AngularSymbolKind2[AngularSymbolKind2["Class"] = 5] = "Class";
+      AngularSymbolKind2[AngularSymbolKind2["Array"] = 18] = "Array";
+      AngularSymbolKind2[AngularSymbolKind2["Object"] = 19] = "Object";
+      AngularSymbolKind2[AngularSymbolKind2["Struct"] = 23] = "Struct";
+      AngularSymbolKind2[AngularSymbolKind2["Event"] = 24] = "Event";
+      return AngularSymbolKind2;
+    })(AngularSymbolKind || {});
     function isNgLanguageService(ls) {
       return "getTcb" in ls;
     }
@@ -9987,6 +9997,63 @@ var require_requests = __commonJS({
     exports2.GetTemplateLocationForComponent = new lsp.RequestType("angular/getTemplateLocationForComponent");
     exports2.GetTcbRequest = new lsp.RequestType("angular/getTcb");
     exports2.IsInAngularProject = new lsp.RequestType("angular/isAngularCoreInOwningProject");
+  }
+});
+
+// vscode-ng-language-service/server/src/config.js
+var require_config = __commonJS({
+  "vscode-ng-language-service/server/src/config.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getWorkspaceConfiguration = getWorkspaceConfiguration;
+    exports2.getWorkspaceConfigurationCached = getWorkspaceConfigurationCached;
+    exports2.clearWorkspaceConfigurationCache = clearWorkspaceConfigurationCache;
+    exports2.flattenConfiguration = flattenConfiguration;
+    var workspaceConfigCache = /* @__PURE__ */ new WeakMap();
+    function getWorkspaceConfiguration(connection, items) {
+      return __async(this, null, function* () {
+        try {
+          return yield connection.workspace.getConfiguration(items);
+        } catch (error) {
+          return items.map(() => ({}));
+        }
+      });
+    }
+    function getWorkspaceConfigurationCached(connection, items) {
+      return __async(this, null, function* () {
+        const key = JSON.stringify(items);
+        let cache = workspaceConfigCache.get(connection);
+        if (!cache) {
+          cache = /* @__PURE__ */ new Map();
+          workspaceConfigCache.set(connection, cache);
+        }
+        const cached = cache.get(key);
+        if (cached !== void 0) {
+          return cached;
+        }
+        const value = yield getWorkspaceConfiguration(connection, items);
+        cache.set(key, value);
+        return value;
+      });
+    }
+    function clearWorkspaceConfigurationCache(connection) {
+      workspaceConfigCache.delete(connection);
+    }
+    function flattenConfiguration(config, prefix) {
+      const result = {};
+      function flatten(obj, currentPrefix) {
+        for (const [key, value] of Object.entries(obj)) {
+          const newKey = `${currentPrefix}.${key}`;
+          if (value !== null && typeof value === "object" && !Array.isArray(value)) {
+            flatten(value, newKey);
+          } else {
+            result[newKey] = value;
+          }
+        }
+      }
+      flatten(config, prefix);
+      return result;
+    }
   }
 });
 
@@ -307868,6 +307935,7 @@ var require_initialization = __commonJS({
       return {
         capabilities: {
           foldingRangeProvider: true,
+          documentSymbolProvider: true,
           codeLensProvider: { resolveProvider: true },
           textDocumentSync: lsp.TextDocumentSyncKind.Incremental,
           completionProvider: {
@@ -307935,6 +308003,322 @@ var require_linked_editing_range = __commonJS({
       return {
         ranges,
         wordPattern: linkedEditingRanges.wordPattern
+      };
+    }
+  }
+});
+
+// vscode-ng-language-service/server/src/handlers/document_symbols.js
+var require_document_symbols = __commonJS({
+  "vscode-ng-language-service/server/src/handlers/document_symbols.js"(exports2) {
+    "use strict";
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    } : function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m[k];
+    });
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar = exports2 && exports2.__importStar || /* @__PURE__ */ function() {
+      var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function(o2) {
+          var ar = [];
+          for (var k in o2)
+            if (Object.prototype.hasOwnProperty.call(o2, k))
+              ar[ar.length] = k;
+          return ar;
+        };
+        return ownKeys(o);
+      };
+      return function(mod) {
+        if (mod && mod.__esModule)
+          return mod;
+        var result = {};
+        if (mod != null) {
+          for (var k = ownKeys(mod), i = 0; i < k.length; i++)
+            if (k[i] !== "default")
+              __createBinding(result, mod, k[i]);
+        }
+        __setModuleDefault(result, mod);
+        return result;
+      };
+    }();
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.onDocumentSymbol = onDocumentSymbol;
+    var lsp = __importStar(require_main4());
+    var ts = __importStar(require("typescript/lib/tsserverlibrary"));
+    var api_1 = require_api_bundle();
+    var config_1 = require_config();
+    var utils_1 = require_utils();
+    function onDocumentSymbol(session, params) {
+      return __async(this, null, function* () {
+        var _a3, _b;
+        const lsInfo = session.getLSAndScriptInfo(params.textDocument);
+        if (lsInfo === null) {
+          return null;
+        }
+        const { scriptInfo, languageService } = lsInfo;
+        const isHtmlFile = params.textDocument.uri.endsWith(".html");
+        const [config] = yield (0, config_1.getWorkspaceConfiguration)(session.connection, [
+          { scopeUri: params.textDocument.uri, section: "angular.documentSymbols" }
+        ]);
+        const isEnabled = (config === null || config === void 0 ? void 0 : config.enabled) !== false;
+        if (!isEnabled) {
+          return null;
+        }
+        if (isHtmlFile) {
+          if (isEnabled && (0, api_1.isNgLanguageService)(languageService)) {
+            const templateSymbols2 = languageService.getTemplateDocumentSymbols(scriptInfo.fileName, {
+              showImplicitForVariables: (_a3 = config === null || config === void 0 ? void 0 : config.showImplicitForVariables) !== null && _a3 !== void 0 ? _a3 : false
+            });
+            if (templateSymbols2.length > 0) {
+              return convertTemplateSymbols(templateSymbols2, scriptInfo);
+            }
+          }
+          return null;
+        }
+        let templateSymbols = [];
+        if ((0, api_1.isNgLanguageService)(languageService)) {
+          templateSymbols = languageService.getTemplateDocumentSymbols(scriptInfo.fileName, {
+            showImplicitForVariables: (_b = config === null || config === void 0 ? void 0 : config.showImplicitForVariables) !== null && _b !== void 0 ? _b : false
+          });
+        }
+        const navigationTree = languageService.getNavigationTree(scriptInfo.fileName);
+        if (!navigationTree) {
+          return null;
+        }
+        const classNamesWithTemplates = /* @__PURE__ */ new Set();
+        for (const symbol of templateSymbols) {
+          if (symbol.className) {
+            classNamesWithTemplates.add(symbol.className);
+          }
+        }
+        const tsSymbols = filterNavigationTreeToTemplateClasses(navigationTree, scriptInfo, classNamesWithTemplates);
+        if (templateSymbols.length > 0) {
+          mergeTemplateSymbolsIntoClass(tsSymbols, templateSymbols, scriptInfo);
+        }
+        return tsSymbols;
+      });
+    }
+    function mergeTemplateSymbolsIntoClass(tsSymbols, templateSymbols, scriptInfo) {
+      var _a3;
+      if (templateSymbols.length === 0) {
+        return;
+      }
+      const symbolsByClass = /* @__PURE__ */ new Map();
+      const symbolsWithoutClass = [];
+      for (const symbol of templateSymbols) {
+        if (symbol.className) {
+          const existing = (_a3 = symbolsByClass.get(symbol.className)) !== null && _a3 !== void 0 ? _a3 : [];
+          existing.push(symbol);
+          symbolsByClass.set(symbol.className, existing);
+        } else {
+          symbolsWithoutClass.push(symbol);
+        }
+      }
+      for (const tsSymbol of tsSymbols) {
+        if (tsSymbol.kind === lsp.SymbolKind.Class) {
+          const classTemplateSymbols = symbolsByClass.get(tsSymbol.name);
+          if (classTemplateSymbols && classTemplateSymbols.length > 0) {
+            const converted = convertTemplateSymbols(classTemplateSymbols, scriptInfo);
+            addTemplateSymbolsToClass(tsSymbol, converted);
+            symbolsByClass.delete(tsSymbol.name);
+          }
+        }
+      }
+      if (symbolsWithoutClass.length > 0) {
+        const converted = convertTemplateSymbols(symbolsWithoutClass, scriptInfo);
+        for (const tsSymbol of tsSymbols) {
+          if (tsSymbol.kind === lsp.SymbolKind.Class) {
+            addTemplateSymbolsToClass(tsSymbol, converted);
+            break;
+          }
+        }
+      }
+    }
+    function addTemplateSymbolsToClass(classSymbol, templateSymbols) {
+      if (!classSymbol.children) {
+        classSymbol.children = [];
+      }
+      const templateContainer = {
+        name: "(template)",
+        kind: lsp.SymbolKind.Namespace,
+        range: templateSymbols[0].range,
+        selectionRange: templateSymbols[0].selectionRange,
+        children: templateSymbols
+      };
+      classSymbol.children.push(templateContainer);
+    }
+    function filterNavigationTreeToTemplateClasses(tree, scriptInfo, classNamesWithTemplates) {
+      const result = [];
+      if (classNamesWithTemplates.size === 0) {
+        return result;
+      }
+      if (tree.kind === ts.ScriptElementKind.moduleElement && tree.childItems) {
+        for (const child of tree.childItems) {
+          const filtered = filterNavigationItem(child, scriptInfo, classNamesWithTemplates);
+          if (filtered) {
+            result.push(filtered);
+          }
+        }
+      } else {
+        const filtered = filterNavigationItem(tree, scriptInfo, classNamesWithTemplates);
+        if (filtered) {
+          result.push(filtered);
+        }
+      }
+      return result;
+    }
+    function filterNavigationItem(item, scriptInfo, classNamesWithTemplates) {
+      if ((item.kind === ts.ScriptElementKind.classElement || item.kind === ts.ScriptElementKind.localClassElement) && item.text && classNamesWithTemplates.has(item.text)) {
+        const spans = item.spans;
+        if (!spans || spans.length === 0) {
+          return null;
+        }
+        const range = (0, utils_1.tsTextSpanToLspRange)(scriptInfo, spans[0]);
+        const selectionRange = item.nameSpan !== void 0 ? (0, utils_1.tsTextSpanToLspRange)(scriptInfo, item.nameSpan) : range;
+        return {
+          name: item.text,
+          kind: lsp.SymbolKind.Class,
+          range,
+          selectionRange
+          // No children - template symbols will be added later
+        };
+      }
+      if (item.kind === ts.ScriptElementKind.moduleElement || item.kind === ts.ScriptElementKind.directory) {
+        if (item.childItems && item.childItems.length > 0) {
+          const filteredChildren = [];
+          for (const child of item.childItems) {
+            const filtered = filterNavigationItem(child, scriptInfo, classNamesWithTemplates);
+            if (filtered) {
+              filteredChildren.push(filtered);
+            }
+          }
+          if (filteredChildren.length > 0) {
+            const spans = item.spans;
+            if (!spans || spans.length === 0) {
+              const childRange = filteredChildren[0].range;
+              return {
+                name: item.text || "",
+                kind: scriptElementKindToSymbolKind(item.kind),
+                range: childRange,
+                selectionRange: childRange,
+                children: filteredChildren
+              };
+            }
+            const range = (0, utils_1.tsTextSpanToLspRange)(scriptInfo, spans[0]);
+            const selectionRange = item.nameSpan !== void 0 ? (0, utils_1.tsTextSpanToLspRange)(scriptInfo, item.nameSpan) : range;
+            return {
+              name: item.text || "",
+              kind: scriptElementKindToSymbolKind(item.kind),
+              range,
+              selectionRange,
+              children: filteredChildren
+            };
+          }
+        }
+      }
+      return null;
+    }
+    function scriptElementKindToSymbolKind(kind) {
+      switch (kind) {
+        case ts.ScriptElementKind.moduleElement:
+          return lsp.SymbolKind.Module;
+        case ts.ScriptElementKind.classElement:
+          return lsp.SymbolKind.Class;
+        case ts.ScriptElementKind.localClassElement:
+          return lsp.SymbolKind.Class;
+        case ts.ScriptElementKind.interfaceElement:
+          return lsp.SymbolKind.Interface;
+        case ts.ScriptElementKind.typeElement:
+          return lsp.SymbolKind.TypeParameter;
+        case ts.ScriptElementKind.enumElement:
+          return lsp.SymbolKind.Enum;
+        case ts.ScriptElementKind.enumMemberElement:
+          return lsp.SymbolKind.EnumMember;
+        case ts.ScriptElementKind.variableElement:
+          return lsp.SymbolKind.Variable;
+        case ts.ScriptElementKind.localVariableElement:
+          return lsp.SymbolKind.Variable;
+        case ts.ScriptElementKind.functionElement:
+          return lsp.SymbolKind.Function;
+        case ts.ScriptElementKind.localFunctionElement:
+          return lsp.SymbolKind.Function;
+        case ts.ScriptElementKind.memberFunctionElement:
+          return lsp.SymbolKind.Method;
+        case ts.ScriptElementKind.memberGetAccessorElement:
+          return lsp.SymbolKind.Property;
+        case ts.ScriptElementKind.memberSetAccessorElement:
+          return lsp.SymbolKind.Property;
+        case ts.ScriptElementKind.memberVariableElement:
+          return lsp.SymbolKind.Field;
+        case ts.ScriptElementKind.constructorImplementationElement:
+          return lsp.SymbolKind.Constructor;
+        case ts.ScriptElementKind.callSignatureElement:
+          return lsp.SymbolKind.Function;
+        case ts.ScriptElementKind.indexSignatureElement:
+          return lsp.SymbolKind.Key;
+        case ts.ScriptElementKind.constructSignatureElement:
+          return lsp.SymbolKind.Constructor;
+        case ts.ScriptElementKind.parameterElement:
+          return lsp.SymbolKind.Variable;
+        case ts.ScriptElementKind.typeParameterElement:
+          return lsp.SymbolKind.TypeParameter;
+        case ts.ScriptElementKind.constElement:
+          return lsp.SymbolKind.Constant;
+        case ts.ScriptElementKind.letElement:
+          return lsp.SymbolKind.Variable;
+        case ts.ScriptElementKind.alias:
+          return lsp.SymbolKind.Variable;
+        default:
+          return lsp.SymbolKind.Variable;
+      }
+    }
+    function convertTemplateSymbols(symbols, scriptInfo) {
+      const result = [];
+      for (const symbol of symbols) {
+        const converted = convertTemplateSymbol(symbol, scriptInfo);
+        if (converted) {
+          result.push(converted);
+        }
+      }
+      return result;
+    }
+    function convertTemplateSymbol(symbol, scriptInfo) {
+      if (!symbol.spans || symbol.spans.length === 0) {
+        return null;
+      }
+      const range = (0, utils_1.tsTextSpanToLspRange)(scriptInfo, symbol.spans[0]);
+      const selectionRange = symbol.nameSpan ? (0, utils_1.tsTextSpanToLspRange)(scriptInfo, symbol.nameSpan) : range;
+      const children = [];
+      if (symbol.childItems) {
+        for (const child of symbol.childItems) {
+          const childSymbol = convertTemplateSymbol(child, scriptInfo);
+          if (childSymbol) {
+            children.push(childSymbol);
+          }
+        }
+      }
+      const kind = symbol.lspKind !== void 0 ? symbol.lspKind : scriptElementKindToSymbolKind(symbol.kind);
+      return {
+        name: symbol.text,
+        kind,
+        range,
+        selectionRange,
+        children: children.length > 0 ? children : void 0
       };
     }
   }
@@ -308105,63 +308489,6 @@ var require_did_change_watched_files = __commonJS({
         logger.info(`Received file change event for ${filePath} type ${change.type}`);
         host.notifyFileChange(filePath, change.type);
       }
-    }
-  }
-});
-
-// vscode-ng-language-service/server/src/config.js
-var require_config = __commonJS({
-  "vscode-ng-language-service/server/src/config.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getWorkspaceConfiguration = getWorkspaceConfiguration;
-    exports2.getWorkspaceConfigurationCached = getWorkspaceConfigurationCached;
-    exports2.clearWorkspaceConfigurationCache = clearWorkspaceConfigurationCache;
-    exports2.flattenConfiguration = flattenConfiguration;
-    var workspaceConfigCache = /* @__PURE__ */ new WeakMap();
-    function getWorkspaceConfiguration(connection, items) {
-      return __async(this, null, function* () {
-        try {
-          return yield connection.workspace.getConfiguration(items);
-        } catch (error) {
-          return items.map(() => ({}));
-        }
-      });
-    }
-    function getWorkspaceConfigurationCached(connection, items) {
-      return __async(this, null, function* () {
-        const key = JSON.stringify(items);
-        let cache = workspaceConfigCache.get(connection);
-        if (!cache) {
-          cache = /* @__PURE__ */ new Map();
-          workspaceConfigCache.set(connection, cache);
-        }
-        const cached = cache.get(key);
-        if (cached !== void 0) {
-          return cached;
-        }
-        const value = yield getWorkspaceConfiguration(connection, items);
-        cache.set(key, value);
-        return value;
-      });
-    }
-    function clearWorkspaceConfigurationCache(connection) {
-      workspaceConfigCache.delete(connection);
-    }
-    function flattenConfiguration(config, prefix) {
-      const result = {};
-      function flatten(obj, currentPrefix) {
-        for (const [key, value] of Object.entries(obj)) {
-          const newKey = `${currentPrefix}.${key}`;
-          if (value !== null && typeof value === "object" && !Array.isArray(value)) {
-            flatten(value, newKey);
-          } else {
-            result[newKey] = value;
-          }
-        }
-      }
-      flatten(config, prefix);
-      return result;
     }
   }
 });
@@ -308473,6 +308800,7 @@ var require_session = __commonJS({
     var lsp = __importStar(require_node3());
     var notifications_1 = require_notifications();
     var requests_1 = require_requests();
+    var config_1 = require_config();
     var diagnostic_1 = require_diagnostic2();
     var utils_1 = require_utils();
     var code_actions_1 = require_code_actions();
@@ -308483,13 +308811,13 @@ var require_session = __commonJS({
     var hover_1 = require_hover();
     var initialization_1 = require_initialization();
     var linked_editing_range_1 = require_linked_editing_range();
+    var document_symbols_1 = require_document_symbols();
     var rename_1 = require_rename();
     var signature_1 = require_signature();
     var tcb_1 = require_tcb();
     var template_info_1 = require_template_info();
     var did_change_watched_files_1 = require_did_change_watched_files();
     var inlay_hints_1 = require_inlay_hints();
-    var config_1 = require_config();
     var LanguageId;
     (function(LanguageId2) {
       LanguageId2["TS"] = "typescript";
@@ -308632,6 +308960,9 @@ var require_session = __commonJS({
         conn.onHover((p) => (0, hover_1.onHover)(this, p));
         conn.onFoldingRanges((p) => (0, folding_1.onFoldingRanges)(this, p));
         conn.languages.onLinkedEditingRange((p) => (0, linked_editing_range_1.onLinkedEditingRange)(this, p));
+        conn.onDocumentSymbol((p) => __async(this, null, function* () {
+          return yield (0, document_symbols_1.onDocumentSymbol)(this, p);
+        }));
         conn.onCompletion((p) => (0, completions_1.onCompletion)(this, p));
         conn.onCompletionResolve((p) => (0, completions_1.onCompletionResolve)(this, p));
         conn.onRequest(requests_1.GetComponentsWithTemplateFile, (p) => (0, code_lens_1.getComponentsWithTemplateFile)(this, p));
