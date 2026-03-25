@@ -73054,9 +73054,9 @@ var require_source_map_support = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/typescript@6.0.1-rc/node_modules/typescript/lib/typescript.js
+// node_modules/.aspect_rules_js/typescript@6.0.2/node_modules/typescript/lib/typescript.js
 var require_typescript = __commonJS({
-  "node_modules/.aspect_rules_js/typescript@6.0.1-rc/node_modules/typescript/lib/typescript.js"(exports2, module2) {
+  "node_modules/.aspect_rules_js/typescript@6.0.2/node_modules/typescript/lib/typescript.js"(exports2, module2) {
     var ts = {};
     ((module3) => {
       "use strict";
@@ -75330,7 +75330,7 @@ var require_typescript = __commonJS({
       });
       module3.exports = __toCommonJS2(typescript_exports);
       var versionMajorMinor = "6.0";
-      var version = "6.0.1-rc";
+      var version = "6.0.2";
       var Comparison = ((Comparison3) => {
         Comparison3[Comparison3["LessThan"] = -1] = "LessThan";
         Comparison3[Comparison3["EqualTo"] = 0] = "EqualTo";
@@ -211415,6 +211415,9 @@ ${lanes.join("\n")}
           Debug.assert(newSourceFiles.length === oldProgram.getSourceFiles().length);
           for (const newSourceFile of newSourceFiles) {
             filesByName.set(newSourceFile.path, newSourceFile);
+            if (oldProgram.isSourceFileDefaultLibrary(newSourceFile)) {
+              libFiles.add(newSourceFile.path);
+            }
           }
           const oldFilesByNameMap = oldProgram.getFilesByNameMap();
           oldFilesByNameMap.forEach((oldFile, path) => {
