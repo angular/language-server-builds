@@ -73054,9 +73054,9 @@ var require_source_map_support = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/typescript@6.0.2/node_modules/typescript/lib/typescript.js
+// node_modules/.aspect_rules_js/typescript@6.0.3/node_modules/typescript/lib/typescript.js
 var require_typescript = __commonJS({
-  "node_modules/.aspect_rules_js/typescript@6.0.2/node_modules/typescript/lib/typescript.js"(exports2, module2) {
+  "node_modules/.aspect_rules_js/typescript@6.0.3/node_modules/typescript/lib/typescript.js"(exports2, module2) {
     var ts = {};
     ((module3) => {
       "use strict";
@@ -75330,7 +75330,7 @@ var require_typescript = __commonJS({
       });
       module3.exports = __toCommonJS2(typescript_exports);
       var versionMajorMinor = "6.0";
-      var version = "6.0.2";
+      var version = "6.0.3";
       var Comparison = ((Comparison3) => {
         Comparison3[Comparison3["LessThan"] = -1] = "LessThan";
         Comparison3[Comparison3["EqualTo"] = 0] = "EqualTo";
@@ -126676,6 +126676,8 @@ ${lanes.join("\n")}
             return 1 | 4 | 32 | 8 | 16 | 256;
           case 269:
             return 4;
+          case 173:
+            return node.initializer ? 4 : 0;
           case 300:
           case 249:
           case 250:
@@ -223410,7 +223412,11 @@ ${lanes.join("\n")}
         NameValidationResult2[NameValidationResult2["NameTooLong"] = 2] = "NameTooLong";
         NameValidationResult2[NameValidationResult2["NameStartsWithDot"] = 3] = "NameStartsWithDot";
         NameValidationResult2[NameValidationResult2["NameStartsWithUnderscore"] = 4] = "NameStartsWithUnderscore";
-        NameValidationResult2[NameValidationResult2["NameContainsNonURISafeCharacters"] = 5] = "NameContainsNonURISafeCharacters";
+        NameValidationResult2[NameValidationResult2["NameContainsInvalidCharacters"] = 5] = "NameContainsInvalidCharacters";
+        NameValidationResult2[
+          NameValidationResult2["NameContainsNonURISafeCharacters"] = 5
+          /* NameContainsInvalidCharacters */
+        ] = "NameContainsNonURISafeCharacters";
         return NameValidationResult2;
       })(NameValidationResult || {});
       var maxPackageNameLength = 214;
@@ -223456,7 +223462,7 @@ ${lanes.join("\n")}
             return 0;
           }
         }
-        if (encodeURIComponent(packageName) !== packageName) {
+        if (!/^[\w.-]+$/.test(packageName)) {
           return 5;
         }
         return 0;
@@ -223482,7 +223488,7 @@ ${lanes.join("\n")}
           case 4:
             return `'${typing}':: ${kind} name '${name}' cannot start with '_'`;
           case 5:
-            return `'${typing}':: ${kind} name '${name}' contains non URI safe characters`;
+            return `'${typing}':: ${kind} name '${name}' contains invalid characters`;
           case 0:
             return Debug.fail();
           default:
@@ -273744,6 +273750,22 @@ ${options2.prefix}` : "\n" : options2.prefix
         /** @internal */
         installPackage(req) {
           const { fileName, packageName, projectName, projectRootPath, id } = req;
+          const validationResult = ts_JsTyping_exports.validatePackageName(packageName);
+          if (validationResult !== ts_JsTyping_exports.NameValidationResult.Ok) {
+            const message = ts_JsTyping_exports.renderPackageNameValidationFailure(validationResult, packageName);
+            if (this.log.isEnabled()) {
+              this.log.writeLine(message);
+            }
+            const response = {
+              kind: ActionPackageInstalled,
+              projectName,
+              id,
+              success: false,
+              message
+            };
+            this.sendResponse(response);
+            return;
+          }
           const cwd = forEachAncestorDirectory(getDirectoryPath(fileName), (directory) => {
             if (this.installTypingHost.fileExists(combinePaths(directory, "package.json"))) {
               return directory;
