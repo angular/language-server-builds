@@ -296907,24 +296907,14 @@ var require_session = __commonJS({
         if (!project.hasRoots() || project.isNonTsProject()) {
           return null;
         }
-        const angularCore = project.getFileNames().find(isAngularCore);
-        if (angularCore === void 0 && project.getExcludedFiles().some(isAngularCore)) {
+        const angularCore = project.getFileNames().find(utils_1.isAngularCore);
+        if (angularCore === void 0 && project.getExcludedFiles().some(utils_1.isAngularCore)) {
           this.info(`Please check your tsconfig.json to make sure 'node_modules' directory is not excluded.`);
         }
         return angularCore !== null && angularCore !== void 0 ? angularCore : null;
       }
     };
     exports2.Session = Session;
-    function isAngularCore(path) {
-      return isExternalAngularCore(path) || isInternalAngularCore(path);
-    }
-    function isExternalAngularCore(path) {
-      return /@angular\/core\/.+\.d\.ts$/.test(path);
-    }
-    function isInternalAngularCore(path) {
-      return path.endsWith("angular2/rc/packages/core/index.d.ts") || // angular/angular repository direct sources
-      path.includes("angular/packages/core/src");
-    }
     function isTypeScriptFile(path) {
       return path.endsWith(".ts");
     }
