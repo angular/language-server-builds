@@ -1613,7 +1613,7 @@ var require_cancellation = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.CancellationTokenSource = exports2.CancellationToken = void 0;
     var ral_1 = require_ral();
-    var Is2 = require_is2();
+    var Is3 = require_is2();
     var events_1 = require_events();
     var CancellationToken;
     (function(CancellationToken2) {
@@ -1627,7 +1627,7 @@ var require_cancellation = __commonJS({
       });
       function is(value) {
         const candidate = value;
-        return candidate && (candidate === CancellationToken2.None || candidate === CancellationToken2.Cancelled || Is2.boolean(candidate.isCancellationRequested) && !!candidate.onCancellationRequested);
+        return candidate && (candidate === CancellationToken2.None || candidate === CancellationToken2.Cancelled || Is3.boolean(candidate.isCancellationRequested) && !!candidate.onCancellationRequested);
       }
       CancellationToken2.is = is;
     })(CancellationToken || (exports2.CancellationToken = CancellationToken = {}));
@@ -1850,14 +1850,14 @@ var require_messageReader = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ReadableStreamMessageReader = exports2.AbstractMessageReader = exports2.MessageReader = void 0;
     var ral_1 = require_ral();
-    var Is2 = require_is2();
+    var Is3 = require_is2();
     var events_1 = require_events();
     var semaphore_1 = require_semaphore();
     var MessageReader;
     (function(MessageReader2) {
       function is(value) {
         let candidate = value;
-        return candidate && Is2.func(candidate.listen) && Is2.func(candidate.dispose) && Is2.func(candidate.onError) && Is2.func(candidate.onClose) && Is2.func(candidate.onPartialMessage);
+        return candidate && Is3.func(candidate.listen) && Is3.func(candidate.dispose) && Is3.func(candidate.onError) && Is3.func(candidate.onClose) && Is3.func(candidate.onPartialMessage);
       }
       MessageReader2.is = is;
     })(MessageReader || (exports2.MessageReader = MessageReader = {}));
@@ -1893,7 +1893,7 @@ var require_messageReader = __commonJS({
         if (error instanceof Error) {
           return error;
         } else {
-          return new Error(`Reader received error. Reason: ${Is2.string(error.message) ? error.message : "unknown"}`);
+          return new Error(`Reader received error. Reason: ${Is3.string(error.message) ? error.message : "unknown"}`);
         }
       }
     };
@@ -2040,7 +2040,7 @@ var require_messageWriter = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.WriteableStreamMessageWriter = exports2.AbstractMessageWriter = exports2.MessageWriter = void 0;
     var ral_1 = require_ral();
-    var Is2 = require_is2();
+    var Is3 = require_is2();
     var semaphore_1 = require_semaphore();
     var events_1 = require_events();
     var ContentLength = "Content-Length: ";
@@ -2049,7 +2049,7 @@ var require_messageWriter = __commonJS({
     (function(MessageWriter2) {
       function is(value) {
         let candidate = value;
-        return candidate && Is2.func(candidate.dispose) && Is2.func(candidate.onClose) && Is2.func(candidate.onError) && Is2.func(candidate.write);
+        return candidate && Is3.func(candidate.dispose) && Is3.func(candidate.onClose) && Is3.func(candidate.onError) && Is3.func(candidate.write);
       }
       MessageWriter2.is = is;
     })(MessageWriter || (exports2.MessageWriter = MessageWriter = {}));
@@ -2078,7 +2078,7 @@ var require_messageWriter = __commonJS({
         if (error instanceof Error) {
           return error;
         } else {
-          return new Error(`Writer received error. Reason: ${Is2.string(error.message) ? error.message : "unknown"}`);
+          return new Error(`Writer received error. Reason: ${Is3.string(error.message) ? error.message : "unknown"}`);
         }
       }
     };
@@ -2307,7 +2307,7 @@ var require_connection = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.createMessageConnection = exports2.ConnectionOptions = exports2.MessageStrategy = exports2.CancellationStrategy = exports2.CancellationSenderStrategy = exports2.CancellationReceiverStrategy = exports2.RequestCancellationReceiverStrategy = exports2.IdCancellationReceiverStrategy = exports2.ConnectionStrategy = exports2.ConnectionError = exports2.ConnectionErrors = exports2.LogTraceNotification = exports2.SetTraceNotification = exports2.TraceFormat = exports2.TraceValues = exports2.Trace = exports2.NullLogger = exports2.ProgressType = exports2.ProgressToken = void 0;
     var ral_1 = require_ral();
-    var Is2 = require_is2();
+    var Is3 = require_is2();
     var messages_1 = require_messages();
     var linkedMap_1 = require_linkedMap();
     var events_1 = require_events();
@@ -2335,7 +2335,7 @@ var require_connection = __commonJS({
     var StarRequestHandler;
     (function(StarRequestHandler2) {
       function is(value) {
-        return Is2.func(value);
+        return Is3.func(value);
       }
       StarRequestHandler2.is = is;
     })(StarRequestHandler || (StarRequestHandler = {}));
@@ -2365,7 +2365,7 @@ var require_connection = __commonJS({
     })(TraceValues || (exports2.TraceValues = TraceValues = {}));
     (function(Trace2) {
       function fromString(value) {
-        if (!Is2.string(value)) {
+        if (!Is3.string(value)) {
           return Trace2.Off;
         }
         value = value.toLowerCase();
@@ -2406,7 +2406,7 @@ var require_connection = __commonJS({
     })(TraceFormat || (exports2.TraceFormat = TraceFormat = {}));
     (function(TraceFormat2) {
       function fromString(value) {
-        if (!Is2.string(value)) {
+        if (!Is3.string(value)) {
           return TraceFormat2.Text;
         }
         value = value.toLowerCase();
@@ -2444,7 +2444,7 @@ var require_connection = __commonJS({
     (function(ConnectionStrategy2) {
       function is(value) {
         const candidate = value;
-        return candidate && Is2.func(candidate.cancelUndispatched);
+        return candidate && Is3.func(candidate.cancelUndispatched);
       }
       ConnectionStrategy2.is = is;
     })(ConnectionStrategy || (exports2.ConnectionStrategy = ConnectionStrategy = {}));
@@ -2452,7 +2452,7 @@ var require_connection = __commonJS({
     (function(IdCancellationReceiverStrategy2) {
       function is(value) {
         const candidate = value;
-        return candidate && (candidate.kind === void 0 || candidate.kind === "id") && Is2.func(candidate.createCancellationTokenSource) && (candidate.dispose === void 0 || Is2.func(candidate.dispose));
+        return candidate && (candidate.kind === void 0 || candidate.kind === "id") && Is3.func(candidate.createCancellationTokenSource) && (candidate.dispose === void 0 || Is3.func(candidate.dispose));
       }
       IdCancellationReceiverStrategy2.is = is;
     })(IdCancellationReceiverStrategy || (exports2.IdCancellationReceiverStrategy = IdCancellationReceiverStrategy = {}));
@@ -2460,7 +2460,7 @@ var require_connection = __commonJS({
     (function(RequestCancellationReceiverStrategy2) {
       function is(value) {
         const candidate = value;
-        return candidate && candidate.kind === "request" && Is2.func(candidate.createCancellationTokenSource) && (candidate.dispose === void 0 || Is2.func(candidate.dispose));
+        return candidate && candidate.kind === "request" && Is3.func(candidate.createCancellationTokenSource) && (candidate.dispose === void 0 || Is3.func(candidate.dispose));
       }
       RequestCancellationReceiverStrategy2.is = is;
     })(RequestCancellationReceiverStrategy || (exports2.RequestCancellationReceiverStrategy = RequestCancellationReceiverStrategy = {}));
@@ -2487,7 +2487,7 @@ var require_connection = __commonJS({
       });
       function is(value) {
         const candidate = value;
-        return candidate && Is2.func(candidate.sendCancellation) && Is2.func(candidate.cleanup);
+        return candidate && Is3.func(candidate.sendCancellation) && Is3.func(candidate.cleanup);
       }
       CancellationSenderStrategy2.is = is;
     })(CancellationSenderStrategy || (exports2.CancellationSenderStrategy = CancellationSenderStrategy = {}));
@@ -2507,7 +2507,7 @@ var require_connection = __commonJS({
     (function(MessageStrategy2) {
       function is(value) {
         const candidate = value;
-        return candidate && Is2.func(candidate.handleMessage);
+        return candidate && Is3.func(candidate.handleMessage);
       }
       MessageStrategy2.is = is;
     })(MessageStrategy || (exports2.MessageStrategy = MessageStrategy = {}));
@@ -2767,7 +2767,7 @@ var require_connection = __commonJS({
                 requestTokens.delete(tokenKey);
                 if (error instanceof messages_1.ResponseError) {
                   replyError(error, requestMessage.method, startTime);
-                } else if (error && Is2.string(error.message)) {
+                } else if (error && Is3.string(error.message)) {
                   replyError(new messages_1.ResponseError(messages_1.ErrorCodes.InternalError, `Request ${requestMessage.method} failed with message: ${error.message}`), requestMessage.method, startTime);
                 } else {
                   replyError(new messages_1.ResponseError(messages_1.ErrorCodes.InternalError, `Request ${requestMessage.method} failed unexpectedly without providing any details.`), requestMessage.method, startTime);
@@ -2781,7 +2781,7 @@ var require_connection = __commonJS({
             requestTokens.delete(tokenKey);
             if (error instanceof messages_1.ResponseError) {
               reply(error, requestMessage.method, startTime);
-            } else if (error && Is2.string(error.message)) {
+            } else if (error && Is3.string(error.message)) {
               replyError(new messages_1.ResponseError(messages_1.ErrorCodes.InternalError, `Request ${requestMessage.method} failed with message: ${error.message}`), requestMessage.method, startTime);
             } else {
               replyError(new messages_1.ResponseError(messages_1.ErrorCodes.InternalError, `Request ${requestMessage.method} failed unexpectedly without providing any details.`), requestMessage.method, startTime);
@@ -2899,7 +2899,7 @@ ${JSON.stringify(responseMessage.error, void 0, 4)}`);
         logger.error(`Received message which is neither a response nor a notification message:
 ${JSON.stringify(message, null, 4)}`);
         const responseMessage = message;
-        if (Is2.string(responseMessage.id) || Is2.number(responseMessage.id)) {
+        if (Is3.string(responseMessage.id) || Is3.number(responseMessage.id)) {
           const key = responseMessage.id;
           const responseHandler = responsePromises.get(key);
           if (responseHandler) {
@@ -3144,7 +3144,7 @@ ${JSON.stringify(message, null, 4)}`);
           throwIfClosedOrDisposed();
           let method;
           let messageParams;
-          if (Is2.string(type)) {
+          if (Is3.string(type)) {
             method = type;
             const first = args[0];
             let paramStart = 0;
@@ -3188,10 +3188,10 @@ ${JSON.stringify(message, null, 4)}`);
         onNotification: (type, handler) => {
           throwIfClosedOrDisposed();
           let method;
-          if (Is2.func(type)) {
+          if (Is3.func(type)) {
             starNotificationHandler = type;
           } else if (handler) {
-            if (Is2.string(type)) {
+            if (Is3.string(type)) {
               method = type;
               notificationHandlers.set(type, { type: void 0, handler });
             } else {
@@ -3230,7 +3230,7 @@ ${JSON.stringify(message, null, 4)}`);
           let method;
           let messageParams;
           let token = void 0;
-          if (Is2.string(type)) {
+          if (Is3.string(type)) {
             method = type;
             const first = args[0];
             const last = args[args.length - 1];
@@ -3320,7 +3320,7 @@ ${JSON.stringify(message, null, 4)}`);
           if (StarRequestHandler.is(type)) {
             method = void 0;
             starRequestHandler = type;
-          } else if (Is2.string(type)) {
+          } else if (Is3.string(type)) {
             method = null;
             if (handler !== void 0) {
               method = type;
@@ -3352,7 +3352,7 @@ ${JSON.stringify(message, null, 4)}`);
           let _sendNotification = false;
           let _traceFormat = TraceFormat.Text;
           if (sendNotificationOrTraceOptions !== void 0) {
-            if (Is2.boolean(sendNotificationOrTraceOptions)) {
+            if (Is3.boolean(sendNotificationOrTraceOptions)) {
               _sendNotification = sendNotificationOrTraceOptions;
             } else {
               _sendNotification = sendNotificationOrTraceOptions.sendNotification || false;
@@ -3391,10 +3391,10 @@ ${JSON.stringify(message, null, 4)}`);
           requestTokens = /* @__PURE__ */ new Map();
           knownCanceledRequests = /* @__PURE__ */ new Set();
           messageQueue = new linkedMap_1.LinkedMap();
-          if (Is2.func(messageWriter.dispose)) {
+          if (Is3.func(messageWriter.dispose)) {
             messageWriter.dispose();
           }
-          if (Is2.func(messageReader.dispose)) {
+          if (Is3.func(messageReader.dispose)) {
             messageReader.dispose();
           }
         },
@@ -4074,100 +4074,100 @@ var require_main2 = __commonJS({
       "use strict";
       Object.defineProperty(exports3, "__esModule", { value: true });
       exports3.TextDocument = exports3.EOL = exports3.WorkspaceFolder = exports3.InlineCompletionContext = exports3.SelectedCompletionInfo = exports3.InlineCompletionTriggerKind = exports3.InlineCompletionList = exports3.InlineCompletionItem = exports3.StringValue = exports3.InlayHint = exports3.InlayHintLabelPart = exports3.InlayHintKind = exports3.InlineValueContext = exports3.InlineValueEvaluatableExpression = exports3.InlineValueVariableLookup = exports3.InlineValueText = exports3.SemanticTokens = exports3.SemanticTokenModifiers = exports3.SemanticTokenTypes = exports3.SelectionRange = exports3.DocumentLink = exports3.FormattingOptions = exports3.CodeLens = exports3.CodeAction = exports3.CodeActionContext = exports3.CodeActionTriggerKind = exports3.CodeActionKind = exports3.DocumentSymbol = exports3.WorkspaceSymbol = exports3.SymbolInformation = exports3.SymbolTag = exports3.SymbolKind = exports3.DocumentHighlight = exports3.DocumentHighlightKind = exports3.SignatureInformation = exports3.ParameterInformation = exports3.Hover = exports3.MarkedString = exports3.CompletionList = exports3.CompletionItem = exports3.CompletionItemLabelDetails = exports3.InsertTextMode = exports3.InsertReplaceEdit = exports3.CompletionItemTag = exports3.InsertTextFormat = exports3.CompletionItemKind = exports3.MarkupContent = exports3.MarkupKind = exports3.TextDocumentItem = exports3.OptionalVersionedTextDocumentIdentifier = exports3.VersionedTextDocumentIdentifier = exports3.TextDocumentIdentifier = exports3.WorkspaceChange = exports3.WorkspaceEdit = exports3.DeleteFile = exports3.RenameFile = exports3.CreateFile = exports3.TextDocumentEdit = exports3.AnnotatedTextEdit = exports3.ChangeAnnotationIdentifier = exports3.ChangeAnnotation = exports3.TextEdit = exports3.Command = exports3.Diagnostic = exports3.CodeDescription = exports3.DiagnosticTag = exports3.DiagnosticSeverity = exports3.DiagnosticRelatedInformation = exports3.FoldingRange = exports3.FoldingRangeKind = exports3.ColorPresentation = exports3.ColorInformation = exports3.Color = exports3.LocationLink = exports3.Location = exports3.Range = exports3.Position = exports3.uinteger = exports3.integer = exports3.URI = exports3.DocumentUri = void 0;
-      var DocumentUri2;
-      (function(DocumentUri3) {
+      var DocumentUri3;
+      (function(DocumentUri4) {
         function is(value) {
           return typeof value === "string";
         }
-        DocumentUri3.is = is;
-      })(DocumentUri2 || (exports3.DocumentUri = DocumentUri2 = {}));
-      var URI3;
-      (function(URI4) {
+        DocumentUri4.is = is;
+      })(DocumentUri3 || (exports3.DocumentUri = DocumentUri3 = {}));
+      var URI4;
+      (function(URI5) {
         function is(value) {
           return typeof value === "string";
         }
-        URI4.is = is;
-      })(URI3 || (exports3.URI = URI3 = {}));
-      var integer2;
-      (function(integer3) {
-        integer3.MIN_VALUE = -2147483648;
-        integer3.MAX_VALUE = 2147483647;
+        URI5.is = is;
+      })(URI4 || (exports3.URI = URI4 = {}));
+      var integer3;
+      (function(integer4) {
+        integer4.MIN_VALUE = -2147483648;
+        integer4.MAX_VALUE = 2147483647;
         function is(value) {
-          return typeof value === "number" && integer3.MIN_VALUE <= value && value <= integer3.MAX_VALUE;
+          return typeof value === "number" && integer4.MIN_VALUE <= value && value <= integer4.MAX_VALUE;
         }
-        integer3.is = is;
-      })(integer2 || (exports3.integer = integer2 = {}));
-      var uinteger2;
-      (function(uinteger3) {
-        uinteger3.MIN_VALUE = 0;
-        uinteger3.MAX_VALUE = 2147483647;
+        integer4.is = is;
+      })(integer3 || (exports3.integer = integer3 = {}));
+      var uinteger3;
+      (function(uinteger4) {
+        uinteger4.MIN_VALUE = 0;
+        uinteger4.MAX_VALUE = 2147483647;
         function is(value) {
-          return typeof value === "number" && uinteger3.MIN_VALUE <= value && value <= uinteger3.MAX_VALUE;
+          return typeof value === "number" && uinteger4.MIN_VALUE <= value && value <= uinteger4.MAX_VALUE;
         }
-        uinteger3.is = is;
-      })(uinteger2 || (exports3.uinteger = uinteger2 = {}));
-      var Position2;
-      (function(Position3) {
+        uinteger4.is = is;
+      })(uinteger3 || (exports3.uinteger = uinteger3 = {}));
+      var Position3;
+      (function(Position4) {
         function create(line, character) {
           if (line === Number.MAX_VALUE) {
-            line = uinteger2.MAX_VALUE;
+            line = uinteger3.MAX_VALUE;
           }
           if (character === Number.MAX_VALUE) {
-            character = uinteger2.MAX_VALUE;
+            character = uinteger3.MAX_VALUE;
           }
           return { line, character };
         }
-        Position3.create = create;
+        Position4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && Is2.uinteger(candidate.line) && Is2.uinteger(candidate.character);
+          return Is3.objectLiteral(candidate) && Is3.uinteger(candidate.line) && Is3.uinteger(candidate.character);
         }
-        Position3.is = is;
-      })(Position2 || (exports3.Position = Position2 = {}));
-      var Range2;
-      (function(Range3) {
+        Position4.is = is;
+      })(Position3 || (exports3.Position = Position3 = {}));
+      var Range3;
+      (function(Range4) {
         function create(one, two, three, four) {
-          if (Is2.uinteger(one) && Is2.uinteger(two) && Is2.uinteger(three) && Is2.uinteger(four)) {
-            return { start: Position2.create(one, two), end: Position2.create(three, four) };
-          } else if (Position2.is(one) && Position2.is(two)) {
+          if (Is3.uinteger(one) && Is3.uinteger(two) && Is3.uinteger(three) && Is3.uinteger(four)) {
+            return { start: Position3.create(one, two), end: Position3.create(three, four) };
+          } else if (Position3.is(one) && Position3.is(two)) {
             return { start: one, end: two };
           } else {
             throw new Error("Range#create called with invalid arguments[".concat(one, ", ").concat(two, ", ").concat(three, ", ").concat(four, "]"));
           }
         }
-        Range3.create = create;
+        Range4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && Position2.is(candidate.start) && Position2.is(candidate.end);
+          return Is3.objectLiteral(candidate) && Position3.is(candidate.start) && Position3.is(candidate.end);
         }
-        Range3.is = is;
-      })(Range2 || (exports3.Range = Range2 = {}));
-      var Location2;
-      (function(Location3) {
+        Range4.is = is;
+      })(Range3 || (exports3.Range = Range3 = {}));
+      var Location3;
+      (function(Location4) {
         function create(uri, range) {
           return { uri, range };
         }
-        Location3.create = create;
+        Location4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && (Is2.string(candidate.uri) || Is2.undefined(candidate.uri));
+          return Is3.objectLiteral(candidate) && Range3.is(candidate.range) && (Is3.string(candidate.uri) || Is3.undefined(candidate.uri));
         }
-        Location3.is = is;
-      })(Location2 || (exports3.Location = Location2 = {}));
-      var LocationLink2;
-      (function(LocationLink3) {
+        Location4.is = is;
+      })(Location3 || (exports3.Location = Location3 = {}));
+      var LocationLink3;
+      (function(LocationLink4) {
         function create(targetUri, targetRange, targetSelectionRange, originSelectionRange) {
           return { targetUri, targetRange, targetSelectionRange, originSelectionRange };
         }
-        LocationLink3.create = create;
+        LocationLink4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && Range2.is(candidate.targetRange) && Is2.string(candidate.targetUri) && Range2.is(candidate.targetSelectionRange) && (Range2.is(candidate.originSelectionRange) || Is2.undefined(candidate.originSelectionRange));
+          return Is3.objectLiteral(candidate) && Range3.is(candidate.targetRange) && Is3.string(candidate.targetUri) && Range3.is(candidate.targetSelectionRange) && (Range3.is(candidate.originSelectionRange) || Is3.undefined(candidate.originSelectionRange));
         }
-        LocationLink3.is = is;
-      })(LocationLink2 || (exports3.LocationLink = LocationLink2 = {}));
-      var Color2;
-      (function(Color3) {
+        LocationLink4.is = is;
+      })(LocationLink3 || (exports3.LocationLink = LocationLink3 = {}));
+      var Color3;
+      (function(Color4) {
         function create(red, green, blue, alpha) {
           return {
             red,
@@ -4176,30 +4176,30 @@ var require_main2 = __commonJS({
             alpha
           };
         }
-        Color3.create = create;
+        Color4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && Is2.numberRange(candidate.red, 0, 1) && Is2.numberRange(candidate.green, 0, 1) && Is2.numberRange(candidate.blue, 0, 1) && Is2.numberRange(candidate.alpha, 0, 1);
+          return Is3.objectLiteral(candidate) && Is3.numberRange(candidate.red, 0, 1) && Is3.numberRange(candidate.green, 0, 1) && Is3.numberRange(candidate.blue, 0, 1) && Is3.numberRange(candidate.alpha, 0, 1);
         }
-        Color3.is = is;
-      })(Color2 || (exports3.Color = Color2 = {}));
-      var ColorInformation2;
-      (function(ColorInformation3) {
+        Color4.is = is;
+      })(Color3 || (exports3.Color = Color3 = {}));
+      var ColorInformation3;
+      (function(ColorInformation4) {
         function create(range, color) {
           return {
             range,
             color
           };
         }
-        ColorInformation3.create = create;
+        ColorInformation4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && Color2.is(candidate.color);
+          return Is3.objectLiteral(candidate) && Range3.is(candidate.range) && Color3.is(candidate.color);
         }
-        ColorInformation3.is = is;
-      })(ColorInformation2 || (exports3.ColorInformation = ColorInformation2 = {}));
-      var ColorPresentation2;
-      (function(ColorPresentation3) {
+        ColorInformation4.is = is;
+      })(ColorInformation3 || (exports3.ColorInformation = ColorInformation3 = {}));
+      var ColorPresentation3;
+      (function(ColorPresentation4) {
         function create(label, textEdit, additionalTextEdits) {
           return {
             label,
@@ -4207,150 +4207,150 @@ var require_main2 = __commonJS({
             additionalTextEdits
           };
         }
-        ColorPresentation3.create = create;
+        ColorPresentation4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && Is2.string(candidate.label) && (Is2.undefined(candidate.textEdit) || TextEdit2.is(candidate)) && (Is2.undefined(candidate.additionalTextEdits) || Is2.typedArray(candidate.additionalTextEdits, TextEdit2.is));
+          return Is3.objectLiteral(candidate) && Is3.string(candidate.label) && (Is3.undefined(candidate.textEdit) || TextEdit3.is(candidate)) && (Is3.undefined(candidate.additionalTextEdits) || Is3.typedArray(candidate.additionalTextEdits, TextEdit3.is));
         }
-        ColorPresentation3.is = is;
-      })(ColorPresentation2 || (exports3.ColorPresentation = ColorPresentation2 = {}));
-      var FoldingRangeKind2;
-      (function(FoldingRangeKind3) {
-        FoldingRangeKind3.Comment = "comment";
-        FoldingRangeKind3.Imports = "imports";
-        FoldingRangeKind3.Region = "region";
-      })(FoldingRangeKind2 || (exports3.FoldingRangeKind = FoldingRangeKind2 = {}));
-      var FoldingRange2;
-      (function(FoldingRange3) {
+        ColorPresentation4.is = is;
+      })(ColorPresentation3 || (exports3.ColorPresentation = ColorPresentation3 = {}));
+      var FoldingRangeKind3;
+      (function(FoldingRangeKind4) {
+        FoldingRangeKind4.Comment = "comment";
+        FoldingRangeKind4.Imports = "imports";
+        FoldingRangeKind4.Region = "region";
+      })(FoldingRangeKind3 || (exports3.FoldingRangeKind = FoldingRangeKind3 = {}));
+      var FoldingRange3;
+      (function(FoldingRange4) {
         function create(startLine, endLine, startCharacter, endCharacter, kind, collapsedText) {
           var result = {
             startLine,
             endLine
           };
-          if (Is2.defined(startCharacter)) {
+          if (Is3.defined(startCharacter)) {
             result.startCharacter = startCharacter;
           }
-          if (Is2.defined(endCharacter)) {
+          if (Is3.defined(endCharacter)) {
             result.endCharacter = endCharacter;
           }
-          if (Is2.defined(kind)) {
+          if (Is3.defined(kind)) {
             result.kind = kind;
           }
-          if (Is2.defined(collapsedText)) {
+          if (Is3.defined(collapsedText)) {
             result.collapsedText = collapsedText;
           }
           return result;
         }
-        FoldingRange3.create = create;
+        FoldingRange4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && Is2.uinteger(candidate.startLine) && Is2.uinteger(candidate.startLine) && (Is2.undefined(candidate.startCharacter) || Is2.uinteger(candidate.startCharacter)) && (Is2.undefined(candidate.endCharacter) || Is2.uinteger(candidate.endCharacter)) && (Is2.undefined(candidate.kind) || Is2.string(candidate.kind));
+          return Is3.objectLiteral(candidate) && Is3.uinteger(candidate.startLine) && Is3.uinteger(candidate.startLine) && (Is3.undefined(candidate.startCharacter) || Is3.uinteger(candidate.startCharacter)) && (Is3.undefined(candidate.endCharacter) || Is3.uinteger(candidate.endCharacter)) && (Is3.undefined(candidate.kind) || Is3.string(candidate.kind));
         }
-        FoldingRange3.is = is;
-      })(FoldingRange2 || (exports3.FoldingRange = FoldingRange2 = {}));
-      var DiagnosticRelatedInformation2;
-      (function(DiagnosticRelatedInformation3) {
+        FoldingRange4.is = is;
+      })(FoldingRange3 || (exports3.FoldingRange = FoldingRange3 = {}));
+      var DiagnosticRelatedInformation3;
+      (function(DiagnosticRelatedInformation4) {
         function create(location, message) {
           return {
             location,
             message
           };
         }
-        DiagnosticRelatedInformation3.create = create;
+        DiagnosticRelatedInformation4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.defined(candidate) && Location2.is(candidate.location) && Is2.string(candidate.message);
+          return Is3.defined(candidate) && Location3.is(candidate.location) && Is3.string(candidate.message);
         }
-        DiagnosticRelatedInformation3.is = is;
-      })(DiagnosticRelatedInformation2 || (exports3.DiagnosticRelatedInformation = DiagnosticRelatedInformation2 = {}));
-      var DiagnosticSeverity2;
-      (function(DiagnosticSeverity3) {
-        DiagnosticSeverity3.Error = 1;
-        DiagnosticSeverity3.Warning = 2;
-        DiagnosticSeverity3.Information = 3;
-        DiagnosticSeverity3.Hint = 4;
-      })(DiagnosticSeverity2 || (exports3.DiagnosticSeverity = DiagnosticSeverity2 = {}));
-      var DiagnosticTag2;
-      (function(DiagnosticTag3) {
-        DiagnosticTag3.Unnecessary = 1;
-        DiagnosticTag3.Deprecated = 2;
-      })(DiagnosticTag2 || (exports3.DiagnosticTag = DiagnosticTag2 = {}));
-      var CodeDescription2;
-      (function(CodeDescription3) {
+        DiagnosticRelatedInformation4.is = is;
+      })(DiagnosticRelatedInformation3 || (exports3.DiagnosticRelatedInformation = DiagnosticRelatedInformation3 = {}));
+      var DiagnosticSeverity3;
+      (function(DiagnosticSeverity4) {
+        DiagnosticSeverity4.Error = 1;
+        DiagnosticSeverity4.Warning = 2;
+        DiagnosticSeverity4.Information = 3;
+        DiagnosticSeverity4.Hint = 4;
+      })(DiagnosticSeverity3 || (exports3.DiagnosticSeverity = DiagnosticSeverity3 = {}));
+      var DiagnosticTag3;
+      (function(DiagnosticTag4) {
+        DiagnosticTag4.Unnecessary = 1;
+        DiagnosticTag4.Deprecated = 2;
+      })(DiagnosticTag3 || (exports3.DiagnosticTag = DiagnosticTag3 = {}));
+      var CodeDescription3;
+      (function(CodeDescription4) {
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && Is2.string(candidate.href);
+          return Is3.objectLiteral(candidate) && Is3.string(candidate.href);
         }
-        CodeDescription3.is = is;
-      })(CodeDescription2 || (exports3.CodeDescription = CodeDescription2 = {}));
-      var Diagnostic2;
-      (function(Diagnostic3) {
+        CodeDescription4.is = is;
+      })(CodeDescription3 || (exports3.CodeDescription = CodeDescription3 = {}));
+      var Diagnostic3;
+      (function(Diagnostic4) {
         function create(range, message, severity, code, source, relatedInformation) {
           var result = { range, message };
-          if (Is2.defined(severity)) {
+          if (Is3.defined(severity)) {
             result.severity = severity;
           }
-          if (Is2.defined(code)) {
+          if (Is3.defined(code)) {
             result.code = code;
           }
-          if (Is2.defined(source)) {
+          if (Is3.defined(source)) {
             result.source = source;
           }
-          if (Is2.defined(relatedInformation)) {
+          if (Is3.defined(relatedInformation)) {
             result.relatedInformation = relatedInformation;
           }
           return result;
         }
-        Diagnostic3.create = create;
+        Diagnostic4.create = create;
         function is(value) {
           var _a3;
           var candidate = value;
-          return Is2.defined(candidate) && Range2.is(candidate.range) && Is2.string(candidate.message) && (Is2.number(candidate.severity) || Is2.undefined(candidate.severity)) && (Is2.integer(candidate.code) || Is2.string(candidate.code) || Is2.undefined(candidate.code)) && (Is2.undefined(candidate.codeDescription) || Is2.string((_a3 = candidate.codeDescription) === null || _a3 === void 0 ? void 0 : _a3.href)) && (Is2.string(candidate.source) || Is2.undefined(candidate.source)) && (Is2.undefined(candidate.relatedInformation) || Is2.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation2.is));
+          return Is3.defined(candidate) && Range3.is(candidate.range) && Is3.string(candidate.message) && (Is3.number(candidate.severity) || Is3.undefined(candidate.severity)) && (Is3.integer(candidate.code) || Is3.string(candidate.code) || Is3.undefined(candidate.code)) && (Is3.undefined(candidate.codeDescription) || Is3.string((_a3 = candidate.codeDescription) === null || _a3 === void 0 ? void 0 : _a3.href)) && (Is3.string(candidate.source) || Is3.undefined(candidate.source)) && (Is3.undefined(candidate.relatedInformation) || Is3.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation3.is));
         }
-        Diagnostic3.is = is;
-      })(Diagnostic2 || (exports3.Diagnostic = Diagnostic2 = {}));
-      var Command2;
-      (function(Command3) {
+        Diagnostic4.is = is;
+      })(Diagnostic3 || (exports3.Diagnostic = Diagnostic3 = {}));
+      var Command3;
+      (function(Command4) {
         function create(title, command) {
           var args = [];
           for (var _i = 2; _i < arguments.length; _i++) {
             args[_i - 2] = arguments[_i];
           }
           var result = { title, command };
-          if (Is2.defined(args) && args.length > 0) {
+          if (Is3.defined(args) && args.length > 0) {
             result.arguments = args;
           }
           return result;
         }
-        Command3.create = create;
+        Command4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.defined(candidate) && Is2.string(candidate.title) && Is2.string(candidate.command);
+          return Is3.defined(candidate) && Is3.string(candidate.title) && Is3.string(candidate.command);
         }
-        Command3.is = is;
-      })(Command2 || (exports3.Command = Command2 = {}));
-      var TextEdit2;
-      (function(TextEdit3) {
+        Command4.is = is;
+      })(Command3 || (exports3.Command = Command3 = {}));
+      var TextEdit3;
+      (function(TextEdit4) {
         function replace(range, newText) {
           return { range, newText };
         }
-        TextEdit3.replace = replace;
+        TextEdit4.replace = replace;
         function insert(position, newText) {
           return { range: { start: position, end: position }, newText };
         }
-        TextEdit3.insert = insert;
+        TextEdit4.insert = insert;
         function del(range) {
           return { range, newText: "" };
         }
-        TextEdit3.del = del;
+        TextEdit4.del = del;
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && Is2.string(candidate.newText) && Range2.is(candidate.range);
+          return Is3.objectLiteral(candidate) && Is3.string(candidate.newText) && Range3.is(candidate.range);
         }
-        TextEdit3.is = is;
-      })(TextEdit2 || (exports3.TextEdit = TextEdit2 = {}));
-      var ChangeAnnotation2;
-      (function(ChangeAnnotation3) {
+        TextEdit4.is = is;
+      })(TextEdit3 || (exports3.TextEdit = TextEdit3 = {}));
+      var ChangeAnnotation3;
+      (function(ChangeAnnotation4) {
         function create(label, needsConfirmation, description) {
           var result = { label };
           if (needsConfirmation !== void 0) {
@@ -4361,55 +4361,55 @@ var require_main2 = __commonJS({
           }
           return result;
         }
-        ChangeAnnotation3.create = create;
+        ChangeAnnotation4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && Is2.string(candidate.label) && (Is2.boolean(candidate.needsConfirmation) || candidate.needsConfirmation === void 0) && (Is2.string(candidate.description) || candidate.description === void 0);
+          return Is3.objectLiteral(candidate) && Is3.string(candidate.label) && (Is3.boolean(candidate.needsConfirmation) || candidate.needsConfirmation === void 0) && (Is3.string(candidate.description) || candidate.description === void 0);
         }
-        ChangeAnnotation3.is = is;
-      })(ChangeAnnotation2 || (exports3.ChangeAnnotation = ChangeAnnotation2 = {}));
-      var ChangeAnnotationIdentifier2;
-      (function(ChangeAnnotationIdentifier3) {
+        ChangeAnnotation4.is = is;
+      })(ChangeAnnotation3 || (exports3.ChangeAnnotation = ChangeAnnotation3 = {}));
+      var ChangeAnnotationIdentifier3;
+      (function(ChangeAnnotationIdentifier4) {
         function is(value) {
           var candidate = value;
-          return Is2.string(candidate);
+          return Is3.string(candidate);
         }
-        ChangeAnnotationIdentifier3.is = is;
-      })(ChangeAnnotationIdentifier2 || (exports3.ChangeAnnotationIdentifier = ChangeAnnotationIdentifier2 = {}));
-      var AnnotatedTextEdit2;
-      (function(AnnotatedTextEdit3) {
+        ChangeAnnotationIdentifier4.is = is;
+      })(ChangeAnnotationIdentifier3 || (exports3.ChangeAnnotationIdentifier = ChangeAnnotationIdentifier3 = {}));
+      var AnnotatedTextEdit3;
+      (function(AnnotatedTextEdit4) {
         function replace(range, newText, annotation) {
           return { range, newText, annotationId: annotation };
         }
-        AnnotatedTextEdit3.replace = replace;
+        AnnotatedTextEdit4.replace = replace;
         function insert(position, newText, annotation) {
           return { range: { start: position, end: position }, newText, annotationId: annotation };
         }
-        AnnotatedTextEdit3.insert = insert;
+        AnnotatedTextEdit4.insert = insert;
         function del(range, annotation) {
           return { range, newText: "", annotationId: annotation };
         }
-        AnnotatedTextEdit3.del = del;
+        AnnotatedTextEdit4.del = del;
         function is(value) {
           var candidate = value;
-          return TextEdit2.is(candidate) && (ChangeAnnotation2.is(candidate.annotationId) || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+          return TextEdit3.is(candidate) && (ChangeAnnotation3.is(candidate.annotationId) || ChangeAnnotationIdentifier3.is(candidate.annotationId));
         }
-        AnnotatedTextEdit3.is = is;
-      })(AnnotatedTextEdit2 || (exports3.AnnotatedTextEdit = AnnotatedTextEdit2 = {}));
-      var TextDocumentEdit2;
-      (function(TextDocumentEdit3) {
+        AnnotatedTextEdit4.is = is;
+      })(AnnotatedTextEdit3 || (exports3.AnnotatedTextEdit = AnnotatedTextEdit3 = {}));
+      var TextDocumentEdit3;
+      (function(TextDocumentEdit4) {
         function create(textDocument, edits) {
           return { textDocument, edits };
         }
-        TextDocumentEdit3.create = create;
+        TextDocumentEdit4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.defined(candidate) && OptionalVersionedTextDocumentIdentifier2.is(candidate.textDocument) && Array.isArray(candidate.edits);
+          return Is3.defined(candidate) && OptionalVersionedTextDocumentIdentifier3.is(candidate.textDocument) && Array.isArray(candidate.edits);
         }
-        TextDocumentEdit3.is = is;
-      })(TextDocumentEdit2 || (exports3.TextDocumentEdit = TextDocumentEdit2 = {}));
-      var CreateFile2;
-      (function(CreateFile3) {
+        TextDocumentEdit4.is = is;
+      })(TextDocumentEdit3 || (exports3.TextDocumentEdit = TextDocumentEdit3 = {}));
+      var CreateFile3;
+      (function(CreateFile4) {
         function create(uri, options2, annotation) {
           var result = {
             kind: "create",
@@ -4423,15 +4423,15 @@ var require_main2 = __commonJS({
           }
           return result;
         }
-        CreateFile3.create = create;
+        CreateFile4.create = create;
         function is(value) {
           var candidate = value;
-          return candidate && candidate.kind === "create" && Is2.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is2.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is2.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+          return candidate && candidate.kind === "create" && Is3.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is3.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is3.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier3.is(candidate.annotationId));
         }
-        CreateFile3.is = is;
-      })(CreateFile2 || (exports3.CreateFile = CreateFile2 = {}));
-      var RenameFile2;
-      (function(RenameFile3) {
+        CreateFile4.is = is;
+      })(CreateFile3 || (exports3.CreateFile = CreateFile3 = {}));
+      var RenameFile3;
+      (function(RenameFile4) {
         function create(oldUri, newUri, options2, annotation) {
           var result = {
             kind: "rename",
@@ -4446,15 +4446,15 @@ var require_main2 = __commonJS({
           }
           return result;
         }
-        RenameFile3.create = create;
+        RenameFile4.create = create;
         function is(value) {
           var candidate = value;
-          return candidate && candidate.kind === "rename" && Is2.string(candidate.oldUri) && Is2.string(candidate.newUri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is2.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is2.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+          return candidate && candidate.kind === "rename" && Is3.string(candidate.oldUri) && Is3.string(candidate.newUri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is3.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is3.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier3.is(candidate.annotationId));
         }
-        RenameFile3.is = is;
-      })(RenameFile2 || (exports3.RenameFile = RenameFile2 = {}));
-      var DeleteFile2;
-      (function(DeleteFile3) {
+        RenameFile4.is = is;
+      })(RenameFile3 || (exports3.RenameFile = RenameFile3 = {}));
+      var DeleteFile3;
+      (function(DeleteFile4) {
         function create(uri, options2, annotation) {
           var result = {
             kind: "delete",
@@ -4468,27 +4468,27 @@ var require_main2 = __commonJS({
           }
           return result;
         }
-        DeleteFile3.create = create;
+        DeleteFile4.create = create;
         function is(value) {
           var candidate = value;
-          return candidate && candidate.kind === "delete" && Is2.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.recursive === void 0 || Is2.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === void 0 || Is2.boolean(candidate.options.ignoreIfNotExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+          return candidate && candidate.kind === "delete" && Is3.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.recursive === void 0 || Is3.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === void 0 || Is3.boolean(candidate.options.ignoreIfNotExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier3.is(candidate.annotationId));
         }
-        DeleteFile3.is = is;
-      })(DeleteFile2 || (exports3.DeleteFile = DeleteFile2 = {}));
-      var WorkspaceEdit2;
-      (function(WorkspaceEdit3) {
+        DeleteFile4.is = is;
+      })(DeleteFile3 || (exports3.DeleteFile = DeleteFile3 = {}));
+      var WorkspaceEdit3;
+      (function(WorkspaceEdit4) {
         function is(value) {
           var candidate = value;
           return candidate && (candidate.changes !== void 0 || candidate.documentChanges !== void 0) && (candidate.documentChanges === void 0 || candidate.documentChanges.every(function(change) {
-            if (Is2.string(change.kind)) {
-              return CreateFile2.is(change) || RenameFile2.is(change) || DeleteFile2.is(change);
+            if (Is3.string(change.kind)) {
+              return CreateFile3.is(change) || RenameFile3.is(change) || DeleteFile3.is(change);
             } else {
-              return TextDocumentEdit2.is(change);
+              return TextDocumentEdit3.is(change);
             }
           }));
         }
-        WorkspaceEdit3.is = is;
-      })(WorkspaceEdit2 || (exports3.WorkspaceEdit = WorkspaceEdit2 = {}));
+        WorkspaceEdit4.is = is;
+      })(WorkspaceEdit3 || (exports3.WorkspaceEdit = WorkspaceEdit3 = {}));
       var TextEditChangeImpl = (
         /** @class */
         function() {
@@ -4500,14 +4500,14 @@ var require_main2 = __commonJS({
             var edit;
             var id;
             if (annotation === void 0) {
-              edit = TextEdit2.insert(position, newText);
-            } else if (ChangeAnnotationIdentifier2.is(annotation)) {
+              edit = TextEdit3.insert(position, newText);
+            } else if (ChangeAnnotationIdentifier3.is(annotation)) {
               id = annotation;
-              edit = AnnotatedTextEdit2.insert(position, newText, annotation);
+              edit = AnnotatedTextEdit3.insert(position, newText, annotation);
             } else {
               this.assertChangeAnnotations(this.changeAnnotations);
               id = this.changeAnnotations.manage(annotation);
-              edit = AnnotatedTextEdit2.insert(position, newText, id);
+              edit = AnnotatedTextEdit3.insert(position, newText, id);
             }
             this.edits.push(edit);
             if (id !== void 0) {
@@ -4518,14 +4518,14 @@ var require_main2 = __commonJS({
             var edit;
             var id;
             if (annotation === void 0) {
-              edit = TextEdit2.replace(range, newText);
-            } else if (ChangeAnnotationIdentifier2.is(annotation)) {
+              edit = TextEdit3.replace(range, newText);
+            } else if (ChangeAnnotationIdentifier3.is(annotation)) {
               id = annotation;
-              edit = AnnotatedTextEdit2.replace(range, newText, annotation);
+              edit = AnnotatedTextEdit3.replace(range, newText, annotation);
             } else {
               this.assertChangeAnnotations(this.changeAnnotations);
               id = this.changeAnnotations.manage(annotation);
-              edit = AnnotatedTextEdit2.replace(range, newText, id);
+              edit = AnnotatedTextEdit3.replace(range, newText, id);
             }
             this.edits.push(edit);
             if (id !== void 0) {
@@ -4536,14 +4536,14 @@ var require_main2 = __commonJS({
             var edit;
             var id;
             if (annotation === void 0) {
-              edit = TextEdit2.del(range);
-            } else if (ChangeAnnotationIdentifier2.is(annotation)) {
+              edit = TextEdit3.del(range);
+            } else if (ChangeAnnotationIdentifier3.is(annotation)) {
               id = annotation;
-              edit = AnnotatedTextEdit2.del(range, annotation);
+              edit = AnnotatedTextEdit3.del(range, annotation);
             } else {
               this.assertChangeAnnotations(this.changeAnnotations);
               id = this.changeAnnotations.manage(annotation);
-              edit = AnnotatedTextEdit2.del(range, id);
+              edit = AnnotatedTextEdit3.del(range, id);
             }
             this.edits.push(edit);
             if (id !== void 0) {
@@ -4587,7 +4587,7 @@ var require_main2 = __commonJS({
           });
           ChangeAnnotations2.prototype.manage = function(idOrAnnotation, annotation) {
             var id;
-            if (ChangeAnnotationIdentifier2.is(idOrAnnotation)) {
+            if (ChangeAnnotationIdentifier3.is(idOrAnnotation)) {
               id = idOrAnnotation;
             } else {
               id = this.nextId();
@@ -4622,7 +4622,7 @@ var require_main2 = __commonJS({
                 this._changeAnnotations = new ChangeAnnotations(workspaceEdit.changeAnnotations);
                 workspaceEdit.changeAnnotations = this._changeAnnotations.all();
                 workspaceEdit.documentChanges.forEach(function(change) {
-                  if (TextDocumentEdit2.is(change)) {
+                  if (TextDocumentEdit3.is(change)) {
                     var textEditChange = new TextEditChangeImpl(change.edits, _this._changeAnnotations);
                     _this._textEditChanges[change.textDocument.uri] = textEditChange;
                   }
@@ -4657,7 +4657,7 @@ var require_main2 = __commonJS({
             configurable: true
           });
           WorkspaceChange2.prototype.getTextEditChange = function(key) {
-            if (OptionalVersionedTextDocumentIdentifier2.is(key)) {
+            if (OptionalVersionedTextDocumentIdentifier3.is(key)) {
               this.initDocumentChanges();
               if (this._workspaceEdit.documentChanges === void 0) {
                 throw new Error("Workspace edit is not configured for document changes.");
@@ -4708,7 +4708,7 @@ var require_main2 = __commonJS({
               throw new Error("Workspace edit is not configured for document changes.");
             }
             var annotation;
-            if (ChangeAnnotation2.is(optionsOrAnnotation) || ChangeAnnotationIdentifier2.is(optionsOrAnnotation)) {
+            if (ChangeAnnotation3.is(optionsOrAnnotation) || ChangeAnnotationIdentifier3.is(optionsOrAnnotation)) {
               annotation = optionsOrAnnotation;
             } else {
               options2 = optionsOrAnnotation;
@@ -4716,10 +4716,10 @@ var require_main2 = __commonJS({
             var operation;
             var id;
             if (annotation === void 0) {
-              operation = CreateFile2.create(uri, options2);
+              operation = CreateFile3.create(uri, options2);
             } else {
-              id = ChangeAnnotationIdentifier2.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
-              operation = CreateFile2.create(uri, options2, id);
+              id = ChangeAnnotationIdentifier3.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+              operation = CreateFile3.create(uri, options2, id);
             }
             this._workspaceEdit.documentChanges.push(operation);
             if (id !== void 0) {
@@ -4732,7 +4732,7 @@ var require_main2 = __commonJS({
               throw new Error("Workspace edit is not configured for document changes.");
             }
             var annotation;
-            if (ChangeAnnotation2.is(optionsOrAnnotation) || ChangeAnnotationIdentifier2.is(optionsOrAnnotation)) {
+            if (ChangeAnnotation3.is(optionsOrAnnotation) || ChangeAnnotationIdentifier3.is(optionsOrAnnotation)) {
               annotation = optionsOrAnnotation;
             } else {
               options2 = optionsOrAnnotation;
@@ -4740,10 +4740,10 @@ var require_main2 = __commonJS({
             var operation;
             var id;
             if (annotation === void 0) {
-              operation = RenameFile2.create(oldUri, newUri, options2);
+              operation = RenameFile3.create(oldUri, newUri, options2);
             } else {
-              id = ChangeAnnotationIdentifier2.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
-              operation = RenameFile2.create(oldUri, newUri, options2, id);
+              id = ChangeAnnotationIdentifier3.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+              operation = RenameFile3.create(oldUri, newUri, options2, id);
             }
             this._workspaceEdit.documentChanges.push(operation);
             if (id !== void 0) {
@@ -4756,7 +4756,7 @@ var require_main2 = __commonJS({
               throw new Error("Workspace edit is not configured for document changes.");
             }
             var annotation;
-            if (ChangeAnnotation2.is(optionsOrAnnotation) || ChangeAnnotationIdentifier2.is(optionsOrAnnotation)) {
+            if (ChangeAnnotation3.is(optionsOrAnnotation) || ChangeAnnotationIdentifier3.is(optionsOrAnnotation)) {
               annotation = optionsOrAnnotation;
             } else {
               options2 = optionsOrAnnotation;
@@ -4764,10 +4764,10 @@ var require_main2 = __commonJS({
             var operation;
             var id;
             if (annotation === void 0) {
-              operation = DeleteFile2.create(uri, options2);
+              operation = DeleteFile3.create(uri, options2);
             } else {
-              id = ChangeAnnotationIdentifier2.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
-              operation = DeleteFile2.create(uri, options2, id);
+              id = ChangeAnnotationIdentifier3.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+              operation = DeleteFile3.create(uri, options2, id);
             }
             this._workspaceEdit.documentChanges.push(operation);
             if (id !== void 0) {
@@ -4778,247 +4778,247 @@ var require_main2 = __commonJS({
         }()
       );
       exports3.WorkspaceChange = WorkspaceChange;
-      var TextDocumentIdentifier2;
-      (function(TextDocumentIdentifier3) {
+      var TextDocumentIdentifier3;
+      (function(TextDocumentIdentifier4) {
         function create(uri) {
           return { uri };
         }
-        TextDocumentIdentifier3.create = create;
+        TextDocumentIdentifier4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.defined(candidate) && Is2.string(candidate.uri);
+          return Is3.defined(candidate) && Is3.string(candidate.uri);
         }
-        TextDocumentIdentifier3.is = is;
-      })(TextDocumentIdentifier2 || (exports3.TextDocumentIdentifier = TextDocumentIdentifier2 = {}));
-      var VersionedTextDocumentIdentifier2;
-      (function(VersionedTextDocumentIdentifier3) {
+        TextDocumentIdentifier4.is = is;
+      })(TextDocumentIdentifier3 || (exports3.TextDocumentIdentifier = TextDocumentIdentifier3 = {}));
+      var VersionedTextDocumentIdentifier3;
+      (function(VersionedTextDocumentIdentifier4) {
         function create(uri, version) {
           return { uri, version };
         }
-        VersionedTextDocumentIdentifier3.create = create;
+        VersionedTextDocumentIdentifier4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.defined(candidate) && Is2.string(candidate.uri) && Is2.integer(candidate.version);
+          return Is3.defined(candidate) && Is3.string(candidate.uri) && Is3.integer(candidate.version);
         }
-        VersionedTextDocumentIdentifier3.is = is;
-      })(VersionedTextDocumentIdentifier2 || (exports3.VersionedTextDocumentIdentifier = VersionedTextDocumentIdentifier2 = {}));
-      var OptionalVersionedTextDocumentIdentifier2;
-      (function(OptionalVersionedTextDocumentIdentifier3) {
+        VersionedTextDocumentIdentifier4.is = is;
+      })(VersionedTextDocumentIdentifier3 || (exports3.VersionedTextDocumentIdentifier = VersionedTextDocumentIdentifier3 = {}));
+      var OptionalVersionedTextDocumentIdentifier3;
+      (function(OptionalVersionedTextDocumentIdentifier4) {
         function create(uri, version) {
           return { uri, version };
         }
-        OptionalVersionedTextDocumentIdentifier3.create = create;
+        OptionalVersionedTextDocumentIdentifier4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.defined(candidate) && Is2.string(candidate.uri) && (candidate.version === null || Is2.integer(candidate.version));
+          return Is3.defined(candidate) && Is3.string(candidate.uri) && (candidate.version === null || Is3.integer(candidate.version));
         }
-        OptionalVersionedTextDocumentIdentifier3.is = is;
-      })(OptionalVersionedTextDocumentIdentifier2 || (exports3.OptionalVersionedTextDocumentIdentifier = OptionalVersionedTextDocumentIdentifier2 = {}));
-      var TextDocumentItem2;
-      (function(TextDocumentItem3) {
+        OptionalVersionedTextDocumentIdentifier4.is = is;
+      })(OptionalVersionedTextDocumentIdentifier3 || (exports3.OptionalVersionedTextDocumentIdentifier = OptionalVersionedTextDocumentIdentifier3 = {}));
+      var TextDocumentItem3;
+      (function(TextDocumentItem4) {
         function create(uri, languageId, version, text) {
           return { uri, languageId, version, text };
         }
-        TextDocumentItem3.create = create;
+        TextDocumentItem4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.defined(candidate) && Is2.string(candidate.uri) && Is2.string(candidate.languageId) && Is2.integer(candidate.version) && Is2.string(candidate.text);
+          return Is3.defined(candidate) && Is3.string(candidate.uri) && Is3.string(candidate.languageId) && Is3.integer(candidate.version) && Is3.string(candidate.text);
         }
-        TextDocumentItem3.is = is;
-      })(TextDocumentItem2 || (exports3.TextDocumentItem = TextDocumentItem2 = {}));
-      var MarkupKind2;
-      (function(MarkupKind3) {
-        MarkupKind3.PlainText = "plaintext";
-        MarkupKind3.Markdown = "markdown";
+        TextDocumentItem4.is = is;
+      })(TextDocumentItem3 || (exports3.TextDocumentItem = TextDocumentItem3 = {}));
+      var MarkupKind3;
+      (function(MarkupKind4) {
+        MarkupKind4.PlainText = "plaintext";
+        MarkupKind4.Markdown = "markdown";
         function is(value) {
           var candidate = value;
-          return candidate === MarkupKind3.PlainText || candidate === MarkupKind3.Markdown;
+          return candidate === MarkupKind4.PlainText || candidate === MarkupKind4.Markdown;
         }
-        MarkupKind3.is = is;
-      })(MarkupKind2 || (exports3.MarkupKind = MarkupKind2 = {}));
-      var MarkupContent2;
-      (function(MarkupContent3) {
+        MarkupKind4.is = is;
+      })(MarkupKind3 || (exports3.MarkupKind = MarkupKind3 = {}));
+      var MarkupContent3;
+      (function(MarkupContent4) {
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(value) && MarkupKind2.is(candidate.kind) && Is2.string(candidate.value);
+          return Is3.objectLiteral(value) && MarkupKind3.is(candidate.kind) && Is3.string(candidate.value);
         }
-        MarkupContent3.is = is;
-      })(MarkupContent2 || (exports3.MarkupContent = MarkupContent2 = {}));
-      var CompletionItemKind2;
-      (function(CompletionItemKind3) {
-        CompletionItemKind3.Text = 1;
-        CompletionItemKind3.Method = 2;
-        CompletionItemKind3.Function = 3;
-        CompletionItemKind3.Constructor = 4;
-        CompletionItemKind3.Field = 5;
-        CompletionItemKind3.Variable = 6;
-        CompletionItemKind3.Class = 7;
-        CompletionItemKind3.Interface = 8;
-        CompletionItemKind3.Module = 9;
-        CompletionItemKind3.Property = 10;
-        CompletionItemKind3.Unit = 11;
-        CompletionItemKind3.Value = 12;
-        CompletionItemKind3.Enum = 13;
-        CompletionItemKind3.Keyword = 14;
-        CompletionItemKind3.Snippet = 15;
-        CompletionItemKind3.Color = 16;
-        CompletionItemKind3.File = 17;
-        CompletionItemKind3.Reference = 18;
-        CompletionItemKind3.Folder = 19;
-        CompletionItemKind3.EnumMember = 20;
-        CompletionItemKind3.Constant = 21;
-        CompletionItemKind3.Struct = 22;
-        CompletionItemKind3.Event = 23;
-        CompletionItemKind3.Operator = 24;
-        CompletionItemKind3.TypeParameter = 25;
-      })(CompletionItemKind2 || (exports3.CompletionItemKind = CompletionItemKind2 = {}));
-      var InsertTextFormat2;
-      (function(InsertTextFormat3) {
-        InsertTextFormat3.PlainText = 1;
-        InsertTextFormat3.Snippet = 2;
-      })(InsertTextFormat2 || (exports3.InsertTextFormat = InsertTextFormat2 = {}));
-      var CompletionItemTag2;
-      (function(CompletionItemTag3) {
-        CompletionItemTag3.Deprecated = 1;
-      })(CompletionItemTag2 || (exports3.CompletionItemTag = CompletionItemTag2 = {}));
-      var InsertReplaceEdit2;
-      (function(InsertReplaceEdit3) {
+        MarkupContent4.is = is;
+      })(MarkupContent3 || (exports3.MarkupContent = MarkupContent3 = {}));
+      var CompletionItemKind3;
+      (function(CompletionItemKind4) {
+        CompletionItemKind4.Text = 1;
+        CompletionItemKind4.Method = 2;
+        CompletionItemKind4.Function = 3;
+        CompletionItemKind4.Constructor = 4;
+        CompletionItemKind4.Field = 5;
+        CompletionItemKind4.Variable = 6;
+        CompletionItemKind4.Class = 7;
+        CompletionItemKind4.Interface = 8;
+        CompletionItemKind4.Module = 9;
+        CompletionItemKind4.Property = 10;
+        CompletionItemKind4.Unit = 11;
+        CompletionItemKind4.Value = 12;
+        CompletionItemKind4.Enum = 13;
+        CompletionItemKind4.Keyword = 14;
+        CompletionItemKind4.Snippet = 15;
+        CompletionItemKind4.Color = 16;
+        CompletionItemKind4.File = 17;
+        CompletionItemKind4.Reference = 18;
+        CompletionItemKind4.Folder = 19;
+        CompletionItemKind4.EnumMember = 20;
+        CompletionItemKind4.Constant = 21;
+        CompletionItemKind4.Struct = 22;
+        CompletionItemKind4.Event = 23;
+        CompletionItemKind4.Operator = 24;
+        CompletionItemKind4.TypeParameter = 25;
+      })(CompletionItemKind3 || (exports3.CompletionItemKind = CompletionItemKind3 = {}));
+      var InsertTextFormat3;
+      (function(InsertTextFormat4) {
+        InsertTextFormat4.PlainText = 1;
+        InsertTextFormat4.Snippet = 2;
+      })(InsertTextFormat3 || (exports3.InsertTextFormat = InsertTextFormat3 = {}));
+      var CompletionItemTag3;
+      (function(CompletionItemTag4) {
+        CompletionItemTag4.Deprecated = 1;
+      })(CompletionItemTag3 || (exports3.CompletionItemTag = CompletionItemTag3 = {}));
+      var InsertReplaceEdit3;
+      (function(InsertReplaceEdit4) {
         function create(newText, insert, replace) {
           return { newText, insert, replace };
         }
-        InsertReplaceEdit3.create = create;
+        InsertReplaceEdit4.create = create;
         function is(value) {
           var candidate = value;
-          return candidate && Is2.string(candidate.newText) && Range2.is(candidate.insert) && Range2.is(candidate.replace);
+          return candidate && Is3.string(candidate.newText) && Range3.is(candidate.insert) && Range3.is(candidate.replace);
         }
-        InsertReplaceEdit3.is = is;
-      })(InsertReplaceEdit2 || (exports3.InsertReplaceEdit = InsertReplaceEdit2 = {}));
-      var InsertTextMode2;
-      (function(InsertTextMode3) {
-        InsertTextMode3.asIs = 1;
-        InsertTextMode3.adjustIndentation = 2;
-      })(InsertTextMode2 || (exports3.InsertTextMode = InsertTextMode2 = {}));
-      var CompletionItemLabelDetails2;
-      (function(CompletionItemLabelDetails3) {
+        InsertReplaceEdit4.is = is;
+      })(InsertReplaceEdit3 || (exports3.InsertReplaceEdit = InsertReplaceEdit3 = {}));
+      var InsertTextMode3;
+      (function(InsertTextMode4) {
+        InsertTextMode4.asIs = 1;
+        InsertTextMode4.adjustIndentation = 2;
+      })(InsertTextMode3 || (exports3.InsertTextMode = InsertTextMode3 = {}));
+      var CompletionItemLabelDetails3;
+      (function(CompletionItemLabelDetails4) {
         function is(value) {
           var candidate = value;
-          return candidate && (Is2.string(candidate.detail) || candidate.detail === void 0) && (Is2.string(candidate.description) || candidate.description === void 0);
+          return candidate && (Is3.string(candidate.detail) || candidate.detail === void 0) && (Is3.string(candidate.description) || candidate.description === void 0);
         }
-        CompletionItemLabelDetails3.is = is;
-      })(CompletionItemLabelDetails2 || (exports3.CompletionItemLabelDetails = CompletionItemLabelDetails2 = {}));
-      var CompletionItem2;
-      (function(CompletionItem3) {
+        CompletionItemLabelDetails4.is = is;
+      })(CompletionItemLabelDetails3 || (exports3.CompletionItemLabelDetails = CompletionItemLabelDetails3 = {}));
+      var CompletionItem3;
+      (function(CompletionItem4) {
         function create(label) {
           return { label };
         }
-        CompletionItem3.create = create;
-      })(CompletionItem2 || (exports3.CompletionItem = CompletionItem2 = {}));
-      var CompletionList2;
-      (function(CompletionList3) {
+        CompletionItem4.create = create;
+      })(CompletionItem3 || (exports3.CompletionItem = CompletionItem3 = {}));
+      var CompletionList3;
+      (function(CompletionList4) {
         function create(items, isIncomplete) {
           return { items: items ? items : [], isIncomplete: !!isIncomplete };
         }
-        CompletionList3.create = create;
-      })(CompletionList2 || (exports3.CompletionList = CompletionList2 = {}));
-      var MarkedString2;
-      (function(MarkedString3) {
+        CompletionList4.create = create;
+      })(CompletionList3 || (exports3.CompletionList = CompletionList3 = {}));
+      var MarkedString3;
+      (function(MarkedString4) {
         function fromPlainText(plainText) {
           return plainText.replace(/[\\`*_{}[\]()#+\-.!]/g, "\\$&");
         }
-        MarkedString3.fromPlainText = fromPlainText;
+        MarkedString4.fromPlainText = fromPlainText;
         function is(value) {
           var candidate = value;
-          return Is2.string(candidate) || Is2.objectLiteral(candidate) && Is2.string(candidate.language) && Is2.string(candidate.value);
+          return Is3.string(candidate) || Is3.objectLiteral(candidate) && Is3.string(candidate.language) && Is3.string(candidate.value);
         }
-        MarkedString3.is = is;
-      })(MarkedString2 || (exports3.MarkedString = MarkedString2 = {}));
-      var Hover2;
-      (function(Hover3) {
+        MarkedString4.is = is;
+      })(MarkedString3 || (exports3.MarkedString = MarkedString3 = {}));
+      var Hover3;
+      (function(Hover4) {
         function is(value) {
           var candidate = value;
-          return !!candidate && Is2.objectLiteral(candidate) && (MarkupContent2.is(candidate.contents) || MarkedString2.is(candidate.contents) || Is2.typedArray(candidate.contents, MarkedString2.is)) && (value.range === void 0 || Range2.is(value.range));
+          return !!candidate && Is3.objectLiteral(candidate) && (MarkupContent3.is(candidate.contents) || MarkedString3.is(candidate.contents) || Is3.typedArray(candidate.contents, MarkedString3.is)) && (value.range === void 0 || Range3.is(value.range));
         }
-        Hover3.is = is;
-      })(Hover2 || (exports3.Hover = Hover2 = {}));
-      var ParameterInformation2;
-      (function(ParameterInformation3) {
+        Hover4.is = is;
+      })(Hover3 || (exports3.Hover = Hover3 = {}));
+      var ParameterInformation3;
+      (function(ParameterInformation4) {
         function create(label, documentation) {
           return documentation ? { label, documentation } : { label };
         }
-        ParameterInformation3.create = create;
-      })(ParameterInformation2 || (exports3.ParameterInformation = ParameterInformation2 = {}));
-      var SignatureInformation2;
-      (function(SignatureInformation3) {
+        ParameterInformation4.create = create;
+      })(ParameterInformation3 || (exports3.ParameterInformation = ParameterInformation3 = {}));
+      var SignatureInformation3;
+      (function(SignatureInformation4) {
         function create(label, documentation) {
           var parameters = [];
           for (var _i = 2; _i < arguments.length; _i++) {
             parameters[_i - 2] = arguments[_i];
           }
           var result = { label };
-          if (Is2.defined(documentation)) {
+          if (Is3.defined(documentation)) {
             result.documentation = documentation;
           }
-          if (Is2.defined(parameters)) {
+          if (Is3.defined(parameters)) {
             result.parameters = parameters;
           } else {
             result.parameters = [];
           }
           return result;
         }
-        SignatureInformation3.create = create;
-      })(SignatureInformation2 || (exports3.SignatureInformation = SignatureInformation2 = {}));
-      var DocumentHighlightKind2;
-      (function(DocumentHighlightKind3) {
-        DocumentHighlightKind3.Text = 1;
-        DocumentHighlightKind3.Read = 2;
-        DocumentHighlightKind3.Write = 3;
-      })(DocumentHighlightKind2 || (exports3.DocumentHighlightKind = DocumentHighlightKind2 = {}));
-      var DocumentHighlight2;
-      (function(DocumentHighlight3) {
+        SignatureInformation4.create = create;
+      })(SignatureInformation3 || (exports3.SignatureInformation = SignatureInformation3 = {}));
+      var DocumentHighlightKind3;
+      (function(DocumentHighlightKind4) {
+        DocumentHighlightKind4.Text = 1;
+        DocumentHighlightKind4.Read = 2;
+        DocumentHighlightKind4.Write = 3;
+      })(DocumentHighlightKind3 || (exports3.DocumentHighlightKind = DocumentHighlightKind3 = {}));
+      var DocumentHighlight3;
+      (function(DocumentHighlight4) {
         function create(range, kind) {
           var result = { range };
-          if (Is2.number(kind)) {
+          if (Is3.number(kind)) {
             result.kind = kind;
           }
           return result;
         }
-        DocumentHighlight3.create = create;
-      })(DocumentHighlight2 || (exports3.DocumentHighlight = DocumentHighlight2 = {}));
-      var SymbolKind2;
-      (function(SymbolKind3) {
-        SymbolKind3.File = 1;
-        SymbolKind3.Module = 2;
-        SymbolKind3.Namespace = 3;
-        SymbolKind3.Package = 4;
-        SymbolKind3.Class = 5;
-        SymbolKind3.Method = 6;
-        SymbolKind3.Property = 7;
-        SymbolKind3.Field = 8;
-        SymbolKind3.Constructor = 9;
-        SymbolKind3.Enum = 10;
-        SymbolKind3.Interface = 11;
-        SymbolKind3.Function = 12;
-        SymbolKind3.Variable = 13;
-        SymbolKind3.Constant = 14;
-        SymbolKind3.String = 15;
-        SymbolKind3.Number = 16;
-        SymbolKind3.Boolean = 17;
-        SymbolKind3.Array = 18;
-        SymbolKind3.Object = 19;
-        SymbolKind3.Key = 20;
-        SymbolKind3.Null = 21;
-        SymbolKind3.EnumMember = 22;
-        SymbolKind3.Struct = 23;
-        SymbolKind3.Event = 24;
-        SymbolKind3.Operator = 25;
-        SymbolKind3.TypeParameter = 26;
-      })(SymbolKind2 || (exports3.SymbolKind = SymbolKind2 = {}));
-      var SymbolTag2;
-      (function(SymbolTag3) {
-        SymbolTag3.Deprecated = 1;
-      })(SymbolTag2 || (exports3.SymbolTag = SymbolTag2 = {}));
-      var SymbolInformation2;
-      (function(SymbolInformation3) {
+        DocumentHighlight4.create = create;
+      })(DocumentHighlight3 || (exports3.DocumentHighlight = DocumentHighlight3 = {}));
+      var SymbolKind3;
+      (function(SymbolKind4) {
+        SymbolKind4.File = 1;
+        SymbolKind4.Module = 2;
+        SymbolKind4.Namespace = 3;
+        SymbolKind4.Package = 4;
+        SymbolKind4.Class = 5;
+        SymbolKind4.Method = 6;
+        SymbolKind4.Property = 7;
+        SymbolKind4.Field = 8;
+        SymbolKind4.Constructor = 9;
+        SymbolKind4.Enum = 10;
+        SymbolKind4.Interface = 11;
+        SymbolKind4.Function = 12;
+        SymbolKind4.Variable = 13;
+        SymbolKind4.Constant = 14;
+        SymbolKind4.String = 15;
+        SymbolKind4.Number = 16;
+        SymbolKind4.Boolean = 17;
+        SymbolKind4.Array = 18;
+        SymbolKind4.Object = 19;
+        SymbolKind4.Key = 20;
+        SymbolKind4.Null = 21;
+        SymbolKind4.EnumMember = 22;
+        SymbolKind4.Struct = 23;
+        SymbolKind4.Event = 24;
+        SymbolKind4.Operator = 25;
+        SymbolKind4.TypeParameter = 26;
+      })(SymbolKind3 || (exports3.SymbolKind = SymbolKind3 = {}));
+      var SymbolTag3;
+      (function(SymbolTag4) {
+        SymbolTag4.Deprecated = 1;
+      })(SymbolTag3 || (exports3.SymbolTag = SymbolTag3 = {}));
+      var SymbolInformation3;
+      (function(SymbolInformation4) {
         function create(name, kind, range, uri, containerName) {
           var result = {
             name,
@@ -5030,17 +5030,17 @@ var require_main2 = __commonJS({
           }
           return result;
         }
-        SymbolInformation3.create = create;
-      })(SymbolInformation2 || (exports3.SymbolInformation = SymbolInformation2 = {}));
-      var WorkspaceSymbol2;
-      (function(WorkspaceSymbol3) {
+        SymbolInformation4.create = create;
+      })(SymbolInformation3 || (exports3.SymbolInformation = SymbolInformation3 = {}));
+      var WorkspaceSymbol3;
+      (function(WorkspaceSymbol4) {
         function create(name, kind, uri, range) {
           return range !== void 0 ? { name, kind, location: { uri, range } } : { name, kind, location: { uri } };
         }
-        WorkspaceSymbol3.create = create;
-      })(WorkspaceSymbol2 || (exports3.WorkspaceSymbol = WorkspaceSymbol2 = {}));
-      var DocumentSymbol2;
-      (function(DocumentSymbol3) {
+        WorkspaceSymbol4.create = create;
+      })(WorkspaceSymbol3 || (exports3.WorkspaceSymbol = WorkspaceSymbol3 = {}));
+      var DocumentSymbol3;
+      (function(DocumentSymbol4) {
         function create(name, detail, kind, range, selectionRange, children) {
           var result = {
             name,
@@ -5054,32 +5054,32 @@ var require_main2 = __commonJS({
           }
           return result;
         }
-        DocumentSymbol3.create = create;
+        DocumentSymbol4.create = create;
         function is(value) {
           var candidate = value;
-          return candidate && Is2.string(candidate.name) && Is2.number(candidate.kind) && Range2.is(candidate.range) && Range2.is(candidate.selectionRange) && (candidate.detail === void 0 || Is2.string(candidate.detail)) && (candidate.deprecated === void 0 || Is2.boolean(candidate.deprecated)) && (candidate.children === void 0 || Array.isArray(candidate.children)) && (candidate.tags === void 0 || Array.isArray(candidate.tags));
+          return candidate && Is3.string(candidate.name) && Is3.number(candidate.kind) && Range3.is(candidate.range) && Range3.is(candidate.selectionRange) && (candidate.detail === void 0 || Is3.string(candidate.detail)) && (candidate.deprecated === void 0 || Is3.boolean(candidate.deprecated)) && (candidate.children === void 0 || Array.isArray(candidate.children)) && (candidate.tags === void 0 || Array.isArray(candidate.tags));
         }
-        DocumentSymbol3.is = is;
-      })(DocumentSymbol2 || (exports3.DocumentSymbol = DocumentSymbol2 = {}));
-      var CodeActionKind2;
-      (function(CodeActionKind3) {
-        CodeActionKind3.Empty = "";
-        CodeActionKind3.QuickFix = "quickfix";
-        CodeActionKind3.Refactor = "refactor";
-        CodeActionKind3.RefactorExtract = "refactor.extract";
-        CodeActionKind3.RefactorInline = "refactor.inline";
-        CodeActionKind3.RefactorRewrite = "refactor.rewrite";
-        CodeActionKind3.Source = "source";
-        CodeActionKind3.SourceOrganizeImports = "source.organizeImports";
-        CodeActionKind3.SourceFixAll = "source.fixAll";
-      })(CodeActionKind2 || (exports3.CodeActionKind = CodeActionKind2 = {}));
-      var CodeActionTriggerKind2;
-      (function(CodeActionTriggerKind3) {
-        CodeActionTriggerKind3.Invoked = 1;
-        CodeActionTriggerKind3.Automatic = 2;
-      })(CodeActionTriggerKind2 || (exports3.CodeActionTriggerKind = CodeActionTriggerKind2 = {}));
-      var CodeActionContext2;
-      (function(CodeActionContext3) {
+        DocumentSymbol4.is = is;
+      })(DocumentSymbol3 || (exports3.DocumentSymbol = DocumentSymbol3 = {}));
+      var CodeActionKind3;
+      (function(CodeActionKind4) {
+        CodeActionKind4.Empty = "";
+        CodeActionKind4.QuickFix = "quickfix";
+        CodeActionKind4.Refactor = "refactor";
+        CodeActionKind4.RefactorExtract = "refactor.extract";
+        CodeActionKind4.RefactorInline = "refactor.inline";
+        CodeActionKind4.RefactorRewrite = "refactor.rewrite";
+        CodeActionKind4.Source = "source";
+        CodeActionKind4.SourceOrganizeImports = "source.organizeImports";
+        CodeActionKind4.SourceFixAll = "source.fixAll";
+      })(CodeActionKind3 || (exports3.CodeActionKind = CodeActionKind3 = {}));
+      var CodeActionTriggerKind3;
+      (function(CodeActionTriggerKind4) {
+        CodeActionTriggerKind4.Invoked = 1;
+        CodeActionTriggerKind4.Automatic = 2;
+      })(CodeActionTriggerKind3 || (exports3.CodeActionTriggerKind = CodeActionTriggerKind3 = {}));
+      var CodeActionContext3;
+      (function(CodeActionContext4) {
         function create(diagnostics, only, triggerKind) {
           var result = { diagnostics };
           if (only !== void 0 && only !== null) {
@@ -5090,22 +5090,22 @@ var require_main2 = __commonJS({
           }
           return result;
         }
-        CodeActionContext3.create = create;
+        CodeActionContext4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.defined(candidate) && Is2.typedArray(candidate.diagnostics, Diagnostic2.is) && (candidate.only === void 0 || Is2.typedArray(candidate.only, Is2.string)) && (candidate.triggerKind === void 0 || candidate.triggerKind === CodeActionTriggerKind2.Invoked || candidate.triggerKind === CodeActionTriggerKind2.Automatic);
+          return Is3.defined(candidate) && Is3.typedArray(candidate.diagnostics, Diagnostic3.is) && (candidate.only === void 0 || Is3.typedArray(candidate.only, Is3.string)) && (candidate.triggerKind === void 0 || candidate.triggerKind === CodeActionTriggerKind3.Invoked || candidate.triggerKind === CodeActionTriggerKind3.Automatic);
         }
-        CodeActionContext3.is = is;
-      })(CodeActionContext2 || (exports3.CodeActionContext = CodeActionContext2 = {}));
-      var CodeAction2;
-      (function(CodeAction3) {
+        CodeActionContext4.is = is;
+      })(CodeActionContext3 || (exports3.CodeActionContext = CodeActionContext3 = {}));
+      var CodeAction3;
+      (function(CodeAction4) {
         function create(title, kindOrCommandOrEdit, kind) {
           var result = { title };
           var checkKind = true;
           if (typeof kindOrCommandOrEdit === "string") {
             checkKind = false;
             result.kind = kindOrCommandOrEdit;
-          } else if (Command2.is(kindOrCommandOrEdit)) {
+          } else if (Command3.is(kindOrCommandOrEdit)) {
             result.command = kindOrCommandOrEdit;
           } else {
             result.edit = kindOrCommandOrEdit;
@@ -5115,183 +5115,183 @@ var require_main2 = __commonJS({
           }
           return result;
         }
-        CodeAction3.create = create;
+        CodeAction4.create = create;
         function is(value) {
           var candidate = value;
-          return candidate && Is2.string(candidate.title) && (candidate.diagnostics === void 0 || Is2.typedArray(candidate.diagnostics, Diagnostic2.is)) && (candidate.kind === void 0 || Is2.string(candidate.kind)) && (candidate.edit !== void 0 || candidate.command !== void 0) && (candidate.command === void 0 || Command2.is(candidate.command)) && (candidate.isPreferred === void 0 || Is2.boolean(candidate.isPreferred)) && (candidate.edit === void 0 || WorkspaceEdit2.is(candidate.edit));
+          return candidate && Is3.string(candidate.title) && (candidate.diagnostics === void 0 || Is3.typedArray(candidate.diagnostics, Diagnostic3.is)) && (candidate.kind === void 0 || Is3.string(candidate.kind)) && (candidate.edit !== void 0 || candidate.command !== void 0) && (candidate.command === void 0 || Command3.is(candidate.command)) && (candidate.isPreferred === void 0 || Is3.boolean(candidate.isPreferred)) && (candidate.edit === void 0 || WorkspaceEdit3.is(candidate.edit));
         }
-        CodeAction3.is = is;
-      })(CodeAction2 || (exports3.CodeAction = CodeAction2 = {}));
-      var CodeLens2;
-      (function(CodeLens3) {
+        CodeAction4.is = is;
+      })(CodeAction3 || (exports3.CodeAction = CodeAction3 = {}));
+      var CodeLens3;
+      (function(CodeLens4) {
         function create(range, data) {
           var result = { range };
-          if (Is2.defined(data)) {
+          if (Is3.defined(data)) {
             result.data = data;
           }
           return result;
         }
-        CodeLens3.create = create;
+        CodeLens4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.defined(candidate) && Range2.is(candidate.range) && (Is2.undefined(candidate.command) || Command2.is(candidate.command));
+          return Is3.defined(candidate) && Range3.is(candidate.range) && (Is3.undefined(candidate.command) || Command3.is(candidate.command));
         }
-        CodeLens3.is = is;
-      })(CodeLens2 || (exports3.CodeLens = CodeLens2 = {}));
-      var FormattingOptions2;
-      (function(FormattingOptions3) {
+        CodeLens4.is = is;
+      })(CodeLens3 || (exports3.CodeLens = CodeLens3 = {}));
+      var FormattingOptions3;
+      (function(FormattingOptions4) {
         function create(tabSize, insertSpaces) {
           return { tabSize, insertSpaces };
         }
-        FormattingOptions3.create = create;
+        FormattingOptions4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.defined(candidate) && Is2.uinteger(candidate.tabSize) && Is2.boolean(candidate.insertSpaces);
+          return Is3.defined(candidate) && Is3.uinteger(candidate.tabSize) && Is3.boolean(candidate.insertSpaces);
         }
-        FormattingOptions3.is = is;
-      })(FormattingOptions2 || (exports3.FormattingOptions = FormattingOptions2 = {}));
-      var DocumentLink2;
-      (function(DocumentLink3) {
+        FormattingOptions4.is = is;
+      })(FormattingOptions3 || (exports3.FormattingOptions = FormattingOptions3 = {}));
+      var DocumentLink3;
+      (function(DocumentLink4) {
         function create(range, target, data) {
           return { range, target, data };
         }
-        DocumentLink3.create = create;
+        DocumentLink4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.defined(candidate) && Range2.is(candidate.range) && (Is2.undefined(candidate.target) || Is2.string(candidate.target));
+          return Is3.defined(candidate) && Range3.is(candidate.range) && (Is3.undefined(candidate.target) || Is3.string(candidate.target));
         }
-        DocumentLink3.is = is;
-      })(DocumentLink2 || (exports3.DocumentLink = DocumentLink2 = {}));
-      var SelectionRange2;
-      (function(SelectionRange3) {
+        DocumentLink4.is = is;
+      })(DocumentLink3 || (exports3.DocumentLink = DocumentLink3 = {}));
+      var SelectionRange3;
+      (function(SelectionRange4) {
         function create(range, parent) {
           return { range, parent };
         }
-        SelectionRange3.create = create;
+        SelectionRange4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && (candidate.parent === void 0 || SelectionRange3.is(candidate.parent));
+          return Is3.objectLiteral(candidate) && Range3.is(candidate.range) && (candidate.parent === void 0 || SelectionRange4.is(candidate.parent));
         }
-        SelectionRange3.is = is;
-      })(SelectionRange2 || (exports3.SelectionRange = SelectionRange2 = {}));
-      var SemanticTokenTypes2;
-      (function(SemanticTokenTypes3) {
-        SemanticTokenTypes3["namespace"] = "namespace";
-        SemanticTokenTypes3["type"] = "type";
-        SemanticTokenTypes3["class"] = "class";
-        SemanticTokenTypes3["enum"] = "enum";
-        SemanticTokenTypes3["interface"] = "interface";
-        SemanticTokenTypes3["struct"] = "struct";
-        SemanticTokenTypes3["typeParameter"] = "typeParameter";
-        SemanticTokenTypes3["parameter"] = "parameter";
-        SemanticTokenTypes3["variable"] = "variable";
-        SemanticTokenTypes3["property"] = "property";
-        SemanticTokenTypes3["enumMember"] = "enumMember";
-        SemanticTokenTypes3["event"] = "event";
-        SemanticTokenTypes3["function"] = "function";
-        SemanticTokenTypes3["method"] = "method";
-        SemanticTokenTypes3["macro"] = "macro";
-        SemanticTokenTypes3["keyword"] = "keyword";
-        SemanticTokenTypes3["modifier"] = "modifier";
-        SemanticTokenTypes3["comment"] = "comment";
-        SemanticTokenTypes3["string"] = "string";
-        SemanticTokenTypes3["number"] = "number";
-        SemanticTokenTypes3["regexp"] = "regexp";
-        SemanticTokenTypes3["operator"] = "operator";
-        SemanticTokenTypes3["decorator"] = "decorator";
-      })(SemanticTokenTypes2 || (exports3.SemanticTokenTypes = SemanticTokenTypes2 = {}));
-      var SemanticTokenModifiers2;
-      (function(SemanticTokenModifiers3) {
-        SemanticTokenModifiers3["declaration"] = "declaration";
-        SemanticTokenModifiers3["definition"] = "definition";
-        SemanticTokenModifiers3["readonly"] = "readonly";
-        SemanticTokenModifiers3["static"] = "static";
-        SemanticTokenModifiers3["deprecated"] = "deprecated";
-        SemanticTokenModifiers3["abstract"] = "abstract";
-        SemanticTokenModifiers3["async"] = "async";
-        SemanticTokenModifiers3["modification"] = "modification";
-        SemanticTokenModifiers3["documentation"] = "documentation";
-        SemanticTokenModifiers3["defaultLibrary"] = "defaultLibrary";
-      })(SemanticTokenModifiers2 || (exports3.SemanticTokenModifiers = SemanticTokenModifiers2 = {}));
-      var SemanticTokens2;
-      (function(SemanticTokens3) {
+        SelectionRange4.is = is;
+      })(SelectionRange3 || (exports3.SelectionRange = SelectionRange3 = {}));
+      var SemanticTokenTypes3;
+      (function(SemanticTokenTypes4) {
+        SemanticTokenTypes4["namespace"] = "namespace";
+        SemanticTokenTypes4["type"] = "type";
+        SemanticTokenTypes4["class"] = "class";
+        SemanticTokenTypes4["enum"] = "enum";
+        SemanticTokenTypes4["interface"] = "interface";
+        SemanticTokenTypes4["struct"] = "struct";
+        SemanticTokenTypes4["typeParameter"] = "typeParameter";
+        SemanticTokenTypes4["parameter"] = "parameter";
+        SemanticTokenTypes4["variable"] = "variable";
+        SemanticTokenTypes4["property"] = "property";
+        SemanticTokenTypes4["enumMember"] = "enumMember";
+        SemanticTokenTypes4["event"] = "event";
+        SemanticTokenTypes4["function"] = "function";
+        SemanticTokenTypes4["method"] = "method";
+        SemanticTokenTypes4["macro"] = "macro";
+        SemanticTokenTypes4["keyword"] = "keyword";
+        SemanticTokenTypes4["modifier"] = "modifier";
+        SemanticTokenTypes4["comment"] = "comment";
+        SemanticTokenTypes4["string"] = "string";
+        SemanticTokenTypes4["number"] = "number";
+        SemanticTokenTypes4["regexp"] = "regexp";
+        SemanticTokenTypes4["operator"] = "operator";
+        SemanticTokenTypes4["decorator"] = "decorator";
+      })(SemanticTokenTypes3 || (exports3.SemanticTokenTypes = SemanticTokenTypes3 = {}));
+      var SemanticTokenModifiers3;
+      (function(SemanticTokenModifiers4) {
+        SemanticTokenModifiers4["declaration"] = "declaration";
+        SemanticTokenModifiers4["definition"] = "definition";
+        SemanticTokenModifiers4["readonly"] = "readonly";
+        SemanticTokenModifiers4["static"] = "static";
+        SemanticTokenModifiers4["deprecated"] = "deprecated";
+        SemanticTokenModifiers4["abstract"] = "abstract";
+        SemanticTokenModifiers4["async"] = "async";
+        SemanticTokenModifiers4["modification"] = "modification";
+        SemanticTokenModifiers4["documentation"] = "documentation";
+        SemanticTokenModifiers4["defaultLibrary"] = "defaultLibrary";
+      })(SemanticTokenModifiers3 || (exports3.SemanticTokenModifiers = SemanticTokenModifiers3 = {}));
+      var SemanticTokens3;
+      (function(SemanticTokens4) {
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && (candidate.resultId === void 0 || typeof candidate.resultId === "string") && Array.isArray(candidate.data) && (candidate.data.length === 0 || typeof candidate.data[0] === "number");
+          return Is3.objectLiteral(candidate) && (candidate.resultId === void 0 || typeof candidate.resultId === "string") && Array.isArray(candidate.data) && (candidate.data.length === 0 || typeof candidate.data[0] === "number");
         }
-        SemanticTokens3.is = is;
-      })(SemanticTokens2 || (exports3.SemanticTokens = SemanticTokens2 = {}));
-      var InlineValueText2;
-      (function(InlineValueText3) {
+        SemanticTokens4.is = is;
+      })(SemanticTokens3 || (exports3.SemanticTokens = SemanticTokens3 = {}));
+      var InlineValueText3;
+      (function(InlineValueText4) {
         function create(range, text) {
           return { range, text };
         }
-        InlineValueText3.create = create;
+        InlineValueText4.create = create;
         function is(value) {
           var candidate = value;
-          return candidate !== void 0 && candidate !== null && Range2.is(candidate.range) && Is2.string(candidate.text);
+          return candidate !== void 0 && candidate !== null && Range3.is(candidate.range) && Is3.string(candidate.text);
         }
-        InlineValueText3.is = is;
-      })(InlineValueText2 || (exports3.InlineValueText = InlineValueText2 = {}));
-      var InlineValueVariableLookup2;
-      (function(InlineValueVariableLookup3) {
+        InlineValueText4.is = is;
+      })(InlineValueText3 || (exports3.InlineValueText = InlineValueText3 = {}));
+      var InlineValueVariableLookup3;
+      (function(InlineValueVariableLookup4) {
         function create(range, variableName, caseSensitiveLookup) {
           return { range, variableName, caseSensitiveLookup };
         }
-        InlineValueVariableLookup3.create = create;
+        InlineValueVariableLookup4.create = create;
         function is(value) {
           var candidate = value;
-          return candidate !== void 0 && candidate !== null && Range2.is(candidate.range) && Is2.boolean(candidate.caseSensitiveLookup) && (Is2.string(candidate.variableName) || candidate.variableName === void 0);
+          return candidate !== void 0 && candidate !== null && Range3.is(candidate.range) && Is3.boolean(candidate.caseSensitiveLookup) && (Is3.string(candidate.variableName) || candidate.variableName === void 0);
         }
-        InlineValueVariableLookup3.is = is;
-      })(InlineValueVariableLookup2 || (exports3.InlineValueVariableLookup = InlineValueVariableLookup2 = {}));
-      var InlineValueEvaluatableExpression2;
-      (function(InlineValueEvaluatableExpression3) {
+        InlineValueVariableLookup4.is = is;
+      })(InlineValueVariableLookup3 || (exports3.InlineValueVariableLookup = InlineValueVariableLookup3 = {}));
+      var InlineValueEvaluatableExpression3;
+      (function(InlineValueEvaluatableExpression4) {
         function create(range, expression) {
           return { range, expression };
         }
-        InlineValueEvaluatableExpression3.create = create;
+        InlineValueEvaluatableExpression4.create = create;
         function is(value) {
           var candidate = value;
-          return candidate !== void 0 && candidate !== null && Range2.is(candidate.range) && (Is2.string(candidate.expression) || candidate.expression === void 0);
+          return candidate !== void 0 && candidate !== null && Range3.is(candidate.range) && (Is3.string(candidate.expression) || candidate.expression === void 0);
         }
-        InlineValueEvaluatableExpression3.is = is;
-      })(InlineValueEvaluatableExpression2 || (exports3.InlineValueEvaluatableExpression = InlineValueEvaluatableExpression2 = {}));
-      var InlineValueContext2;
-      (function(InlineValueContext3) {
+        InlineValueEvaluatableExpression4.is = is;
+      })(InlineValueEvaluatableExpression3 || (exports3.InlineValueEvaluatableExpression = InlineValueEvaluatableExpression3 = {}));
+      var InlineValueContext3;
+      (function(InlineValueContext4) {
         function create(frameId, stoppedLocation) {
           return { frameId, stoppedLocation };
         }
-        InlineValueContext3.create = create;
+        InlineValueContext4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.defined(candidate) && Range2.is(value.stoppedLocation);
+          return Is3.defined(candidate) && Range3.is(value.stoppedLocation);
         }
-        InlineValueContext3.is = is;
-      })(InlineValueContext2 || (exports3.InlineValueContext = InlineValueContext2 = {}));
-      var InlayHintKind3;
-      (function(InlayHintKind4) {
-        InlayHintKind4.Type = 1;
-        InlayHintKind4.Parameter = 2;
+        InlineValueContext4.is = is;
+      })(InlineValueContext3 || (exports3.InlineValueContext = InlineValueContext3 = {}));
+      var InlayHintKind4;
+      (function(InlayHintKind5) {
+        InlayHintKind5.Type = 1;
+        InlayHintKind5.Parameter = 2;
         function is(value) {
           return value === 1 || value === 2;
         }
-        InlayHintKind4.is = is;
-      })(InlayHintKind3 || (exports3.InlayHintKind = InlayHintKind3 = {}));
-      var InlayHintLabelPart2;
-      (function(InlayHintLabelPart3) {
+        InlayHintKind5.is = is;
+      })(InlayHintKind4 || (exports3.InlayHintKind = InlayHintKind4 = {}));
+      var InlayHintLabelPart3;
+      (function(InlayHintLabelPart4) {
         function create(value) {
           return { value };
         }
-        InlayHintLabelPart3.create = create;
+        InlayHintLabelPart4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && (candidate.tooltip === void 0 || Is2.string(candidate.tooltip) || MarkupContent2.is(candidate.tooltip)) && (candidate.location === void 0 || Location2.is(candidate.location)) && (candidate.command === void 0 || Command2.is(candidate.command));
+          return Is3.objectLiteral(candidate) && (candidate.tooltip === void 0 || Is3.string(candidate.tooltip) || MarkupContent3.is(candidate.tooltip)) && (candidate.location === void 0 || Location3.is(candidate.location)) && (candidate.command === void 0 || Command3.is(candidate.command));
         }
-        InlayHintLabelPart3.is = is;
-      })(InlayHintLabelPart2 || (exports3.InlayHintLabelPart = InlayHintLabelPart2 = {}));
-      var InlayHint2;
-      (function(InlayHint3) {
+        InlayHintLabelPart4.is = is;
+      })(InlayHintLabelPart3 || (exports3.InlayHintLabelPart = InlayHintLabelPart3 = {}));
+      var InlayHint3;
+      (function(InlayHint4) {
         function create(position, label, kind) {
           var result = { position, label };
           if (kind !== void 0) {
@@ -5299,73 +5299,73 @@ var require_main2 = __commonJS({
           }
           return result;
         }
-        InlayHint3.create = create;
+        InlayHint4.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && Position2.is(candidate.position) && (Is2.string(candidate.label) || Is2.typedArray(candidate.label, InlayHintLabelPart2.is)) && (candidate.kind === void 0 || InlayHintKind3.is(candidate.kind)) && candidate.textEdits === void 0 || Is2.typedArray(candidate.textEdits, TextEdit2.is) && (candidate.tooltip === void 0 || Is2.string(candidate.tooltip) || MarkupContent2.is(candidate.tooltip)) && (candidate.paddingLeft === void 0 || Is2.boolean(candidate.paddingLeft)) && (candidate.paddingRight === void 0 || Is2.boolean(candidate.paddingRight));
+          return Is3.objectLiteral(candidate) && Position3.is(candidate.position) && (Is3.string(candidate.label) || Is3.typedArray(candidate.label, InlayHintLabelPart3.is)) && (candidate.kind === void 0 || InlayHintKind4.is(candidate.kind)) && candidate.textEdits === void 0 || Is3.typedArray(candidate.textEdits, TextEdit3.is) && (candidate.tooltip === void 0 || Is3.string(candidate.tooltip) || MarkupContent3.is(candidate.tooltip)) && (candidate.paddingLeft === void 0 || Is3.boolean(candidate.paddingLeft)) && (candidate.paddingRight === void 0 || Is3.boolean(candidate.paddingRight));
         }
-        InlayHint3.is = is;
-      })(InlayHint2 || (exports3.InlayHint = InlayHint2 = {}));
-      var StringValue2;
-      (function(StringValue3) {
+        InlayHint4.is = is;
+      })(InlayHint3 || (exports3.InlayHint = InlayHint3 = {}));
+      var StringValue3;
+      (function(StringValue4) {
         function createSnippet(value) {
           return { kind: "snippet", value };
         }
-        StringValue3.createSnippet = createSnippet;
-      })(StringValue2 || (exports3.StringValue = StringValue2 = {}));
-      var InlineCompletionItem2;
-      (function(InlineCompletionItem3) {
+        StringValue4.createSnippet = createSnippet;
+      })(StringValue3 || (exports3.StringValue = StringValue3 = {}));
+      var InlineCompletionItem3;
+      (function(InlineCompletionItem4) {
         function create(insertText, filterText, range, command) {
           return { insertText, filterText, range, command };
         }
-        InlineCompletionItem3.create = create;
-      })(InlineCompletionItem2 || (exports3.InlineCompletionItem = InlineCompletionItem2 = {}));
-      var InlineCompletionList2;
-      (function(InlineCompletionList3) {
+        InlineCompletionItem4.create = create;
+      })(InlineCompletionItem3 || (exports3.InlineCompletionItem = InlineCompletionItem3 = {}));
+      var InlineCompletionList3;
+      (function(InlineCompletionList4) {
         function create(items) {
           return { items };
         }
-        InlineCompletionList3.create = create;
-      })(InlineCompletionList2 || (exports3.InlineCompletionList = InlineCompletionList2 = {}));
-      var InlineCompletionTriggerKind2;
-      (function(InlineCompletionTriggerKind3) {
-        InlineCompletionTriggerKind3.Invoked = 0;
-        InlineCompletionTriggerKind3.Automatic = 1;
-      })(InlineCompletionTriggerKind2 || (exports3.InlineCompletionTriggerKind = InlineCompletionTriggerKind2 = {}));
-      var SelectedCompletionInfo2;
-      (function(SelectedCompletionInfo3) {
+        InlineCompletionList4.create = create;
+      })(InlineCompletionList3 || (exports3.InlineCompletionList = InlineCompletionList3 = {}));
+      var InlineCompletionTriggerKind3;
+      (function(InlineCompletionTriggerKind4) {
+        InlineCompletionTriggerKind4.Invoked = 0;
+        InlineCompletionTriggerKind4.Automatic = 1;
+      })(InlineCompletionTriggerKind3 || (exports3.InlineCompletionTriggerKind = InlineCompletionTriggerKind3 = {}));
+      var SelectedCompletionInfo3;
+      (function(SelectedCompletionInfo4) {
         function create(range, text) {
           return { range, text };
         }
-        SelectedCompletionInfo3.create = create;
-      })(SelectedCompletionInfo2 || (exports3.SelectedCompletionInfo = SelectedCompletionInfo2 = {}));
-      var InlineCompletionContext2;
-      (function(InlineCompletionContext3) {
+        SelectedCompletionInfo4.create = create;
+      })(SelectedCompletionInfo3 || (exports3.SelectedCompletionInfo = SelectedCompletionInfo3 = {}));
+      var InlineCompletionContext3;
+      (function(InlineCompletionContext4) {
         function create(triggerKind, selectedCompletionInfo) {
           return { triggerKind, selectedCompletionInfo };
         }
-        InlineCompletionContext3.create = create;
-      })(InlineCompletionContext2 || (exports3.InlineCompletionContext = InlineCompletionContext2 = {}));
-      var WorkspaceFolder2;
-      (function(WorkspaceFolder3) {
+        InlineCompletionContext4.create = create;
+      })(InlineCompletionContext3 || (exports3.InlineCompletionContext = InlineCompletionContext3 = {}));
+      var WorkspaceFolder3;
+      (function(WorkspaceFolder4) {
         function is(value) {
           var candidate = value;
-          return Is2.objectLiteral(candidate) && URI3.is(candidate.uri) && Is2.string(candidate.name);
+          return Is3.objectLiteral(candidate) && URI4.is(candidate.uri) && Is3.string(candidate.name);
         }
-        WorkspaceFolder3.is = is;
-      })(WorkspaceFolder2 || (exports3.WorkspaceFolder = WorkspaceFolder2 = {}));
+        WorkspaceFolder4.is = is;
+      })(WorkspaceFolder3 || (exports3.WorkspaceFolder = WorkspaceFolder3 = {}));
       exports3.EOL = ["\n", "\r\n", "\r"];
-      var TextDocument3;
-      (function(TextDocument4) {
+      var TextDocument4;
+      (function(TextDocument5) {
         function create(uri, languageId, version, content) {
-          return new FullTextDocument3(uri, languageId, version, content);
+          return new FullTextDocument4(uri, languageId, version, content);
         }
-        TextDocument4.create = create;
+        TextDocument5.create = create;
         function is(value) {
           var candidate = value;
-          return Is2.defined(candidate) && Is2.string(candidate.uri) && (Is2.undefined(candidate.languageId) || Is2.string(candidate.languageId)) && Is2.uinteger(candidate.lineCount) && Is2.func(candidate.getText) && Is2.func(candidate.positionAt) && Is2.func(candidate.offsetAt) ? true : false;
+          return Is3.defined(candidate) && Is3.string(candidate.uri) && (Is3.undefined(candidate.languageId) || Is3.string(candidate.languageId)) && Is3.uinteger(candidate.lineCount) && Is3.func(candidate.getText) && Is3.func(candidate.positionAt) && Is3.func(candidate.offsetAt) ? true : false;
         }
-        TextDocument4.is = is;
+        TextDocument5.is = is;
         function applyEdits(document, edits) {
           var text = document.getText();
           var sortedEdits = mergeSort2(edits, function(a2, b) {
@@ -5389,7 +5389,7 @@ var require_main2 = __commonJS({
           }
           return text;
         }
-        TextDocument4.applyEdits = applyEdits;
+        TextDocument5.applyEdits = applyEdits;
         function mergeSort2(data, compare) {
           if (data.length <= 1) {
             return data;
@@ -5418,39 +5418,39 @@ var require_main2 = __commonJS({
           }
           return data;
         }
-      })(TextDocument3 || (exports3.TextDocument = TextDocument3 = {}));
-      var FullTextDocument3 = (
+      })(TextDocument4 || (exports3.TextDocument = TextDocument4 = {}));
+      var FullTextDocument4 = (
         /** @class */
         function() {
-          function FullTextDocument4(uri, languageId, version, content) {
+          function FullTextDocument5(uri, languageId, version, content) {
             this._uri = uri;
             this._languageId = languageId;
             this._version = version;
             this._content = content;
             this._lineOffsets = void 0;
           }
-          Object.defineProperty(FullTextDocument4.prototype, "uri", {
+          Object.defineProperty(FullTextDocument5.prototype, "uri", {
             get: function() {
               return this._uri;
             },
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(FullTextDocument4.prototype, "languageId", {
+          Object.defineProperty(FullTextDocument5.prototype, "languageId", {
             get: function() {
               return this._languageId;
             },
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(FullTextDocument4.prototype, "version", {
+          Object.defineProperty(FullTextDocument5.prototype, "version", {
             get: function() {
               return this._version;
             },
             enumerable: false,
             configurable: true
           });
-          FullTextDocument4.prototype.getText = function(range) {
+          FullTextDocument5.prototype.getText = function(range) {
             if (range) {
               var start = this.offsetAt(range.start);
               var end = this.offsetAt(range.end);
@@ -5458,12 +5458,12 @@ var require_main2 = __commonJS({
             }
             return this._content;
           };
-          FullTextDocument4.prototype.update = function(event, version) {
+          FullTextDocument5.prototype.update = function(event, version) {
             this._content = event.text;
             this._version = version;
             this._lineOffsets = void 0;
           };
-          FullTextDocument4.prototype.getLineOffsets = function() {
+          FullTextDocument5.prototype.getLineOffsets = function() {
             if (this._lineOffsets === void 0) {
               var lineOffsets = [];
               var text = this._content;
@@ -5486,12 +5486,12 @@ var require_main2 = __commonJS({
             }
             return this._lineOffsets;
           };
-          FullTextDocument4.prototype.positionAt = function(offset) {
+          FullTextDocument5.prototype.positionAt = function(offset) {
             offset = Math.max(Math.min(offset, this._content.length), 0);
             var lineOffsets = this.getLineOffsets();
             var low = 0, high = lineOffsets.length;
             if (high === 0) {
-              return Position2.create(0, offset);
+              return Position3.create(0, offset);
             }
             while (low < high) {
               var mid = Math.floor((low + high) / 2);
@@ -5502,9 +5502,9 @@ var require_main2 = __commonJS({
               }
             }
             var line = low - 1;
-            return Position2.create(line, offset - lineOffsets[line]);
+            return Position3.create(line, offset - lineOffsets[line]);
           };
-          FullTextDocument4.prototype.offsetAt = function(position) {
+          FullTextDocument5.prototype.offsetAt = function(position) {
             var lineOffsets = this.getLineOffsets();
             if (position.line >= lineOffsets.length) {
               return this._content.length;
@@ -5515,64 +5515,64 @@ var require_main2 = __commonJS({
             var nextLineOffset = position.line + 1 < lineOffsets.length ? lineOffsets[position.line + 1] : this._content.length;
             return Math.max(Math.min(lineOffset + position.character, nextLineOffset), lineOffset);
           };
-          Object.defineProperty(FullTextDocument4.prototype, "lineCount", {
+          Object.defineProperty(FullTextDocument5.prototype, "lineCount", {
             get: function() {
               return this.getLineOffsets().length;
             },
             enumerable: false,
             configurable: true
           });
-          return FullTextDocument4;
+          return FullTextDocument5;
         }()
       );
-      var Is2;
-      (function(Is3) {
+      var Is3;
+      (function(Is4) {
         var toString = Object.prototype.toString;
         function defined(value) {
           return typeof value !== "undefined";
         }
-        Is3.defined = defined;
+        Is4.defined = defined;
         function undefined2(value) {
           return typeof value === "undefined";
         }
-        Is3.undefined = undefined2;
+        Is4.undefined = undefined2;
         function boolean(value) {
           return value === true || value === false;
         }
-        Is3.boolean = boolean;
+        Is4.boolean = boolean;
         function string(value) {
           return toString.call(value) === "[object String]";
         }
-        Is3.string = string;
+        Is4.string = string;
         function number(value) {
           return toString.call(value) === "[object Number]";
         }
-        Is3.number = number;
+        Is4.number = number;
         function numberRange(value, min, max) {
           return toString.call(value) === "[object Number]" && min <= value && value <= max;
         }
-        Is3.numberRange = numberRange;
-        function integer3(value) {
+        Is4.numberRange = numberRange;
+        function integer4(value) {
           return toString.call(value) === "[object Number]" && -2147483648 <= value && value <= 2147483647;
         }
-        Is3.integer = integer3;
-        function uinteger3(value) {
+        Is4.integer = integer4;
+        function uinteger4(value) {
           return toString.call(value) === "[object Number]" && 0 <= value && value <= 2147483647;
         }
-        Is3.uinteger = uinteger3;
+        Is4.uinteger = uinteger4;
         function func(value) {
           return toString.call(value) === "[object Function]";
         }
-        Is3.func = func;
+        Is4.func = func;
         function objectLiteral(value) {
           return value !== null && typeof value === "object";
         }
-        Is3.objectLiteral = objectLiteral;
+        Is4.objectLiteral = objectLiteral;
         function typedArray(value, check) {
           return Array.isArray(value) && value.every(check);
         }
-        Is3.typedArray = typedArray;
-      })(Is2 || (Is2 = {}));
+        Is4.typedArray = typedArray;
+      })(Is3 || (Is3 = {}));
     });
   }
 });
@@ -6117,13 +6117,13 @@ var require_protocol_diagnostic = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.DiagnosticRefreshRequest = exports2.WorkspaceDiagnosticRequest = exports2.DocumentDiagnosticRequest = exports2.DocumentDiagnosticReportKind = exports2.DiagnosticServerCancellationData = void 0;
     var vscode_jsonrpc_1 = require_main();
-    var Is2 = require_is3();
+    var Is3 = require_is3();
     var messages_1 = require_messages2();
     var DiagnosticServerCancellationData;
     (function(DiagnosticServerCancellationData2) {
       function is(value) {
         const candidate = value;
-        return candidate && Is2.boolean(candidate.retriggerRequest);
+        return candidate && Is3.boolean(candidate.retriggerRequest);
       }
       DiagnosticServerCancellationData2.is = is;
     })(DiagnosticServerCancellationData || (exports2.DiagnosticServerCancellationData = DiagnosticServerCancellationData = {}));
@@ -6162,7 +6162,7 @@ var require_protocol_notebook = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.DidCloseNotebookDocumentNotification = exports2.DidSaveNotebookDocumentNotification = exports2.DidChangeNotebookDocumentNotification = exports2.NotebookCellArrayChange = exports2.DidOpenNotebookDocumentNotification = exports2.NotebookDocumentSyncRegistrationType = exports2.NotebookDocument = exports2.NotebookCell = exports2.ExecutionSummary = exports2.NotebookCellKind = void 0;
     var vscode_languageserver_types_1 = require_main2();
-    var Is2 = require_is3();
+    var Is3 = require_is3();
     var messages_1 = require_messages2();
     var NotebookCellKind;
     (function(NotebookCellKind2) {
@@ -6185,7 +6185,7 @@ var require_protocol_notebook = __commonJS({
       ExecutionSummary2.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && vscode_languageserver_types_1.uinteger.is(candidate.executionOrder) && (candidate.success === void 0 || Is2.boolean(candidate.success));
+        return Is3.objectLiteral(candidate) && vscode_languageserver_types_1.uinteger.is(candidate.executionOrder) && (candidate.success === void 0 || Is3.boolean(candidate.success));
       }
       ExecutionSummary2.is = is;
       function equals(one, other) {
@@ -6207,7 +6207,7 @@ var require_protocol_notebook = __commonJS({
       NotebookCell2.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && NotebookCellKind.is(candidate.kind) && vscode_languageserver_types_1.DocumentUri.is(candidate.document) && (candidate.metadata === void 0 || Is2.objectLiteral(candidate.metadata));
+        return Is3.objectLiteral(candidate) && NotebookCellKind.is(candidate.kind) && vscode_languageserver_types_1.DocumentUri.is(candidate.document) && (candidate.metadata === void 0 || Is3.objectLiteral(candidate.metadata));
       }
       NotebookCell2.is = is;
       function diff(one, two) {
@@ -6258,7 +6258,7 @@ var require_protocol_notebook = __commonJS({
             }
           }
         }
-        if (Is2.objectLiteral(one) && Is2.objectLiteral(other)) {
+        if (Is3.objectLiteral(one) && Is3.objectLiteral(other)) {
           const oneKeys = Object.keys(one);
           const otherKeys = Object.keys(other);
           if (oneKeys.length !== otherKeys.length) {
@@ -6287,7 +6287,7 @@ var require_protocol_notebook = __commonJS({
       NotebookDocument2.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && Is2.string(candidate.uri) && vscode_languageserver_types_1.integer.is(candidate.version) && Is2.typedArray(candidate.cells, NotebookCell.is);
+        return Is3.objectLiteral(candidate) && Is3.string(candidate.uri) && vscode_languageserver_types_1.integer.is(candidate.version) && Is3.typedArray(candidate.cells, NotebookCell.is);
       }
       NotebookDocument2.is = is;
     })(NotebookDocument || (exports2.NotebookDocument = NotebookDocument = {}));
@@ -6308,7 +6308,7 @@ var require_protocol_notebook = __commonJS({
     (function(NotebookCellArrayChange2) {
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && vscode_languageserver_types_1.uinteger.is(candidate.start) && vscode_languageserver_types_1.uinteger.is(candidate.deleteCount) && (candidate.cells === void 0 || Is2.typedArray(candidate.cells, NotebookCell.is));
+        return Is3.objectLiteral(candidate) && vscode_languageserver_types_1.uinteger.is(candidate.start) && vscode_languageserver_types_1.uinteger.is(candidate.deleteCount) && (candidate.cells === void 0 || Is3.typedArray(candidate.cells, NotebookCell.is));
       }
       NotebookCellArrayChange2.is = is;
       function create(start, deleteCount, cells) {
@@ -6370,7 +6370,7 @@ var require_protocol = __commonJS({
     exports2.InlineCompletionRequest = exports2.DidCloseNotebookDocumentNotification = exports2.DidSaveNotebookDocumentNotification = exports2.DidChangeNotebookDocumentNotification = exports2.NotebookCellArrayChange = exports2.DidOpenNotebookDocumentNotification = exports2.NotebookDocumentSyncRegistrationType = exports2.NotebookDocument = exports2.NotebookCell = exports2.ExecutionSummary = exports2.NotebookCellKind = exports2.DiagnosticRefreshRequest = exports2.WorkspaceDiagnosticRequest = exports2.DocumentDiagnosticRequest = exports2.DocumentDiagnosticReportKind = exports2.DiagnosticServerCancellationData = exports2.InlayHintRefreshRequest = exports2.InlayHintResolveRequest = exports2.InlayHintRequest = exports2.InlineValueRefreshRequest = exports2.InlineValueRequest = exports2.TypeHierarchySupertypesRequest = exports2.TypeHierarchySubtypesRequest = exports2.TypeHierarchyPrepareRequest = void 0;
     var messages_1 = require_messages2();
     var vscode_languageserver_types_1 = require_main2();
-    var Is2 = require_is3();
+    var Is3 = require_is3();
     var protocol_implementation_1 = require_protocol_implementation();
     Object.defineProperty(exports2, "ImplementationRequest", { enumerable: true, get: function() {
       return protocol_implementation_1.ImplementationRequest;
@@ -6573,7 +6573,7 @@ var require_protocol = __commonJS({
     (function(TextDocumentFilter2) {
       function is(value) {
         const candidate = value;
-        return Is2.string(candidate) || (Is2.string(candidate.language) || Is2.string(candidate.scheme) || Is2.string(candidate.pattern));
+        return Is3.string(candidate) || (Is3.string(candidate.language) || Is3.string(candidate.scheme) || Is3.string(candidate.pattern));
       }
       TextDocumentFilter2.is = is;
     })(TextDocumentFilter || (exports2.TextDocumentFilter = TextDocumentFilter = {}));
@@ -6581,7 +6581,7 @@ var require_protocol = __commonJS({
     (function(NotebookDocumentFilter2) {
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && (Is2.string(candidate.notebookType) || Is2.string(candidate.scheme) || Is2.string(candidate.pattern));
+        return Is3.objectLiteral(candidate) && (Is3.string(candidate.notebookType) || Is3.string(candidate.scheme) || Is3.string(candidate.pattern));
       }
       NotebookDocumentFilter2.is = is;
     })(NotebookDocumentFilter || (exports2.NotebookDocumentFilter = NotebookDocumentFilter = {}));
@@ -6589,7 +6589,7 @@ var require_protocol = __commonJS({
     (function(NotebookCellTextDocumentFilter2) {
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && (Is2.string(candidate.notebook) || NotebookDocumentFilter.is(candidate.notebook)) && (candidate.language === void 0 || Is2.string(candidate.language));
+        return Is3.objectLiteral(candidate) && (Is3.string(candidate.notebook) || NotebookDocumentFilter.is(candidate.notebook)) && (candidate.language === void 0 || Is3.string(candidate.language));
       }
       NotebookCellTextDocumentFilter2.is = is;
     })(NotebookCellTextDocumentFilter || (exports2.NotebookCellTextDocumentFilter = NotebookCellTextDocumentFilter = {}));
@@ -6600,7 +6600,7 @@ var require_protocol = __commonJS({
           return false;
         }
         for (let elem of value) {
-          if (!Is2.string(elem) && !TextDocumentFilter.is(elem) && !NotebookCellTextDocumentFilter.is(elem)) {
+          if (!Is3.string(elem) && !TextDocumentFilter.is(elem) && !NotebookCellTextDocumentFilter.is(elem)) {
             return false;
           }
         }
@@ -6643,7 +6643,7 @@ var require_protocol = __commonJS({
     (function(StaticRegistrationOptions2) {
       function hasId(value) {
         const candidate = value;
-        return candidate && Is2.string(candidate.id) && candidate.id.length > 0;
+        return candidate && Is3.string(candidate.id) && candidate.id.length > 0;
       }
       StaticRegistrationOptions2.hasId = hasId;
     })(StaticRegistrationOptions || (exports2.StaticRegistrationOptions = StaticRegistrationOptions = {}));
@@ -6659,12 +6659,12 @@ var require_protocol = __commonJS({
     (function(WorkDoneProgressOptions2) {
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && (candidate.workDoneProgress === void 0 || Is2.boolean(candidate.workDoneProgress));
+        return Is3.objectLiteral(candidate) && (candidate.workDoneProgress === void 0 || Is3.boolean(candidate.workDoneProgress));
       }
       WorkDoneProgressOptions2.is = is;
       function hasWorkDoneProgress(value) {
         const candidate = value;
-        return candidate && Is2.boolean(candidate.workDoneProgress);
+        return candidate && Is3.boolean(candidate.workDoneProgress);
       }
       WorkDoneProgressOptions2.hasWorkDoneProgress = hasWorkDoneProgress;
     })(WorkDoneProgressOptions || (exports2.WorkDoneProgressOptions = WorkDoneProgressOptions = {}));
@@ -6811,7 +6811,7 @@ var require_protocol = __commonJS({
     (function(RelativePattern2) {
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && (vscode_languageserver_types_1.URI.is(candidate.baseUri) || vscode_languageserver_types_1.WorkspaceFolder.is(candidate.baseUri)) && Is2.string(candidate.pattern);
+        return Is3.objectLiteral(candidate) && (vscode_languageserver_types_1.URI.is(candidate.baseUri) || vscode_languageserver_types_1.WorkspaceFolder.is(candidate.baseUri)) && Is3.string(candidate.pattern);
       }
       RelativePattern2.is = is;
     })(RelativePattern || (exports2.RelativePattern = RelativePattern = {}));
@@ -7352,13 +7352,13 @@ var require_configuration = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ConfigurationFeature = void 0;
     var vscode_languageserver_protocol_1 = require_main3();
-    var Is2 = require_is();
+    var Is3 = require_is();
     var ConfigurationFeature = (Base) => {
       return class extends Base {
         getConfiguration(arg) {
           if (!arg) {
             return this._getConfiguration({});
-          } else if (Is2.string(arg)) {
+          } else if (Is3.string(arg)) {
             return this._getConfiguration({ section: arg });
           } else {
             return this._getConfiguration(arg);
@@ -8307,7 +8307,7 @@ var require_server = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.createConnection = exports2.combineFeatures = exports2.combineNotebooksFeatures = exports2.combineLanguagesFeatures = exports2.combineWorkspaceFeatures = exports2.combineWindowFeatures = exports2.combineClientFeatures = exports2.combineTracerFeatures = exports2.combineTelemetryFeatures = exports2.combineConsoleFeatures = exports2._NotebooksImpl = exports2._LanguagesImpl = exports2.BulkUnregistration = exports2.BulkRegistration = exports2.ErrorMessageTracker = void 0;
     var vscode_languageserver_protocol_1 = require_main3();
-    var Is2 = require_is();
+    var Is3 = require_is();
     var UUID = require_uuid();
     var progress_1 = require_progress();
     var configuration_1 = require_configuration();
@@ -8444,7 +8444,7 @@ var require_server = __commonJS({
         this._registered = /* @__PURE__ */ new Set();
       }
       add(type, registerOptions) {
-        const method = Is2.string(type) ? type : type.method;
+        const method = Is3.string(type) ? type : type.method;
         if (this._registered.has(method)) {
           throw new Error(`${method} is already added to this registration`);
         }
@@ -8499,7 +8499,7 @@ var require_server = __commonJS({
         });
       }
       disposeSingle(arg) {
-        const method = Is2.string(arg) ? arg : arg.method;
+        const method = Is3.string(arg) ? arg : arg.method;
         const unregistration = this._unregistrations.get(method);
         if (!unregistration) {
           return false;
@@ -8539,7 +8539,7 @@ var require_server = __commonJS({
         }
       }
       registerSingle1(unregistration, type, registerOptions) {
-        const method = Is2.string(type) ? type : type.method;
+        const method = Is3.string(type) ? type : type.method;
         const id = UUID.generateUuid();
         let params = {
           registrations: [{ id, method, registerOptions: registerOptions || {} }]
@@ -8556,7 +8556,7 @@ var require_server = __commonJS({
         });
       }
       registerSingle2(type, registerOptions) {
-        const method = Is2.string(type) ? type : type.method;
+        const method = Is3.string(type) ? type : type.method;
         const id = UUID.generateUuid();
         let params = {
           registrations: [{ id, method, registerOptions: registerOptions || {} }]
@@ -8807,7 +8807,7 @@ var require_server = __commonJS({
       function asPromise(value) {
         if (value instanceof Promise) {
           return value;
-        } else if (Is2.thenable(value)) {
+        } else if (Is3.thenable(value)) {
           return new Promise((resolve, reject) => {
             value.then((resolved) => resolve(resolved), (error) => reject(error));
           });
@@ -8820,10 +8820,10 @@ var require_server = __commonJS({
       let exitHandler = void 0;
       let protocolConnection = {
         listen: () => connection.listen(),
-        sendRequest: (type, ...params) => connection.sendRequest(Is2.string(type) ? type : type.method, ...params),
+        sendRequest: (type, ...params) => connection.sendRequest(Is3.string(type) ? type : type.method, ...params),
         onRequest: (type, handler) => connection.onRequest(type, handler),
         sendNotification: (type, param) => {
-          const method = Is2.string(type) ? type : type.method;
+          const method = Is3.string(type) ? type : type.method;
           return connection.sendNotification(method, param);
         },
         onNotification: (type, handler) => connection.onNotification(type, handler),
@@ -8978,7 +8978,7 @@ var require_server = __commonJS({
       }
       connection.onRequest(vscode_languageserver_protocol_1.InitializeRequest.type, (params) => {
         watchDog.initialize(params);
-        if (Is2.string(params.trace)) {
+        if (Is3.string(params.trace)) {
           tracer.trace = vscode_languageserver_protocol_1.Trace.fromString(params.trace);
         }
         for (let remote of allRemotes) {
@@ -9000,9 +9000,9 @@ var require_server = __commonJS({
               result2.capabilities = capabilities;
             }
             if (capabilities.textDocumentSync === void 0 || capabilities.textDocumentSync === null) {
-              capabilities.textDocumentSync = Is2.number(protocolConnection.__textDocumentSync) ? protocolConnection.__textDocumentSync : vscode_languageserver_protocol_1.TextDocumentSyncKind.None;
-            } else if (!Is2.number(capabilities.textDocumentSync) && !Is2.number(capabilities.textDocumentSync.change)) {
-              capabilities.textDocumentSync.change = Is2.number(protocolConnection.__textDocumentSync) ? protocolConnection.__textDocumentSync : vscode_languageserver_protocol_1.TextDocumentSyncKind.None;
+              capabilities.textDocumentSync = Is3.number(protocolConnection.__textDocumentSync) ? protocolConnection.__textDocumentSync : vscode_languageserver_protocol_1.TextDocumentSyncKind.None;
+            } else if (!Is3.number(capabilities.textDocumentSync) && !Is3.number(capabilities.textDocumentSync.change)) {
+              capabilities.textDocumentSync.change = Is3.number(protocolConnection.__textDocumentSync) ? protocolConnection.__textDocumentSync : vscode_languageserver_protocol_1.TextDocumentSyncKind.None;
             }
             for (let remote of allRemotes) {
               remote.fillServerCapabilities(capabilities);
@@ -9388,7 +9388,7 @@ var require_main4 = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.createConnection = exports2.Files = void 0;
     var node_util_1 = require("util");
-    var Is2 = require_is();
+    var Is3 = require_is();
     var server_1 = require_server();
     var fm = require_files();
     var node_1 = require_node2();
@@ -9449,7 +9449,7 @@ var require_main4 = __commonJS({
     var watchDog = {
       initialize: (params) => {
         const processId = params.processId;
-        if (Is2.number(processId) && exitTimer === void 0) {
+        if (Is3.number(processId) && exitTimer === void 0) {
           setInterval(() => {
             try {
               process.kill(processId, 0);
@@ -9542,7 +9542,7 @@ var require_main4 = __commonJS({
       if (!output) {
         throw new Error("Connection output stream is not set. " + commandLineMessage);
       }
-      if (Is2.func(input.read) && Is2.func(input.on)) {
+      if (Is3.func(input.read) && Is3.func(input.on)) {
         let inputStream = input;
         inputStream.on("end", () => {
           endProtocolConnection();
@@ -13412,35 +13412,35 @@ var DocumentUri, URI, integer, uinteger, Position, Range, Location, LocationLink
 var init_main = __esm({
   "node_modules/.aspect_rules_js/vscode-languageserver-types@3.17.5/node_modules/vscode-languageserver-types/lib/esm/main.js"() {
     "use strict";
-    (function(DocumentUri2) {
+    (function(DocumentUri3) {
       function is(value) {
         return typeof value === "string";
       }
-      DocumentUri2.is = is;
+      DocumentUri3.is = is;
     })(DocumentUri || (DocumentUri = {}));
-    (function(URI3) {
+    (function(URI4) {
       function is(value) {
         return typeof value === "string";
       }
-      URI3.is = is;
+      URI4.is = is;
     })(URI || (URI = {}));
-    (function(integer2) {
-      integer2.MIN_VALUE = -2147483648;
-      integer2.MAX_VALUE = 2147483647;
+    (function(integer3) {
+      integer3.MIN_VALUE = -2147483648;
+      integer3.MAX_VALUE = 2147483647;
       function is(value) {
-        return typeof value === "number" && integer2.MIN_VALUE <= value && value <= integer2.MAX_VALUE;
+        return typeof value === "number" && integer3.MIN_VALUE <= value && value <= integer3.MAX_VALUE;
       }
-      integer2.is = is;
+      integer3.is = is;
     })(integer || (integer = {}));
-    (function(uinteger2) {
-      uinteger2.MIN_VALUE = 0;
-      uinteger2.MAX_VALUE = 2147483647;
+    (function(uinteger3) {
+      uinteger3.MIN_VALUE = 0;
+      uinteger3.MAX_VALUE = 2147483647;
       function is(value) {
-        return typeof value === "number" && uinteger2.MIN_VALUE <= value && value <= uinteger2.MAX_VALUE;
+        return typeof value === "number" && uinteger3.MIN_VALUE <= value && value <= uinteger3.MAX_VALUE;
       }
-      uinteger2.is = is;
+      uinteger3.is = is;
     })(uinteger || (uinteger = {}));
-    (function(Position2) {
+    (function(Position3) {
       function create(line, character) {
         if (line === Number.MAX_VALUE) {
           line = uinteger.MAX_VALUE;
@@ -13450,14 +13450,14 @@ var init_main = __esm({
         }
         return { line, character };
       }
-      Position2.create = create;
+      Position3.create = create;
       function is(value) {
         let candidate = value;
         return Is.objectLiteral(candidate) && Is.uinteger(candidate.line) && Is.uinteger(candidate.character);
       }
-      Position2.is = is;
+      Position3.is = is;
     })(Position || (Position = {}));
-    (function(Range2) {
+    (function(Range3) {
       function create(one, two, three, four) {
         if (Is.uinteger(one) && Is.uinteger(two) && Is.uinteger(three) && Is.uinteger(four)) {
           return { start: Position.create(one, two), end: Position.create(three, four) };
@@ -13467,36 +13467,36 @@ var init_main = __esm({
           throw new Error(`Range#create called with invalid arguments[${one}, ${two}, ${three}, ${four}]`);
         }
       }
-      Range2.create = create;
+      Range3.create = create;
       function is(value) {
         let candidate = value;
         return Is.objectLiteral(candidate) && Position.is(candidate.start) && Position.is(candidate.end);
       }
-      Range2.is = is;
+      Range3.is = is;
     })(Range || (Range = {}));
-    (function(Location2) {
+    (function(Location3) {
       function create(uri, range) {
         return { uri, range };
       }
-      Location2.create = create;
+      Location3.create = create;
       function is(value) {
         let candidate = value;
         return Is.objectLiteral(candidate) && Range.is(candidate.range) && (Is.string(candidate.uri) || Is.undefined(candidate.uri));
       }
-      Location2.is = is;
+      Location3.is = is;
     })(Location || (Location = {}));
-    (function(LocationLink2) {
+    (function(LocationLink3) {
       function create(targetUri, targetRange, targetSelectionRange, originSelectionRange) {
         return { targetUri, targetRange, targetSelectionRange, originSelectionRange };
       }
-      LocationLink2.create = create;
+      LocationLink3.create = create;
       function is(value) {
         let candidate = value;
         return Is.objectLiteral(candidate) && Range.is(candidate.targetRange) && Is.string(candidate.targetUri) && Range.is(candidate.targetSelectionRange) && (Range.is(candidate.originSelectionRange) || Is.undefined(candidate.originSelectionRange));
       }
-      LocationLink2.is = is;
+      LocationLink3.is = is;
     })(LocationLink || (LocationLink = {}));
-    (function(Color2) {
+    (function(Color3) {
       function create(red, green, blue, alpha) {
         return {
           red,
@@ -13505,28 +13505,28 @@ var init_main = __esm({
           alpha
         };
       }
-      Color2.create = create;
+      Color3.create = create;
       function is(value) {
         const candidate = value;
         return Is.objectLiteral(candidate) && Is.numberRange(candidate.red, 0, 1) && Is.numberRange(candidate.green, 0, 1) && Is.numberRange(candidate.blue, 0, 1) && Is.numberRange(candidate.alpha, 0, 1);
       }
-      Color2.is = is;
+      Color3.is = is;
     })(Color || (Color = {}));
-    (function(ColorInformation2) {
+    (function(ColorInformation3) {
       function create(range, color) {
         return {
           range,
           color
         };
       }
-      ColorInformation2.create = create;
+      ColorInformation3.create = create;
       function is(value) {
         const candidate = value;
         return Is.objectLiteral(candidate) && Range.is(candidate.range) && Color.is(candidate.color);
       }
-      ColorInformation2.is = is;
+      ColorInformation3.is = is;
     })(ColorInformation || (ColorInformation = {}));
-    (function(ColorPresentation2) {
+    (function(ColorPresentation3) {
       function create(label, textEdit, additionalTextEdits) {
         return {
           label,
@@ -13534,19 +13534,19 @@ var init_main = __esm({
           additionalTextEdits
         };
       }
-      ColorPresentation2.create = create;
+      ColorPresentation3.create = create;
       function is(value) {
         const candidate = value;
         return Is.objectLiteral(candidate) && Is.string(candidate.label) && (Is.undefined(candidate.textEdit) || TextEdit.is(candidate)) && (Is.undefined(candidate.additionalTextEdits) || Is.typedArray(candidate.additionalTextEdits, TextEdit.is));
       }
-      ColorPresentation2.is = is;
+      ColorPresentation3.is = is;
     })(ColorPresentation || (ColorPresentation = {}));
-    (function(FoldingRangeKind2) {
-      FoldingRangeKind2.Comment = "comment";
-      FoldingRangeKind2.Imports = "imports";
-      FoldingRangeKind2.Region = "region";
+    (function(FoldingRangeKind3) {
+      FoldingRangeKind3.Comment = "comment";
+      FoldingRangeKind3.Imports = "imports";
+      FoldingRangeKind3.Region = "region";
     })(FoldingRangeKind || (FoldingRangeKind = {}));
-    (function(FoldingRange2) {
+    (function(FoldingRange3) {
       function create(startLine, endLine, startCharacter, endCharacter, kind, collapsedText) {
         const result = {
           startLine,
@@ -13566,45 +13566,45 @@ var init_main = __esm({
         }
         return result;
       }
-      FoldingRange2.create = create;
+      FoldingRange3.create = create;
       function is(value) {
         const candidate = value;
         return Is.objectLiteral(candidate) && Is.uinteger(candidate.startLine) && Is.uinteger(candidate.startLine) && (Is.undefined(candidate.startCharacter) || Is.uinteger(candidate.startCharacter)) && (Is.undefined(candidate.endCharacter) || Is.uinteger(candidate.endCharacter)) && (Is.undefined(candidate.kind) || Is.string(candidate.kind));
       }
-      FoldingRange2.is = is;
+      FoldingRange3.is = is;
     })(FoldingRange || (FoldingRange = {}));
-    (function(DiagnosticRelatedInformation2) {
+    (function(DiagnosticRelatedInformation3) {
       function create(location, message) {
         return {
           location,
           message
         };
       }
-      DiagnosticRelatedInformation2.create = create;
+      DiagnosticRelatedInformation3.create = create;
       function is(value) {
         let candidate = value;
         return Is.defined(candidate) && Location.is(candidate.location) && Is.string(candidate.message);
       }
-      DiagnosticRelatedInformation2.is = is;
+      DiagnosticRelatedInformation3.is = is;
     })(DiagnosticRelatedInformation || (DiagnosticRelatedInformation = {}));
-    (function(DiagnosticSeverity2) {
-      DiagnosticSeverity2.Error = 1;
-      DiagnosticSeverity2.Warning = 2;
-      DiagnosticSeverity2.Information = 3;
-      DiagnosticSeverity2.Hint = 4;
+    (function(DiagnosticSeverity3) {
+      DiagnosticSeverity3.Error = 1;
+      DiagnosticSeverity3.Warning = 2;
+      DiagnosticSeverity3.Information = 3;
+      DiagnosticSeverity3.Hint = 4;
     })(DiagnosticSeverity || (DiagnosticSeverity = {}));
-    (function(DiagnosticTag2) {
-      DiagnosticTag2.Unnecessary = 1;
-      DiagnosticTag2.Deprecated = 2;
+    (function(DiagnosticTag3) {
+      DiagnosticTag3.Unnecessary = 1;
+      DiagnosticTag3.Deprecated = 2;
     })(DiagnosticTag || (DiagnosticTag = {}));
-    (function(CodeDescription2) {
+    (function(CodeDescription3) {
       function is(value) {
         const candidate = value;
         return Is.objectLiteral(candidate) && Is.string(candidate.href);
       }
-      CodeDescription2.is = is;
+      CodeDescription3.is = is;
     })(CodeDescription || (CodeDescription = {}));
-    (function(Diagnostic2) {
+    (function(Diagnostic3) {
       function create(range, message, severity, code, source, relatedInformation) {
         let result = { range, message };
         if (Is.defined(severity)) {
@@ -13621,15 +13621,15 @@ var init_main = __esm({
         }
         return result;
       }
-      Diagnostic2.create = create;
+      Diagnostic3.create = create;
       function is(value) {
         var _a3;
         let candidate = value;
         return Is.defined(candidate) && Range.is(candidate.range) && Is.string(candidate.message) && (Is.number(candidate.severity) || Is.undefined(candidate.severity)) && (Is.integer(candidate.code) || Is.string(candidate.code) || Is.undefined(candidate.code)) && (Is.undefined(candidate.codeDescription) || Is.string((_a3 = candidate.codeDescription) === null || _a3 === void 0 ? void 0 : _a3.href)) && (Is.string(candidate.source) || Is.undefined(candidate.source)) && (Is.undefined(candidate.relatedInformation) || Is.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation.is));
       }
-      Diagnostic2.is = is;
+      Diagnostic3.is = is;
     })(Diagnostic || (Diagnostic = {}));
-    (function(Command2) {
+    (function(Command3) {
       function create(title, command, ...args) {
         let result = { title, command };
         if (Is.defined(args) && args.length > 0) {
@@ -13637,33 +13637,33 @@ var init_main = __esm({
         }
         return result;
       }
-      Command2.create = create;
+      Command3.create = create;
       function is(value) {
         let candidate = value;
         return Is.defined(candidate) && Is.string(candidate.title) && Is.string(candidate.command);
       }
-      Command2.is = is;
+      Command3.is = is;
     })(Command || (Command = {}));
-    (function(TextEdit2) {
+    (function(TextEdit3) {
       function replace(range, newText) {
         return { range, newText };
       }
-      TextEdit2.replace = replace;
+      TextEdit3.replace = replace;
       function insert(position, newText) {
         return { range: { start: position, end: position }, newText };
       }
-      TextEdit2.insert = insert;
+      TextEdit3.insert = insert;
       function del(range) {
         return { range, newText: "" };
       }
-      TextEdit2.del = del;
+      TextEdit3.del = del;
       function is(value) {
         const candidate = value;
         return Is.objectLiteral(candidate) && Is.string(candidate.newText) && Range.is(candidate.range);
       }
-      TextEdit2.is = is;
+      TextEdit3.is = is;
     })(TextEdit || (TextEdit = {}));
-    (function(ChangeAnnotation2) {
+    (function(ChangeAnnotation3) {
       function create(label, needsConfirmation, description) {
         const result = { label };
         if (needsConfirmation !== void 0) {
@@ -13674,51 +13674,51 @@ var init_main = __esm({
         }
         return result;
       }
-      ChangeAnnotation2.create = create;
+      ChangeAnnotation3.create = create;
       function is(value) {
         const candidate = value;
         return Is.objectLiteral(candidate) && Is.string(candidate.label) && (Is.boolean(candidate.needsConfirmation) || candidate.needsConfirmation === void 0) && (Is.string(candidate.description) || candidate.description === void 0);
       }
-      ChangeAnnotation2.is = is;
+      ChangeAnnotation3.is = is;
     })(ChangeAnnotation || (ChangeAnnotation = {}));
-    (function(ChangeAnnotationIdentifier2) {
+    (function(ChangeAnnotationIdentifier3) {
       function is(value) {
         const candidate = value;
         return Is.string(candidate);
       }
-      ChangeAnnotationIdentifier2.is = is;
+      ChangeAnnotationIdentifier3.is = is;
     })(ChangeAnnotationIdentifier || (ChangeAnnotationIdentifier = {}));
-    (function(AnnotatedTextEdit2) {
+    (function(AnnotatedTextEdit3) {
       function replace(range, newText, annotation) {
         return { range, newText, annotationId: annotation };
       }
-      AnnotatedTextEdit2.replace = replace;
+      AnnotatedTextEdit3.replace = replace;
       function insert(position, newText, annotation) {
         return { range: { start: position, end: position }, newText, annotationId: annotation };
       }
-      AnnotatedTextEdit2.insert = insert;
+      AnnotatedTextEdit3.insert = insert;
       function del(range, annotation) {
         return { range, newText: "", annotationId: annotation };
       }
-      AnnotatedTextEdit2.del = del;
+      AnnotatedTextEdit3.del = del;
       function is(value) {
         const candidate = value;
         return TextEdit.is(candidate) && (ChangeAnnotation.is(candidate.annotationId) || ChangeAnnotationIdentifier.is(candidate.annotationId));
       }
-      AnnotatedTextEdit2.is = is;
+      AnnotatedTextEdit3.is = is;
     })(AnnotatedTextEdit || (AnnotatedTextEdit = {}));
-    (function(TextDocumentEdit2) {
+    (function(TextDocumentEdit3) {
       function create(textDocument, edits) {
         return { textDocument, edits };
       }
-      TextDocumentEdit2.create = create;
+      TextDocumentEdit3.create = create;
       function is(value) {
         let candidate = value;
         return Is.defined(candidate) && OptionalVersionedTextDocumentIdentifier.is(candidate.textDocument) && Array.isArray(candidate.edits);
       }
-      TextDocumentEdit2.is = is;
+      TextDocumentEdit3.is = is;
     })(TextDocumentEdit || (TextDocumentEdit = {}));
-    (function(CreateFile2) {
+    (function(CreateFile3) {
       function create(uri, options2, annotation) {
         let result = {
           kind: "create",
@@ -13732,14 +13732,14 @@ var init_main = __esm({
         }
         return result;
       }
-      CreateFile2.create = create;
+      CreateFile3.create = create;
       function is(value) {
         let candidate = value;
         return candidate && candidate.kind === "create" && Is.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier.is(candidate.annotationId));
       }
-      CreateFile2.is = is;
+      CreateFile3.is = is;
     })(CreateFile || (CreateFile = {}));
-    (function(RenameFile2) {
+    (function(RenameFile3) {
       function create(oldUri, newUri, options2, annotation) {
         let result = {
           kind: "rename",
@@ -13754,14 +13754,14 @@ var init_main = __esm({
         }
         return result;
       }
-      RenameFile2.create = create;
+      RenameFile3.create = create;
       function is(value) {
         let candidate = value;
         return candidate && candidate.kind === "rename" && Is.string(candidate.oldUri) && Is.string(candidate.newUri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier.is(candidate.annotationId));
       }
-      RenameFile2.is = is;
+      RenameFile3.is = is;
     })(RenameFile || (RenameFile = {}));
-    (function(DeleteFile2) {
+    (function(DeleteFile3) {
       function create(uri, options2, annotation) {
         let result = {
           kind: "delete",
@@ -13775,14 +13775,14 @@ var init_main = __esm({
         }
         return result;
       }
-      DeleteFile2.create = create;
+      DeleteFile3.create = create;
       function is(value) {
         let candidate = value;
         return candidate && candidate.kind === "delete" && Is.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.recursive === void 0 || Is.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === void 0 || Is.boolean(candidate.options.ignoreIfNotExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier.is(candidate.annotationId));
       }
-      DeleteFile2.is = is;
+      DeleteFile3.is = is;
     })(DeleteFile || (DeleteFile = {}));
-    (function(WorkspaceEdit2) {
+    (function(WorkspaceEdit3) {
       function is(value) {
         let candidate = value;
         return candidate && (candidate.changes !== void 0 || candidate.documentChanges !== void 0) && (candidate.documentChanges === void 0 || candidate.documentChanges.every((change) => {
@@ -13793,161 +13793,161 @@ var init_main = __esm({
           }
         }));
       }
-      WorkspaceEdit2.is = is;
+      WorkspaceEdit3.is = is;
     })(WorkspaceEdit || (WorkspaceEdit = {}));
-    (function(TextDocumentIdentifier2) {
+    (function(TextDocumentIdentifier3) {
       function create(uri) {
         return { uri };
       }
-      TextDocumentIdentifier2.create = create;
+      TextDocumentIdentifier3.create = create;
       function is(value) {
         let candidate = value;
         return Is.defined(candidate) && Is.string(candidate.uri);
       }
-      TextDocumentIdentifier2.is = is;
+      TextDocumentIdentifier3.is = is;
     })(TextDocumentIdentifier || (TextDocumentIdentifier = {}));
-    (function(VersionedTextDocumentIdentifier2) {
+    (function(VersionedTextDocumentIdentifier3) {
       function create(uri, version) {
         return { uri, version };
       }
-      VersionedTextDocumentIdentifier2.create = create;
+      VersionedTextDocumentIdentifier3.create = create;
       function is(value) {
         let candidate = value;
         return Is.defined(candidate) && Is.string(candidate.uri) && Is.integer(candidate.version);
       }
-      VersionedTextDocumentIdentifier2.is = is;
+      VersionedTextDocumentIdentifier3.is = is;
     })(VersionedTextDocumentIdentifier || (VersionedTextDocumentIdentifier = {}));
-    (function(OptionalVersionedTextDocumentIdentifier2) {
+    (function(OptionalVersionedTextDocumentIdentifier3) {
       function create(uri, version) {
         return { uri, version };
       }
-      OptionalVersionedTextDocumentIdentifier2.create = create;
+      OptionalVersionedTextDocumentIdentifier3.create = create;
       function is(value) {
         let candidate = value;
         return Is.defined(candidate) && Is.string(candidate.uri) && (candidate.version === null || Is.integer(candidate.version));
       }
-      OptionalVersionedTextDocumentIdentifier2.is = is;
+      OptionalVersionedTextDocumentIdentifier3.is = is;
     })(OptionalVersionedTextDocumentIdentifier || (OptionalVersionedTextDocumentIdentifier = {}));
-    (function(TextDocumentItem2) {
+    (function(TextDocumentItem3) {
       function create(uri, languageId, version, text) {
         return { uri, languageId, version, text };
       }
-      TextDocumentItem2.create = create;
+      TextDocumentItem3.create = create;
       function is(value) {
         let candidate = value;
         return Is.defined(candidate) && Is.string(candidate.uri) && Is.string(candidate.languageId) && Is.integer(candidate.version) && Is.string(candidate.text);
       }
-      TextDocumentItem2.is = is;
+      TextDocumentItem3.is = is;
     })(TextDocumentItem || (TextDocumentItem = {}));
-    (function(MarkupKind2) {
-      MarkupKind2.PlainText = "plaintext";
-      MarkupKind2.Markdown = "markdown";
+    (function(MarkupKind3) {
+      MarkupKind3.PlainText = "plaintext";
+      MarkupKind3.Markdown = "markdown";
       function is(value) {
         const candidate = value;
-        return candidate === MarkupKind2.PlainText || candidate === MarkupKind2.Markdown;
+        return candidate === MarkupKind3.PlainText || candidate === MarkupKind3.Markdown;
       }
-      MarkupKind2.is = is;
+      MarkupKind3.is = is;
     })(MarkupKind || (MarkupKind = {}));
-    (function(MarkupContent2) {
+    (function(MarkupContent3) {
       function is(value) {
         const candidate = value;
         return Is.objectLiteral(value) && MarkupKind.is(candidate.kind) && Is.string(candidate.value);
       }
-      MarkupContent2.is = is;
+      MarkupContent3.is = is;
     })(MarkupContent || (MarkupContent = {}));
-    (function(CompletionItemKind2) {
-      CompletionItemKind2.Text = 1;
-      CompletionItemKind2.Method = 2;
-      CompletionItemKind2.Function = 3;
-      CompletionItemKind2.Constructor = 4;
-      CompletionItemKind2.Field = 5;
-      CompletionItemKind2.Variable = 6;
-      CompletionItemKind2.Class = 7;
-      CompletionItemKind2.Interface = 8;
-      CompletionItemKind2.Module = 9;
-      CompletionItemKind2.Property = 10;
-      CompletionItemKind2.Unit = 11;
-      CompletionItemKind2.Value = 12;
-      CompletionItemKind2.Enum = 13;
-      CompletionItemKind2.Keyword = 14;
-      CompletionItemKind2.Snippet = 15;
-      CompletionItemKind2.Color = 16;
-      CompletionItemKind2.File = 17;
-      CompletionItemKind2.Reference = 18;
-      CompletionItemKind2.Folder = 19;
-      CompletionItemKind2.EnumMember = 20;
-      CompletionItemKind2.Constant = 21;
-      CompletionItemKind2.Struct = 22;
-      CompletionItemKind2.Event = 23;
-      CompletionItemKind2.Operator = 24;
-      CompletionItemKind2.TypeParameter = 25;
+    (function(CompletionItemKind3) {
+      CompletionItemKind3.Text = 1;
+      CompletionItemKind3.Method = 2;
+      CompletionItemKind3.Function = 3;
+      CompletionItemKind3.Constructor = 4;
+      CompletionItemKind3.Field = 5;
+      CompletionItemKind3.Variable = 6;
+      CompletionItemKind3.Class = 7;
+      CompletionItemKind3.Interface = 8;
+      CompletionItemKind3.Module = 9;
+      CompletionItemKind3.Property = 10;
+      CompletionItemKind3.Unit = 11;
+      CompletionItemKind3.Value = 12;
+      CompletionItemKind3.Enum = 13;
+      CompletionItemKind3.Keyword = 14;
+      CompletionItemKind3.Snippet = 15;
+      CompletionItemKind3.Color = 16;
+      CompletionItemKind3.File = 17;
+      CompletionItemKind3.Reference = 18;
+      CompletionItemKind3.Folder = 19;
+      CompletionItemKind3.EnumMember = 20;
+      CompletionItemKind3.Constant = 21;
+      CompletionItemKind3.Struct = 22;
+      CompletionItemKind3.Event = 23;
+      CompletionItemKind3.Operator = 24;
+      CompletionItemKind3.TypeParameter = 25;
     })(CompletionItemKind || (CompletionItemKind = {}));
-    (function(InsertTextFormat2) {
-      InsertTextFormat2.PlainText = 1;
-      InsertTextFormat2.Snippet = 2;
+    (function(InsertTextFormat3) {
+      InsertTextFormat3.PlainText = 1;
+      InsertTextFormat3.Snippet = 2;
     })(InsertTextFormat || (InsertTextFormat = {}));
-    (function(CompletionItemTag2) {
-      CompletionItemTag2.Deprecated = 1;
+    (function(CompletionItemTag3) {
+      CompletionItemTag3.Deprecated = 1;
     })(CompletionItemTag || (CompletionItemTag = {}));
-    (function(InsertReplaceEdit2) {
+    (function(InsertReplaceEdit3) {
       function create(newText, insert, replace) {
         return { newText, insert, replace };
       }
-      InsertReplaceEdit2.create = create;
+      InsertReplaceEdit3.create = create;
       function is(value) {
         const candidate = value;
         return candidate && Is.string(candidate.newText) && Range.is(candidate.insert) && Range.is(candidate.replace);
       }
-      InsertReplaceEdit2.is = is;
+      InsertReplaceEdit3.is = is;
     })(InsertReplaceEdit || (InsertReplaceEdit = {}));
-    (function(InsertTextMode2) {
-      InsertTextMode2.asIs = 1;
-      InsertTextMode2.adjustIndentation = 2;
+    (function(InsertTextMode3) {
+      InsertTextMode3.asIs = 1;
+      InsertTextMode3.adjustIndentation = 2;
     })(InsertTextMode || (InsertTextMode = {}));
-    (function(CompletionItemLabelDetails2) {
+    (function(CompletionItemLabelDetails3) {
       function is(value) {
         const candidate = value;
         return candidate && (Is.string(candidate.detail) || candidate.detail === void 0) && (Is.string(candidate.description) || candidate.description === void 0);
       }
-      CompletionItemLabelDetails2.is = is;
+      CompletionItemLabelDetails3.is = is;
     })(CompletionItemLabelDetails || (CompletionItemLabelDetails = {}));
-    (function(CompletionItem2) {
+    (function(CompletionItem3) {
       function create(label) {
         return { label };
       }
-      CompletionItem2.create = create;
+      CompletionItem3.create = create;
     })(CompletionItem || (CompletionItem = {}));
-    (function(CompletionList2) {
+    (function(CompletionList3) {
       function create(items, isIncomplete) {
         return { items: items ? items : [], isIncomplete: !!isIncomplete };
       }
-      CompletionList2.create = create;
+      CompletionList3.create = create;
     })(CompletionList || (CompletionList = {}));
-    (function(MarkedString2) {
+    (function(MarkedString3) {
       function fromPlainText(plainText) {
         return plainText.replace(/[\\`*_{}[\]()#+\-.!]/g, "\\$&");
       }
-      MarkedString2.fromPlainText = fromPlainText;
+      MarkedString3.fromPlainText = fromPlainText;
       function is(value) {
         const candidate = value;
         return Is.string(candidate) || Is.objectLiteral(candidate) && Is.string(candidate.language) && Is.string(candidate.value);
       }
-      MarkedString2.is = is;
+      MarkedString3.is = is;
     })(MarkedString || (MarkedString = {}));
-    (function(Hover2) {
+    (function(Hover3) {
       function is(value) {
         let candidate = value;
         return !!candidate && Is.objectLiteral(candidate) && (MarkupContent.is(candidate.contents) || MarkedString.is(candidate.contents) || Is.typedArray(candidate.contents, MarkedString.is)) && (value.range === void 0 || Range.is(value.range));
       }
-      Hover2.is = is;
+      Hover3.is = is;
     })(Hover || (Hover = {}));
-    (function(ParameterInformation2) {
+    (function(ParameterInformation3) {
       function create(label, documentation) {
         return documentation ? { label, documentation } : { label };
       }
-      ParameterInformation2.create = create;
+      ParameterInformation3.create = create;
     })(ParameterInformation || (ParameterInformation = {}));
-    (function(SignatureInformation2) {
+    (function(SignatureInformation3) {
       function create(label, documentation, ...parameters) {
         let result = { label };
         if (Is.defined(documentation)) {
@@ -13960,14 +13960,14 @@ var init_main = __esm({
         }
         return result;
       }
-      SignatureInformation2.create = create;
+      SignatureInformation3.create = create;
     })(SignatureInformation || (SignatureInformation = {}));
-    (function(DocumentHighlightKind2) {
-      DocumentHighlightKind2.Text = 1;
-      DocumentHighlightKind2.Read = 2;
-      DocumentHighlightKind2.Write = 3;
+    (function(DocumentHighlightKind3) {
+      DocumentHighlightKind3.Text = 1;
+      DocumentHighlightKind3.Read = 2;
+      DocumentHighlightKind3.Write = 3;
     })(DocumentHighlightKind || (DocumentHighlightKind = {}));
-    (function(DocumentHighlight2) {
+    (function(DocumentHighlight3) {
       function create(range, kind) {
         let result = { range };
         if (Is.number(kind)) {
@@ -13975,40 +13975,40 @@ var init_main = __esm({
         }
         return result;
       }
-      DocumentHighlight2.create = create;
+      DocumentHighlight3.create = create;
     })(DocumentHighlight || (DocumentHighlight = {}));
-    (function(SymbolKind2) {
-      SymbolKind2.File = 1;
-      SymbolKind2.Module = 2;
-      SymbolKind2.Namespace = 3;
-      SymbolKind2.Package = 4;
-      SymbolKind2.Class = 5;
-      SymbolKind2.Method = 6;
-      SymbolKind2.Property = 7;
-      SymbolKind2.Field = 8;
-      SymbolKind2.Constructor = 9;
-      SymbolKind2.Enum = 10;
-      SymbolKind2.Interface = 11;
-      SymbolKind2.Function = 12;
-      SymbolKind2.Variable = 13;
-      SymbolKind2.Constant = 14;
-      SymbolKind2.String = 15;
-      SymbolKind2.Number = 16;
-      SymbolKind2.Boolean = 17;
-      SymbolKind2.Array = 18;
-      SymbolKind2.Object = 19;
-      SymbolKind2.Key = 20;
-      SymbolKind2.Null = 21;
-      SymbolKind2.EnumMember = 22;
-      SymbolKind2.Struct = 23;
-      SymbolKind2.Event = 24;
-      SymbolKind2.Operator = 25;
-      SymbolKind2.TypeParameter = 26;
+    (function(SymbolKind3) {
+      SymbolKind3.File = 1;
+      SymbolKind3.Module = 2;
+      SymbolKind3.Namespace = 3;
+      SymbolKind3.Package = 4;
+      SymbolKind3.Class = 5;
+      SymbolKind3.Method = 6;
+      SymbolKind3.Property = 7;
+      SymbolKind3.Field = 8;
+      SymbolKind3.Constructor = 9;
+      SymbolKind3.Enum = 10;
+      SymbolKind3.Interface = 11;
+      SymbolKind3.Function = 12;
+      SymbolKind3.Variable = 13;
+      SymbolKind3.Constant = 14;
+      SymbolKind3.String = 15;
+      SymbolKind3.Number = 16;
+      SymbolKind3.Boolean = 17;
+      SymbolKind3.Array = 18;
+      SymbolKind3.Object = 19;
+      SymbolKind3.Key = 20;
+      SymbolKind3.Null = 21;
+      SymbolKind3.EnumMember = 22;
+      SymbolKind3.Struct = 23;
+      SymbolKind3.Event = 24;
+      SymbolKind3.Operator = 25;
+      SymbolKind3.TypeParameter = 26;
     })(SymbolKind || (SymbolKind = {}));
-    (function(SymbolTag2) {
-      SymbolTag2.Deprecated = 1;
+    (function(SymbolTag3) {
+      SymbolTag3.Deprecated = 1;
     })(SymbolTag || (SymbolTag = {}));
-    (function(SymbolInformation2) {
+    (function(SymbolInformation3) {
       function create(name, kind, range, uri, containerName) {
         let result = {
           name,
@@ -14020,15 +14020,15 @@ var init_main = __esm({
         }
         return result;
       }
-      SymbolInformation2.create = create;
+      SymbolInformation3.create = create;
     })(SymbolInformation || (SymbolInformation = {}));
-    (function(WorkspaceSymbol2) {
+    (function(WorkspaceSymbol3) {
       function create(name, kind, uri, range) {
         return range !== void 0 ? { name, kind, location: { uri, range } } : { name, kind, location: { uri } };
       }
-      WorkspaceSymbol2.create = create;
+      WorkspaceSymbol3.create = create;
     })(WorkspaceSymbol || (WorkspaceSymbol = {}));
-    (function(DocumentSymbol2) {
+    (function(DocumentSymbol3) {
       function create(name, detail, kind, range, selectionRange, children) {
         let result = {
           name,
@@ -14042,29 +14042,29 @@ var init_main = __esm({
         }
         return result;
       }
-      DocumentSymbol2.create = create;
+      DocumentSymbol3.create = create;
       function is(value) {
         let candidate = value;
         return candidate && Is.string(candidate.name) && Is.number(candidate.kind) && Range.is(candidate.range) && Range.is(candidate.selectionRange) && (candidate.detail === void 0 || Is.string(candidate.detail)) && (candidate.deprecated === void 0 || Is.boolean(candidate.deprecated)) && (candidate.children === void 0 || Array.isArray(candidate.children)) && (candidate.tags === void 0 || Array.isArray(candidate.tags));
       }
-      DocumentSymbol2.is = is;
+      DocumentSymbol3.is = is;
     })(DocumentSymbol || (DocumentSymbol = {}));
-    (function(CodeActionKind2) {
-      CodeActionKind2.Empty = "";
-      CodeActionKind2.QuickFix = "quickfix";
-      CodeActionKind2.Refactor = "refactor";
-      CodeActionKind2.RefactorExtract = "refactor.extract";
-      CodeActionKind2.RefactorInline = "refactor.inline";
-      CodeActionKind2.RefactorRewrite = "refactor.rewrite";
-      CodeActionKind2.Source = "source";
-      CodeActionKind2.SourceOrganizeImports = "source.organizeImports";
-      CodeActionKind2.SourceFixAll = "source.fixAll";
+    (function(CodeActionKind3) {
+      CodeActionKind3.Empty = "";
+      CodeActionKind3.QuickFix = "quickfix";
+      CodeActionKind3.Refactor = "refactor";
+      CodeActionKind3.RefactorExtract = "refactor.extract";
+      CodeActionKind3.RefactorInline = "refactor.inline";
+      CodeActionKind3.RefactorRewrite = "refactor.rewrite";
+      CodeActionKind3.Source = "source";
+      CodeActionKind3.SourceOrganizeImports = "source.organizeImports";
+      CodeActionKind3.SourceFixAll = "source.fixAll";
     })(CodeActionKind || (CodeActionKind = {}));
-    (function(CodeActionTriggerKind2) {
-      CodeActionTriggerKind2.Invoked = 1;
-      CodeActionTriggerKind2.Automatic = 2;
+    (function(CodeActionTriggerKind3) {
+      CodeActionTriggerKind3.Invoked = 1;
+      CodeActionTriggerKind3.Automatic = 2;
     })(CodeActionTriggerKind || (CodeActionTriggerKind = {}));
-    (function(CodeActionContext2) {
+    (function(CodeActionContext3) {
       function create(diagnostics, only, triggerKind) {
         let result = { diagnostics };
         if (only !== void 0 && only !== null) {
@@ -14075,14 +14075,14 @@ var init_main = __esm({
         }
         return result;
       }
-      CodeActionContext2.create = create;
+      CodeActionContext3.create = create;
       function is(value) {
         let candidate = value;
         return Is.defined(candidate) && Is.typedArray(candidate.diagnostics, Diagnostic.is) && (candidate.only === void 0 || Is.typedArray(candidate.only, Is.string)) && (candidate.triggerKind === void 0 || candidate.triggerKind === CodeActionTriggerKind.Invoked || candidate.triggerKind === CodeActionTriggerKind.Automatic);
       }
-      CodeActionContext2.is = is;
+      CodeActionContext3.is = is;
     })(CodeActionContext || (CodeActionContext = {}));
-    (function(CodeAction2) {
+    (function(CodeAction3) {
       function create(title, kindOrCommandOrEdit, kind) {
         let result = { title };
         let checkKind = true;
@@ -14099,14 +14099,14 @@ var init_main = __esm({
         }
         return result;
       }
-      CodeAction2.create = create;
+      CodeAction3.create = create;
       function is(value) {
         let candidate = value;
         return candidate && Is.string(candidate.title) && (candidate.diagnostics === void 0 || Is.typedArray(candidate.diagnostics, Diagnostic.is)) && (candidate.kind === void 0 || Is.string(candidate.kind)) && (candidate.edit !== void 0 || candidate.command !== void 0) && (candidate.command === void 0 || Command.is(candidate.command)) && (candidate.isPreferred === void 0 || Is.boolean(candidate.isPreferred)) && (candidate.edit === void 0 || WorkspaceEdit.is(candidate.edit));
       }
-      CodeAction2.is = is;
+      CodeAction3.is = is;
     })(CodeAction || (CodeAction = {}));
-    (function(CodeLens2) {
+    (function(CodeLens3) {
       function create(range, data) {
         let result = { range };
         if (Is.defined(data)) {
@@ -14114,154 +14114,154 @@ var init_main = __esm({
         }
         return result;
       }
-      CodeLens2.create = create;
+      CodeLens3.create = create;
       function is(value) {
         let candidate = value;
         return Is.defined(candidate) && Range.is(candidate.range) && (Is.undefined(candidate.command) || Command.is(candidate.command));
       }
-      CodeLens2.is = is;
+      CodeLens3.is = is;
     })(CodeLens || (CodeLens = {}));
-    (function(FormattingOptions2) {
+    (function(FormattingOptions3) {
       function create(tabSize, insertSpaces) {
         return { tabSize, insertSpaces };
       }
-      FormattingOptions2.create = create;
+      FormattingOptions3.create = create;
       function is(value) {
         let candidate = value;
         return Is.defined(candidate) && Is.uinteger(candidate.tabSize) && Is.boolean(candidate.insertSpaces);
       }
-      FormattingOptions2.is = is;
+      FormattingOptions3.is = is;
     })(FormattingOptions || (FormattingOptions = {}));
-    (function(DocumentLink2) {
+    (function(DocumentLink3) {
       function create(range, target, data) {
         return { range, target, data };
       }
-      DocumentLink2.create = create;
+      DocumentLink3.create = create;
       function is(value) {
         let candidate = value;
         return Is.defined(candidate) && Range.is(candidate.range) && (Is.undefined(candidate.target) || Is.string(candidate.target));
       }
-      DocumentLink2.is = is;
+      DocumentLink3.is = is;
     })(DocumentLink || (DocumentLink = {}));
-    (function(SelectionRange2) {
+    (function(SelectionRange3) {
       function create(range, parent) {
         return { range, parent };
       }
-      SelectionRange2.create = create;
+      SelectionRange3.create = create;
       function is(value) {
         let candidate = value;
-        return Is.objectLiteral(candidate) && Range.is(candidate.range) && (candidate.parent === void 0 || SelectionRange2.is(candidate.parent));
+        return Is.objectLiteral(candidate) && Range.is(candidate.range) && (candidate.parent === void 0 || SelectionRange3.is(candidate.parent));
       }
-      SelectionRange2.is = is;
+      SelectionRange3.is = is;
     })(SelectionRange || (SelectionRange = {}));
-    (function(SemanticTokenTypes2) {
-      SemanticTokenTypes2["namespace"] = "namespace";
-      SemanticTokenTypes2["type"] = "type";
-      SemanticTokenTypes2["class"] = "class";
-      SemanticTokenTypes2["enum"] = "enum";
-      SemanticTokenTypes2["interface"] = "interface";
-      SemanticTokenTypes2["struct"] = "struct";
-      SemanticTokenTypes2["typeParameter"] = "typeParameter";
-      SemanticTokenTypes2["parameter"] = "parameter";
-      SemanticTokenTypes2["variable"] = "variable";
-      SemanticTokenTypes2["property"] = "property";
-      SemanticTokenTypes2["enumMember"] = "enumMember";
-      SemanticTokenTypes2["event"] = "event";
-      SemanticTokenTypes2["function"] = "function";
-      SemanticTokenTypes2["method"] = "method";
-      SemanticTokenTypes2["macro"] = "macro";
-      SemanticTokenTypes2["keyword"] = "keyword";
-      SemanticTokenTypes2["modifier"] = "modifier";
-      SemanticTokenTypes2["comment"] = "comment";
-      SemanticTokenTypes2["string"] = "string";
-      SemanticTokenTypes2["number"] = "number";
-      SemanticTokenTypes2["regexp"] = "regexp";
-      SemanticTokenTypes2["operator"] = "operator";
-      SemanticTokenTypes2["decorator"] = "decorator";
+    (function(SemanticTokenTypes3) {
+      SemanticTokenTypes3["namespace"] = "namespace";
+      SemanticTokenTypes3["type"] = "type";
+      SemanticTokenTypes3["class"] = "class";
+      SemanticTokenTypes3["enum"] = "enum";
+      SemanticTokenTypes3["interface"] = "interface";
+      SemanticTokenTypes3["struct"] = "struct";
+      SemanticTokenTypes3["typeParameter"] = "typeParameter";
+      SemanticTokenTypes3["parameter"] = "parameter";
+      SemanticTokenTypes3["variable"] = "variable";
+      SemanticTokenTypes3["property"] = "property";
+      SemanticTokenTypes3["enumMember"] = "enumMember";
+      SemanticTokenTypes3["event"] = "event";
+      SemanticTokenTypes3["function"] = "function";
+      SemanticTokenTypes3["method"] = "method";
+      SemanticTokenTypes3["macro"] = "macro";
+      SemanticTokenTypes3["keyword"] = "keyword";
+      SemanticTokenTypes3["modifier"] = "modifier";
+      SemanticTokenTypes3["comment"] = "comment";
+      SemanticTokenTypes3["string"] = "string";
+      SemanticTokenTypes3["number"] = "number";
+      SemanticTokenTypes3["regexp"] = "regexp";
+      SemanticTokenTypes3["operator"] = "operator";
+      SemanticTokenTypes3["decorator"] = "decorator";
     })(SemanticTokenTypes || (SemanticTokenTypes = {}));
-    (function(SemanticTokenModifiers2) {
-      SemanticTokenModifiers2["declaration"] = "declaration";
-      SemanticTokenModifiers2["definition"] = "definition";
-      SemanticTokenModifiers2["readonly"] = "readonly";
-      SemanticTokenModifiers2["static"] = "static";
-      SemanticTokenModifiers2["deprecated"] = "deprecated";
-      SemanticTokenModifiers2["abstract"] = "abstract";
-      SemanticTokenModifiers2["async"] = "async";
-      SemanticTokenModifiers2["modification"] = "modification";
-      SemanticTokenModifiers2["documentation"] = "documentation";
-      SemanticTokenModifiers2["defaultLibrary"] = "defaultLibrary";
+    (function(SemanticTokenModifiers3) {
+      SemanticTokenModifiers3["declaration"] = "declaration";
+      SemanticTokenModifiers3["definition"] = "definition";
+      SemanticTokenModifiers3["readonly"] = "readonly";
+      SemanticTokenModifiers3["static"] = "static";
+      SemanticTokenModifiers3["deprecated"] = "deprecated";
+      SemanticTokenModifiers3["abstract"] = "abstract";
+      SemanticTokenModifiers3["async"] = "async";
+      SemanticTokenModifiers3["modification"] = "modification";
+      SemanticTokenModifiers3["documentation"] = "documentation";
+      SemanticTokenModifiers3["defaultLibrary"] = "defaultLibrary";
     })(SemanticTokenModifiers || (SemanticTokenModifiers = {}));
-    (function(SemanticTokens2) {
+    (function(SemanticTokens3) {
       function is(value) {
         const candidate = value;
         return Is.objectLiteral(candidate) && (candidate.resultId === void 0 || typeof candidate.resultId === "string") && Array.isArray(candidate.data) && (candidate.data.length === 0 || typeof candidate.data[0] === "number");
       }
-      SemanticTokens2.is = is;
+      SemanticTokens3.is = is;
     })(SemanticTokens || (SemanticTokens = {}));
-    (function(InlineValueText2) {
+    (function(InlineValueText3) {
       function create(range, text) {
         return { range, text };
       }
-      InlineValueText2.create = create;
+      InlineValueText3.create = create;
       function is(value) {
         const candidate = value;
         return candidate !== void 0 && candidate !== null && Range.is(candidate.range) && Is.string(candidate.text);
       }
-      InlineValueText2.is = is;
+      InlineValueText3.is = is;
     })(InlineValueText || (InlineValueText = {}));
-    (function(InlineValueVariableLookup2) {
+    (function(InlineValueVariableLookup3) {
       function create(range, variableName, caseSensitiveLookup) {
         return { range, variableName, caseSensitiveLookup };
       }
-      InlineValueVariableLookup2.create = create;
+      InlineValueVariableLookup3.create = create;
       function is(value) {
         const candidate = value;
         return candidate !== void 0 && candidate !== null && Range.is(candidate.range) && Is.boolean(candidate.caseSensitiveLookup) && (Is.string(candidate.variableName) || candidate.variableName === void 0);
       }
-      InlineValueVariableLookup2.is = is;
+      InlineValueVariableLookup3.is = is;
     })(InlineValueVariableLookup || (InlineValueVariableLookup = {}));
-    (function(InlineValueEvaluatableExpression2) {
+    (function(InlineValueEvaluatableExpression3) {
       function create(range, expression) {
         return { range, expression };
       }
-      InlineValueEvaluatableExpression2.create = create;
+      InlineValueEvaluatableExpression3.create = create;
       function is(value) {
         const candidate = value;
         return candidate !== void 0 && candidate !== null && Range.is(candidate.range) && (Is.string(candidate.expression) || candidate.expression === void 0);
       }
-      InlineValueEvaluatableExpression2.is = is;
+      InlineValueEvaluatableExpression3.is = is;
     })(InlineValueEvaluatableExpression || (InlineValueEvaluatableExpression = {}));
-    (function(InlineValueContext2) {
+    (function(InlineValueContext3) {
       function create(frameId, stoppedLocation) {
         return { frameId, stoppedLocation };
       }
-      InlineValueContext2.create = create;
+      InlineValueContext3.create = create;
       function is(value) {
         const candidate = value;
         return Is.defined(candidate) && Range.is(value.stoppedLocation);
       }
-      InlineValueContext2.is = is;
+      InlineValueContext3.is = is;
     })(InlineValueContext || (InlineValueContext = {}));
-    (function(InlayHintKind3) {
-      InlayHintKind3.Type = 1;
-      InlayHintKind3.Parameter = 2;
+    (function(InlayHintKind4) {
+      InlayHintKind4.Type = 1;
+      InlayHintKind4.Parameter = 2;
       function is(value) {
         return value === 1 || value === 2;
       }
-      InlayHintKind3.is = is;
+      InlayHintKind4.is = is;
     })(InlayHintKind2 || (InlayHintKind2 = {}));
-    (function(InlayHintLabelPart2) {
+    (function(InlayHintLabelPart3) {
       function create(value) {
         return { value };
       }
-      InlayHintLabelPart2.create = create;
+      InlayHintLabelPart3.create = create;
       function is(value) {
         const candidate = value;
         return Is.objectLiteral(candidate) && (candidate.tooltip === void 0 || Is.string(candidate.tooltip) || MarkupContent.is(candidate.tooltip)) && (candidate.location === void 0 || Location.is(candidate.location)) && (candidate.command === void 0 || Command.is(candidate.command));
       }
-      InlayHintLabelPart2.is = is;
+      InlayHintLabelPart3.is = is;
     })(InlayHintLabelPart || (InlayHintLabelPart = {}));
-    (function(InlayHint2) {
+    (function(InlayHint3) {
       function create(position, label, kind) {
         const result = { position, label };
         if (kind !== void 0) {
@@ -14269,64 +14269,64 @@ var init_main = __esm({
         }
         return result;
       }
-      InlayHint2.create = create;
+      InlayHint3.create = create;
       function is(value) {
         const candidate = value;
         return Is.objectLiteral(candidate) && Position.is(candidate.position) && (Is.string(candidate.label) || Is.typedArray(candidate.label, InlayHintLabelPart.is)) && (candidate.kind === void 0 || InlayHintKind2.is(candidate.kind)) && candidate.textEdits === void 0 || Is.typedArray(candidate.textEdits, TextEdit.is) && (candidate.tooltip === void 0 || Is.string(candidate.tooltip) || MarkupContent.is(candidate.tooltip)) && (candidate.paddingLeft === void 0 || Is.boolean(candidate.paddingLeft)) && (candidate.paddingRight === void 0 || Is.boolean(candidate.paddingRight));
       }
-      InlayHint2.is = is;
+      InlayHint3.is = is;
     })(InlayHint || (InlayHint = {}));
-    (function(StringValue2) {
+    (function(StringValue3) {
       function createSnippet(value) {
         return { kind: "snippet", value };
       }
-      StringValue2.createSnippet = createSnippet;
+      StringValue3.createSnippet = createSnippet;
     })(StringValue || (StringValue = {}));
-    (function(InlineCompletionItem2) {
+    (function(InlineCompletionItem3) {
       function create(insertText, filterText, range, command) {
         return { insertText, filterText, range, command };
       }
-      InlineCompletionItem2.create = create;
+      InlineCompletionItem3.create = create;
     })(InlineCompletionItem || (InlineCompletionItem = {}));
-    (function(InlineCompletionList2) {
+    (function(InlineCompletionList3) {
       function create(items) {
         return { items };
       }
-      InlineCompletionList2.create = create;
+      InlineCompletionList3.create = create;
     })(InlineCompletionList || (InlineCompletionList = {}));
-    (function(InlineCompletionTriggerKind2) {
-      InlineCompletionTriggerKind2.Invoked = 0;
-      InlineCompletionTriggerKind2.Automatic = 1;
+    (function(InlineCompletionTriggerKind3) {
+      InlineCompletionTriggerKind3.Invoked = 0;
+      InlineCompletionTriggerKind3.Automatic = 1;
     })(InlineCompletionTriggerKind || (InlineCompletionTriggerKind = {}));
-    (function(SelectedCompletionInfo2) {
+    (function(SelectedCompletionInfo3) {
       function create(range, text) {
         return { range, text };
       }
-      SelectedCompletionInfo2.create = create;
+      SelectedCompletionInfo3.create = create;
     })(SelectedCompletionInfo || (SelectedCompletionInfo = {}));
-    (function(InlineCompletionContext2) {
+    (function(InlineCompletionContext3) {
       function create(triggerKind, selectedCompletionInfo) {
         return { triggerKind, selectedCompletionInfo };
       }
-      InlineCompletionContext2.create = create;
+      InlineCompletionContext3.create = create;
     })(InlineCompletionContext || (InlineCompletionContext = {}));
-    (function(WorkspaceFolder2) {
+    (function(WorkspaceFolder3) {
       function is(value) {
         const candidate = value;
         return Is.objectLiteral(candidate) && URI.is(candidate.uri) && Is.string(candidate.name);
       }
-      WorkspaceFolder2.is = is;
+      WorkspaceFolder3.is = is;
     })(WorkspaceFolder || (WorkspaceFolder = {}));
-    (function(TextDocument3) {
+    (function(TextDocument4) {
       function create(uri, languageId, version, content) {
         return new FullTextDocument(uri, languageId, version, content);
       }
-      TextDocument3.create = create;
+      TextDocument4.create = create;
       function is(value) {
         let candidate = value;
         return Is.defined(candidate) && Is.string(candidate.uri) && (Is.undefined(candidate.languageId) || Is.string(candidate.languageId)) && Is.uinteger(candidate.lineCount) && Is.func(candidate.getText) && Is.func(candidate.positionAt) && Is.func(candidate.offsetAt) ? true : false;
       }
-      TextDocument3.is = is;
+      TextDocument4.is = is;
       function applyEdits(document, edits) {
         let text = document.getText();
         let sortedEdits = mergeSort2(edits, (a2, b) => {
@@ -14350,7 +14350,7 @@ var init_main = __esm({
         }
         return text;
       }
-      TextDocument3.applyEdits = applyEdits;
+      TextDocument4.applyEdits = applyEdits;
       function mergeSort2(data, compare) {
         if (data.length <= 1) {
           return data;
@@ -14466,52 +14466,52 @@ var init_main = __esm({
         return this.getLineOffsets().length;
       }
     };
-    (function(Is2) {
+    (function(Is3) {
       const toString = Object.prototype.toString;
       function defined(value) {
         return typeof value !== "undefined";
       }
-      Is2.defined = defined;
+      Is3.defined = defined;
       function undefined2(value) {
         return typeof value === "undefined";
       }
-      Is2.undefined = undefined2;
+      Is3.undefined = undefined2;
       function boolean(value) {
         return value === true || value === false;
       }
-      Is2.boolean = boolean;
+      Is3.boolean = boolean;
       function string(value) {
         return toString.call(value) === "[object String]";
       }
-      Is2.string = string;
+      Is3.string = string;
       function number(value) {
         return toString.call(value) === "[object Number]";
       }
-      Is2.number = number;
+      Is3.number = number;
       function numberRange(value, min, max) {
         return toString.call(value) === "[object Number]" && min <= value && value <= max;
       }
-      Is2.numberRange = numberRange;
-      function integer2(value) {
+      Is3.numberRange = numberRange;
+      function integer3(value) {
         return toString.call(value) === "[object Number]" && -2147483648 <= value && value <= 2147483647;
       }
-      Is2.integer = integer2;
-      function uinteger2(value) {
+      Is3.integer = integer3;
+      function uinteger3(value) {
         return toString.call(value) === "[object Number]" && 0 <= value && value <= 2147483647;
       }
-      Is2.uinteger = uinteger2;
+      Is3.uinteger = uinteger3;
       function func(value) {
         return toString.call(value) === "[object Function]";
       }
-      Is2.func = func;
+      Is3.func = func;
       function objectLiteral(value) {
         return value !== null && typeof value === "object";
       }
-      Is2.objectLiteral = objectLiteral;
+      Is3.objectLiteral = objectLiteral;
       function typedArray(value, check) {
         return Array.isArray(value) && value.every(check);
       }
-      Is2.typedArray = typedArray;
+      Is3.typedArray = typedArray;
     })(Is || (Is = {}));
   }
 });
@@ -14704,11 +14704,11 @@ var init_main2 = __esm({
         return candidate !== void 0 && candidate !== null && typeof candidate.text === "string" && candidate.range === void 0 && candidate.rangeLength === void 0;
       }
     };
-    (function(TextDocument3) {
+    (function(TextDocument4) {
       function create(uri, languageId, version, content) {
         return new FullTextDocument2(uri, languageId, version, content);
       }
-      TextDocument3.create = create;
+      TextDocument4.create = create;
       function update(document, changes, version) {
         if (document instanceof FullTextDocument2) {
           document.update(changes, version);
@@ -14717,7 +14717,7 @@ var init_main2 = __esm({
           throw new Error("TextDocument.update: document must be created by TextDocument.create");
         }
       }
-      TextDocument3.update = update;
+      TextDocument4.update = update;
       function applyEdits(document, edits) {
         const text = document.getText();
         const sortedEdits = mergeSort(edits.map(getWellformedEdit), (a2, b) => {
@@ -14744,7 +14744,7 @@ var init_main2 = __esm({
         spans.push(text.substr(lastModifiedOffset));
         return spans.join("");
       }
-      TextDocument3.applyEdits = applyEdits;
+      TextDocument4.applyEdits = applyEdits;
     })(TextDocument2 || (TextDocument2 = {}));
   }
 });
@@ -223554,11 +223554,11 @@ ${lanes.join("\n")}
         CompletionTriggerKind2[CompletionTriggerKind2["TriggerForIncompleteCompletions"] = 3] = "TriggerForIncompleteCompletions";
         return CompletionTriggerKind2;
       })(CompletionTriggerKind || {});
-      var InlayHintKind22 = ((InlayHintKind3) => {
-        InlayHintKind3["Type"] = "Type";
-        InlayHintKind3["Parameter"] = "Parameter";
-        InlayHintKind3["Enum"] = "Enum";
-        return InlayHintKind3;
+      var InlayHintKind22 = ((InlayHintKind32) => {
+        InlayHintKind32["Type"] = "Type";
+        InlayHintKind32["Parameter"] = "Parameter";
+        InlayHintKind32["Enum"] = "Enum";
+        return InlayHintKind32;
       })(InlayHintKind22 || {});
       var HighlightSpanKind = ((HighlightSpanKind2) => {
         HighlightSpanKind2["none"] = "none";
@@ -287402,11 +287402,1224 @@ var require_definitions = __commonJS({
   }
 });
 
+// node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.0/node_modules/vscode-languageserver-types/lib/esm/main.js
+var DocumentUri2, URI3, integer2, uinteger2, Position2, Range2, Location2, LocationLink2, Color2, ColorInformation2, ColorPresentation2, FoldingRangeKind2, FoldingRange2, DiagnosticRelatedInformation2, DiagnosticSeverity2, DiagnosticTag2, CodeDescription2, Diagnostic2, Command2, TextEdit2, ChangeAnnotation2, ChangeAnnotationIdentifier2, AnnotatedTextEdit2, TextDocumentEdit2, CreateFile2, RenameFile2, DeleteFile2, WorkspaceEdit2, SnippetTextEdit, TextDocumentIdentifier2, VersionedTextDocumentIdentifier2, OptionalVersionedTextDocumentIdentifier2, LanguageKind, TextDocumentItem2, MarkupKind2, MarkupContent2, CompletionItemKind2, InsertTextFormat2, CompletionItemTag2, InsertReplaceEdit2, InsertTextMode2, ApplyKind, CompletionItemLabelDetails2, CompletionItem2, CompletionList2, MarkedString2, Hover2, ParameterInformation2, SignatureInformation2, DocumentHighlightKind2, DocumentHighlight2, SymbolKind2, SymbolTag2, SymbolInformation2, WorkspaceSymbol2, DocumentSymbol2, CodeActionKind2, CodeActionTriggerKind2, CodeActionContext2, CodeActionTag, CodeAction2, CodeLens2, FormattingOptions2, DocumentLink2, SelectionRange2, SemanticTokenTypes2, SemanticTokenModifiers2, SemanticTokens2, InlineValueText2, InlineValueVariableLookup2, InlineValueEvaluatableExpression2, InlineValueContext2, InlayHintKind3, InlayHintLabelPart2, InlayHint2, StringValue2, InlineCompletionItem2, InlineCompletionList2, InlineCompletionTriggerKind2, SelectedCompletionInfo2, InlineCompletionContext2, WorkspaceFolder2, TextDocument3, FullTextDocument3, Is2;
+var init_main3 = __esm({
+  "node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.0/node_modules/vscode-languageserver-types/lib/esm/main.js"() {
+    "use strict";
+    (function(DocumentUri3) {
+      function is(value) {
+        return typeof value === "string";
+      }
+      DocumentUri3.is = is;
+    })(DocumentUri2 || (DocumentUri2 = {}));
+    (function(URI4) {
+      function is(value) {
+        return typeof value === "string";
+      }
+      URI4.is = is;
+    })(URI3 || (URI3 = {}));
+    (function(integer3) {
+      integer3.MIN_VALUE = -2147483648;
+      integer3.MAX_VALUE = 2147483647;
+      function is(value) {
+        return typeof value === "number" && integer3.MIN_VALUE <= value && value <= integer3.MAX_VALUE;
+      }
+      integer3.is = is;
+    })(integer2 || (integer2 = {}));
+    (function(uinteger3) {
+      uinteger3.MIN_VALUE = 0;
+      uinteger3.MAX_VALUE = 2147483647;
+      function is(value) {
+        return typeof value === "number" && uinteger3.MIN_VALUE <= value && value <= uinteger3.MAX_VALUE;
+      }
+      uinteger3.is = is;
+    })(uinteger2 || (uinteger2 = {}));
+    (function(Position3) {
+      function create(line, character) {
+        if (line === Number.MAX_VALUE) {
+          line = uinteger2.MAX_VALUE;
+        }
+        if (character === Number.MAX_VALUE) {
+          character = uinteger2.MAX_VALUE;
+        }
+        return { line, character };
+      }
+      Position3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && Is2.uinteger(candidate.line) && Is2.uinteger(candidate.character);
+      }
+      Position3.is = is;
+    })(Position2 || (Position2 = {}));
+    (function(Range3) {
+      function create(one, two, three, four) {
+        if (Is2.uinteger(one) && Is2.uinteger(two) && Is2.uinteger(three) && Is2.uinteger(four)) {
+          return { start: Position2.create(one, two), end: Position2.create(three, four) };
+        } else if (Position2.is(one) && Position2.is(two)) {
+          return { start: one, end: two };
+        } else {
+          throw new Error(`Range#create called with invalid arguments[${one}, ${two}, ${three}, ${four}]`);
+        }
+      }
+      Range3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && Position2.is(candidate.start) && Position2.is(candidate.end);
+      }
+      Range3.is = is;
+    })(Range2 || (Range2 = {}));
+    (function(Location3) {
+      function create(uri, range) {
+        return { uri, range };
+      }
+      Location3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && (Is2.string(candidate.uri) || Is2.undefined(candidate.uri));
+      }
+      Location3.is = is;
+    })(Location2 || (Location2 = {}));
+    (function(LocationLink3) {
+      function create(targetUri, targetRange, targetSelectionRange, originSelectionRange) {
+        return { targetUri, targetRange, targetSelectionRange, originSelectionRange };
+      }
+      LocationLink3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && Range2.is(candidate.targetRange) && Is2.string(candidate.targetUri) && Range2.is(candidate.targetSelectionRange) && (Range2.is(candidate.originSelectionRange) || Is2.undefined(candidate.originSelectionRange));
+      }
+      LocationLink3.is = is;
+    })(LocationLink2 || (LocationLink2 = {}));
+    (function(Color3) {
+      function create(red, green, blue, alpha) {
+        return {
+          red,
+          green,
+          blue,
+          alpha
+        };
+      }
+      Color3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && Is2.numberRange(candidate.red, 0, 1) && Is2.numberRange(candidate.green, 0, 1) && Is2.numberRange(candidate.blue, 0, 1) && Is2.numberRange(candidate.alpha, 0, 1);
+      }
+      Color3.is = is;
+    })(Color2 || (Color2 = {}));
+    (function(ColorInformation3) {
+      function create(range, color) {
+        return {
+          range,
+          color
+        };
+      }
+      ColorInformation3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && Color2.is(candidate.color);
+      }
+      ColorInformation3.is = is;
+    })(ColorInformation2 || (ColorInformation2 = {}));
+    (function(ColorPresentation3) {
+      function create(label, textEdit, additionalTextEdits) {
+        return {
+          label,
+          textEdit,
+          additionalTextEdits
+        };
+      }
+      ColorPresentation3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && Is2.string(candidate.label) && (Is2.undefined(candidate.textEdit) || TextEdit2.is(candidate)) && (Is2.undefined(candidate.additionalTextEdits) || Is2.typedArray(candidate.additionalTextEdits, TextEdit2.is));
+      }
+      ColorPresentation3.is = is;
+    })(ColorPresentation2 || (ColorPresentation2 = {}));
+    (function(FoldingRangeKind3) {
+      FoldingRangeKind3.Comment = "comment";
+      FoldingRangeKind3.Imports = "imports";
+      FoldingRangeKind3.Region = "region";
+    })(FoldingRangeKind2 || (FoldingRangeKind2 = {}));
+    (function(FoldingRange3) {
+      function create(startLine, endLine, startCharacter, endCharacter, kind, collapsedText) {
+        const result = {
+          startLine,
+          endLine
+        };
+        if (Is2.defined(startCharacter)) {
+          result.startCharacter = startCharacter;
+        }
+        if (Is2.defined(endCharacter)) {
+          result.endCharacter = endCharacter;
+        }
+        if (Is2.defined(kind)) {
+          result.kind = kind;
+        }
+        if (Is2.defined(collapsedText)) {
+          result.collapsedText = collapsedText;
+        }
+        return result;
+      }
+      FoldingRange3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && Is2.uinteger(candidate.startLine) && Is2.uinteger(candidate.startLine) && (Is2.undefined(candidate.startCharacter) || Is2.uinteger(candidate.startCharacter)) && (Is2.undefined(candidate.endCharacter) || Is2.uinteger(candidate.endCharacter)) && (Is2.undefined(candidate.kind) || Is2.string(candidate.kind));
+      }
+      FoldingRange3.is = is;
+    })(FoldingRange2 || (FoldingRange2 = {}));
+    (function(DiagnosticRelatedInformation3) {
+      function create(location, message) {
+        return {
+          location,
+          message
+        };
+      }
+      DiagnosticRelatedInformation3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.defined(candidate) && Location2.is(candidate.location) && Is2.string(candidate.message);
+      }
+      DiagnosticRelatedInformation3.is = is;
+    })(DiagnosticRelatedInformation2 || (DiagnosticRelatedInformation2 = {}));
+    (function(DiagnosticSeverity3) {
+      DiagnosticSeverity3.Error = 1;
+      DiagnosticSeverity3.Warning = 2;
+      DiagnosticSeverity3.Information = 3;
+      DiagnosticSeverity3.Hint = 4;
+    })(DiagnosticSeverity2 || (DiagnosticSeverity2 = {}));
+    (function(DiagnosticTag3) {
+      DiagnosticTag3.Unnecessary = 1;
+      DiagnosticTag3.Deprecated = 2;
+    })(DiagnosticTag2 || (DiagnosticTag2 = {}));
+    (function(CodeDescription3) {
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && Is2.string(candidate.href);
+      }
+      CodeDescription3.is = is;
+    })(CodeDescription2 || (CodeDescription2 = {}));
+    (function(Diagnostic3) {
+      function create(range, message, severity, code, source, relatedInformation) {
+        const result = { range, message };
+        if (Is2.defined(severity)) {
+          result.severity = severity;
+        }
+        if (Is2.defined(code)) {
+          result.code = code;
+        }
+        if (Is2.defined(source)) {
+          result.source = source;
+        }
+        if (Is2.defined(relatedInformation)) {
+          result.relatedInformation = relatedInformation;
+        }
+        return result;
+      }
+      Diagnostic3.create = create;
+      function is(value) {
+        var _a3;
+        const candidate = value;
+        return Is2.defined(candidate) && Range2.is(candidate.range) && (Is2.string(candidate.message) || MarkupContent2.is(candidate.message)) && (Is2.number(candidate.severity) || Is2.undefined(candidate.severity)) && (Is2.integer(candidate.code) || Is2.string(candidate.code) || Is2.undefined(candidate.code)) && (Is2.undefined(candidate.codeDescription) || Is2.string((_a3 = candidate.codeDescription) === null || _a3 === void 0 ? void 0 : _a3.href)) && (Is2.string(candidate.source) || Is2.undefined(candidate.source)) && (Is2.undefined(candidate.relatedInformation) || Is2.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation2.is));
+      }
+      Diagnostic3.is = is;
+      function is3_17(value) {
+        return Is2.string(value.message);
+      }
+      Diagnostic3.is3_17 = is3_17;
+      function getMessageString(diagnostic) {
+        if (Is2.string(diagnostic.message)) {
+          return diagnostic.message;
+        } else if (MarkupContent2.is(diagnostic.message)) {
+          return diagnostic.message.value;
+        } else {
+          throw new Error(`Unknown message type ${typeof diagnostic.message}`);
+        }
+      }
+      Diagnostic3.getMessageString = getMessageString;
+    })(Diagnostic2 || (Diagnostic2 = {}));
+    (function(Command3) {
+      function create(title, command, ...args) {
+        const result = { title, command };
+        if (Is2.defined(args) && args.length > 0) {
+          result.arguments = args;
+        }
+        return result;
+      }
+      Command3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.defined(candidate) && Is2.string(candidate.title) && (candidate.tooltip === void 0 || Is2.string(candidate.tooltip)) && Is2.string(candidate.command);
+      }
+      Command3.is = is;
+    })(Command2 || (Command2 = {}));
+    (function(TextEdit3) {
+      function replace(range, newText) {
+        return { range, newText };
+      }
+      TextEdit3.replace = replace;
+      function insert(position, newText) {
+        return { range: { start: position, end: position }, newText };
+      }
+      TextEdit3.insert = insert;
+      function del(range) {
+        return { range, newText: "" };
+      }
+      TextEdit3.del = del;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && Is2.string(candidate.newText) && Range2.is(candidate.range);
+      }
+      TextEdit3.is = is;
+    })(TextEdit2 || (TextEdit2 = {}));
+    (function(ChangeAnnotation3) {
+      function create(label, needsConfirmation, description) {
+        const result = { label };
+        if (needsConfirmation !== void 0) {
+          result.needsConfirmation = needsConfirmation;
+        }
+        if (description !== void 0) {
+          result.description = description;
+        }
+        return result;
+      }
+      ChangeAnnotation3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && Is2.string(candidate.label) && (Is2.boolean(candidate.needsConfirmation) || candidate.needsConfirmation === void 0) && (Is2.string(candidate.description) || candidate.description === void 0);
+      }
+      ChangeAnnotation3.is = is;
+    })(ChangeAnnotation2 || (ChangeAnnotation2 = {}));
+    (function(ChangeAnnotationIdentifier3) {
+      function is(value) {
+        const candidate = value;
+        return Is2.string(candidate);
+      }
+      ChangeAnnotationIdentifier3.is = is;
+    })(ChangeAnnotationIdentifier2 || (ChangeAnnotationIdentifier2 = {}));
+    (function(AnnotatedTextEdit3) {
+      function replace(range, newText, annotation) {
+        return { range, newText, annotationId: annotation };
+      }
+      AnnotatedTextEdit3.replace = replace;
+      function insert(position, newText, annotation) {
+        return { range: { start: position, end: position }, newText, annotationId: annotation };
+      }
+      AnnotatedTextEdit3.insert = insert;
+      function del(range, annotation) {
+        return { range, newText: "", annotationId: annotation };
+      }
+      AnnotatedTextEdit3.del = del;
+      function is(value) {
+        const candidate = value;
+        return TextEdit2.is(candidate) && (ChangeAnnotation2.is(candidate.annotationId) || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+      }
+      AnnotatedTextEdit3.is = is;
+    })(AnnotatedTextEdit2 || (AnnotatedTextEdit2 = {}));
+    (function(TextDocumentEdit3) {
+      function create(textDocument, edits) {
+        return { textDocument, edits };
+      }
+      TextDocumentEdit3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.defined(candidate) && OptionalVersionedTextDocumentIdentifier2.is(candidate.textDocument) && Array.isArray(candidate.edits);
+      }
+      TextDocumentEdit3.is = is;
+    })(TextDocumentEdit2 || (TextDocumentEdit2 = {}));
+    (function(CreateFile3) {
+      function create(uri, options2, annotation) {
+        const result = {
+          kind: "create",
+          uri
+        };
+        if (options2 !== void 0 && (options2.overwrite !== void 0 || options2.ignoreIfExists !== void 0)) {
+          result.options = options2;
+        }
+        if (annotation !== void 0) {
+          result.annotationId = annotation;
+        }
+        return result;
+      }
+      CreateFile3.create = create;
+      function is(value) {
+        const candidate = value;
+        return candidate && candidate.kind === "create" && Is2.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is2.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is2.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+      }
+      CreateFile3.is = is;
+    })(CreateFile2 || (CreateFile2 = {}));
+    (function(RenameFile3) {
+      function create(oldUri, newUri, options2, annotation) {
+        const result = {
+          kind: "rename",
+          oldUri,
+          newUri
+        };
+        if (options2 !== void 0 && (options2.overwrite !== void 0 || options2.ignoreIfExists !== void 0)) {
+          result.options = options2;
+        }
+        if (annotation !== void 0) {
+          result.annotationId = annotation;
+        }
+        return result;
+      }
+      RenameFile3.create = create;
+      function is(value) {
+        const candidate = value;
+        return candidate && candidate.kind === "rename" && Is2.string(candidate.oldUri) && Is2.string(candidate.newUri) && (candidate.options === void 0 || (candidate.options.overwrite === void 0 || Is2.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is2.boolean(candidate.options.ignoreIfExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+      }
+      RenameFile3.is = is;
+    })(RenameFile2 || (RenameFile2 = {}));
+    (function(DeleteFile3) {
+      function create(uri, options2, annotation) {
+        const result = {
+          kind: "delete",
+          uri
+        };
+        if (options2 !== void 0 && (options2.recursive !== void 0 || options2.ignoreIfNotExists !== void 0)) {
+          result.options = options2;
+        }
+        if (annotation !== void 0) {
+          result.annotationId = annotation;
+        }
+        return result;
+      }
+      DeleteFile3.create = create;
+      function is(value) {
+        const candidate = value;
+        return candidate && candidate.kind === "delete" && Is2.string(candidate.uri) && (candidate.options === void 0 || (candidate.options.recursive === void 0 || Is2.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === void 0 || Is2.boolean(candidate.options.ignoreIfNotExists))) && (candidate.annotationId === void 0 || ChangeAnnotationIdentifier2.is(candidate.annotationId));
+      }
+      DeleteFile3.is = is;
+    })(DeleteFile2 || (DeleteFile2 = {}));
+    (function(WorkspaceEdit3) {
+      function is(value) {
+        const candidate = value;
+        return candidate && (candidate.changes !== void 0 || candidate.documentChanges !== void 0) && (candidate.documentChanges === void 0 || candidate.documentChanges.every((change) => {
+          if (Is2.string(change.kind)) {
+            return CreateFile2.is(change) || RenameFile2.is(change) || DeleteFile2.is(change);
+          } else {
+            return TextDocumentEdit2.is(change);
+          }
+        }));
+      }
+      WorkspaceEdit3.is = is;
+    })(WorkspaceEdit2 || (WorkspaceEdit2 = {}));
+    (function(SnippetTextEdit2) {
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && StringValue2.isSnippet(candidate.snippet) && (candidate.annotationId === void 0 || (ChangeAnnotation2.is(candidate.annotationId) || ChangeAnnotationIdentifier2.is(candidate.annotationId)));
+      }
+      SnippetTextEdit2.is = is;
+    })(SnippetTextEdit || (SnippetTextEdit = {}));
+    (function(TextDocumentIdentifier3) {
+      function create(uri) {
+        return { uri };
+      }
+      TextDocumentIdentifier3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.defined(candidate) && Is2.string(candidate.uri);
+      }
+      TextDocumentIdentifier3.is = is;
+    })(TextDocumentIdentifier2 || (TextDocumentIdentifier2 = {}));
+    (function(VersionedTextDocumentIdentifier3) {
+      function create(uri, version) {
+        return { uri, version };
+      }
+      VersionedTextDocumentIdentifier3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.defined(candidate) && Is2.string(candidate.uri) && Is2.integer(candidate.version);
+      }
+      VersionedTextDocumentIdentifier3.is = is;
+    })(VersionedTextDocumentIdentifier2 || (VersionedTextDocumentIdentifier2 = {}));
+    (function(OptionalVersionedTextDocumentIdentifier3) {
+      function create(uri, version) {
+        return { uri, version };
+      }
+      OptionalVersionedTextDocumentIdentifier3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.defined(candidate) && Is2.string(candidate.uri) && (candidate.version === null || Is2.integer(candidate.version));
+      }
+      OptionalVersionedTextDocumentIdentifier3.is = is;
+    })(OptionalVersionedTextDocumentIdentifier2 || (OptionalVersionedTextDocumentIdentifier2 = {}));
+    (function(LanguageKind2) {
+      LanguageKind2.ABAP = "abap";
+      LanguageKind2.WindowsBat = "bat";
+      LanguageKind2.BibTeX = "bibtex";
+      LanguageKind2.Clojure = "clojure";
+      LanguageKind2.Coffeescript = "coffeescript";
+      LanguageKind2.C = "c";
+      LanguageKind2.CPP = "cpp";
+      LanguageKind2.CSharp = "csharp";
+      LanguageKind2.CSS = "css";
+      LanguageKind2.D = "d";
+      LanguageKind2.Delphi = "pascal";
+      LanguageKind2.Diff = "diff";
+      LanguageKind2.Dart = "dart";
+      LanguageKind2.Dockerfile = "dockerfile";
+      LanguageKind2.Elixir = "elixir";
+      LanguageKind2.Erlang = "erlang";
+      LanguageKind2.FSharp = "fsharp";
+      LanguageKind2.GitCommit = "git-commit";
+      LanguageKind2.GitRebase = "git-rebase";
+      LanguageKind2.Go = "go";
+      LanguageKind2.Groovy = "groovy";
+      LanguageKind2.Handlebars = "handlebars";
+      LanguageKind2.Haskell = "haskell";
+      LanguageKind2.HTML = "html";
+      LanguageKind2.Ini = "ini";
+      LanguageKind2.Java = "java";
+      LanguageKind2.JavaScript = "javascript";
+      LanguageKind2.JavaScriptReact = "javascriptreact";
+      LanguageKind2.JSON = "json";
+      LanguageKind2.LaTeX = "latex";
+      LanguageKind2.Less = "less";
+      LanguageKind2.Lua = "lua";
+      LanguageKind2.Makefile = "makefile";
+      LanguageKind2.Markdown = "markdown";
+      LanguageKind2.ObjectiveC = "objective-c";
+      LanguageKind2.ObjectiveCPP = "objective-cpp";
+      LanguageKind2.Pascal = "pascal";
+      LanguageKind2.Perl = "perl";
+      LanguageKind2.Perl6 = "perl6";
+      LanguageKind2.PHP = "php";
+      LanguageKind2.Plaintext = "plaintext";
+      LanguageKind2.Powershell = "powershell";
+      LanguageKind2.Pug = "jade";
+      LanguageKind2.Python = "python";
+      LanguageKind2.R = "r";
+      LanguageKind2.Razor = "razor";
+      LanguageKind2.Ruby = "ruby";
+      LanguageKind2.Rust = "rust";
+      LanguageKind2.SCSS = "scss";
+      LanguageKind2.SASS = "sass";
+      LanguageKind2.Scala = "scala";
+      LanguageKind2.ShaderLab = "shaderlab";
+      LanguageKind2.ShellScript = "shellscript";
+      LanguageKind2.SQL = "sql";
+      LanguageKind2.Swift = "swift";
+      LanguageKind2.TypeScript = "typescript";
+      LanguageKind2.TypeScriptReact = "typescriptreact";
+      LanguageKind2.TeX = "tex";
+      LanguageKind2.VisualBasic = "vb";
+      LanguageKind2.XML = "xml";
+      LanguageKind2.XSL = "xsl";
+      LanguageKind2.YAML = "yaml";
+    })(LanguageKind || (LanguageKind = {}));
+    (function(TextDocumentItem3) {
+      function create(uri, languageId, version, text) {
+        return { uri, languageId, version, text };
+      }
+      TextDocumentItem3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.defined(candidate) && Is2.string(candidate.uri) && Is2.string(candidate.languageId) && Is2.integer(candidate.version) && Is2.string(candidate.text);
+      }
+      TextDocumentItem3.is = is;
+    })(TextDocumentItem2 || (TextDocumentItem2 = {}));
+    (function(MarkupKind3) {
+      MarkupKind3.PlainText = "plaintext";
+      MarkupKind3.Markdown = "markdown";
+      function is(value) {
+        const candidate = value;
+        return candidate === MarkupKind3.PlainText || candidate === MarkupKind3.Markdown;
+      }
+      MarkupKind3.is = is;
+    })(MarkupKind2 || (MarkupKind2 = {}));
+    (function(MarkupContent3) {
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(value) && MarkupKind2.is(candidate.kind) && Is2.string(candidate.value);
+      }
+      MarkupContent3.is = is;
+    })(MarkupContent2 || (MarkupContent2 = {}));
+    (function(CompletionItemKind3) {
+      CompletionItemKind3.Text = 1;
+      CompletionItemKind3.Method = 2;
+      CompletionItemKind3.Function = 3;
+      CompletionItemKind3.Constructor = 4;
+      CompletionItemKind3.Field = 5;
+      CompletionItemKind3.Variable = 6;
+      CompletionItemKind3.Class = 7;
+      CompletionItemKind3.Interface = 8;
+      CompletionItemKind3.Module = 9;
+      CompletionItemKind3.Property = 10;
+      CompletionItemKind3.Unit = 11;
+      CompletionItemKind3.Value = 12;
+      CompletionItemKind3.Enum = 13;
+      CompletionItemKind3.Keyword = 14;
+      CompletionItemKind3.Snippet = 15;
+      CompletionItemKind3.Color = 16;
+      CompletionItemKind3.File = 17;
+      CompletionItemKind3.Reference = 18;
+      CompletionItemKind3.Folder = 19;
+      CompletionItemKind3.EnumMember = 20;
+      CompletionItemKind3.Constant = 21;
+      CompletionItemKind3.Struct = 22;
+      CompletionItemKind3.Event = 23;
+      CompletionItemKind3.Operator = 24;
+      CompletionItemKind3.TypeParameter = 25;
+    })(CompletionItemKind2 || (CompletionItemKind2 = {}));
+    (function(InsertTextFormat3) {
+      InsertTextFormat3.PlainText = 1;
+      InsertTextFormat3.Snippet = 2;
+    })(InsertTextFormat2 || (InsertTextFormat2 = {}));
+    (function(CompletionItemTag3) {
+      CompletionItemTag3.Deprecated = 1;
+    })(CompletionItemTag2 || (CompletionItemTag2 = {}));
+    (function(InsertReplaceEdit3) {
+      function create(newText, insert, replace) {
+        return { newText, insert, replace };
+      }
+      InsertReplaceEdit3.create = create;
+      function is(value) {
+        const candidate = value;
+        return candidate && Is2.string(candidate.newText) && Range2.is(candidate.insert) && Range2.is(candidate.replace);
+      }
+      InsertReplaceEdit3.is = is;
+    })(InsertReplaceEdit2 || (InsertReplaceEdit2 = {}));
+    (function(InsertTextMode3) {
+      InsertTextMode3.asIs = 1;
+      InsertTextMode3.adjustIndentation = 2;
+    })(InsertTextMode2 || (InsertTextMode2 = {}));
+    (function(ApplyKind2) {
+      ApplyKind2.Replace = 1;
+      ApplyKind2.Merge = 2;
+    })(ApplyKind || (ApplyKind = {}));
+    (function(CompletionItemLabelDetails3) {
+      function is(value) {
+        const candidate = value;
+        return candidate && (Is2.string(candidate.detail) || candidate.detail === void 0) && (Is2.string(candidate.description) || candidate.description === void 0);
+      }
+      CompletionItemLabelDetails3.is = is;
+    })(CompletionItemLabelDetails2 || (CompletionItemLabelDetails2 = {}));
+    (function(CompletionItem3) {
+      function create(label) {
+        return { label };
+      }
+      CompletionItem3.create = create;
+    })(CompletionItem2 || (CompletionItem2 = {}));
+    (function(CompletionList3) {
+      function create(items, isIncomplete) {
+        return { items: items ? items : [], isIncomplete: !!isIncomplete };
+      }
+      CompletionList3.create = create;
+    })(CompletionList2 || (CompletionList2 = {}));
+    (function(MarkedString3) {
+      function fromPlainText(plainText) {
+        return plainText.replace(/[\\`*_{}[\]()#+\-.!]/g, "\\$&");
+      }
+      MarkedString3.fromPlainText = fromPlainText;
+      function is(value) {
+        const candidate = value;
+        return Is2.string(candidate) || Is2.objectLiteral(candidate) && Is2.string(candidate.language) && Is2.string(candidate.value);
+      }
+      MarkedString3.is = is;
+    })(MarkedString2 || (MarkedString2 = {}));
+    (function(Hover3) {
+      function is(value) {
+        const candidate = value;
+        return !!candidate && Is2.objectLiteral(candidate) && (MarkupContent2.is(candidate.contents) || MarkedString2.is(candidate.contents) || Is2.typedArray(candidate.contents, MarkedString2.is)) && (value.range === void 0 || Range2.is(value.range));
+      }
+      Hover3.is = is;
+    })(Hover2 || (Hover2 = {}));
+    (function(ParameterInformation3) {
+      function create(label, documentation) {
+        return documentation ? { label, documentation } : { label };
+      }
+      ParameterInformation3.create = create;
+    })(ParameterInformation2 || (ParameterInformation2 = {}));
+    (function(SignatureInformation3) {
+      function create(label, documentation, ...parameters) {
+        const result = { label };
+        if (Is2.defined(documentation)) {
+          result.documentation = documentation;
+        }
+        if (Is2.defined(parameters)) {
+          result.parameters = parameters;
+        } else {
+          result.parameters = [];
+        }
+        return result;
+      }
+      SignatureInformation3.create = create;
+    })(SignatureInformation2 || (SignatureInformation2 = {}));
+    (function(DocumentHighlightKind3) {
+      DocumentHighlightKind3.Text = 1;
+      DocumentHighlightKind3.Read = 2;
+      DocumentHighlightKind3.Write = 3;
+    })(DocumentHighlightKind2 || (DocumentHighlightKind2 = {}));
+    (function(DocumentHighlight3) {
+      function create(range, kind) {
+        const result = { range };
+        if (Is2.number(kind)) {
+          result.kind = kind;
+        }
+        return result;
+      }
+      DocumentHighlight3.create = create;
+    })(DocumentHighlight2 || (DocumentHighlight2 = {}));
+    (function(SymbolKind3) {
+      SymbolKind3.File = 1;
+      SymbolKind3.Module = 2;
+      SymbolKind3.Namespace = 3;
+      SymbolKind3.Package = 4;
+      SymbolKind3.Class = 5;
+      SymbolKind3.Method = 6;
+      SymbolKind3.Property = 7;
+      SymbolKind3.Field = 8;
+      SymbolKind3.Constructor = 9;
+      SymbolKind3.Enum = 10;
+      SymbolKind3.Interface = 11;
+      SymbolKind3.Function = 12;
+      SymbolKind3.Variable = 13;
+      SymbolKind3.Constant = 14;
+      SymbolKind3.String = 15;
+      SymbolKind3.Number = 16;
+      SymbolKind3.Boolean = 17;
+      SymbolKind3.Array = 18;
+      SymbolKind3.Object = 19;
+      SymbolKind3.Key = 20;
+      SymbolKind3.Null = 21;
+      SymbolKind3.EnumMember = 22;
+      SymbolKind3.Struct = 23;
+      SymbolKind3.Event = 24;
+      SymbolKind3.Operator = 25;
+      SymbolKind3.TypeParameter = 26;
+    })(SymbolKind2 || (SymbolKind2 = {}));
+    (function(SymbolTag3) {
+      SymbolTag3.Deprecated = 1;
+    })(SymbolTag2 || (SymbolTag2 = {}));
+    (function(SymbolInformation3) {
+      function create(name, kind, range, uri, containerName) {
+        const result = {
+          name,
+          kind,
+          location: { uri, range }
+        };
+        if (containerName) {
+          result.containerName = containerName;
+        }
+        return result;
+      }
+      SymbolInformation3.create = create;
+    })(SymbolInformation2 || (SymbolInformation2 = {}));
+    (function(WorkspaceSymbol3) {
+      function create(name, kind, uri, range) {
+        return range !== void 0 ? { name, kind, location: { uri, range } } : { name, kind, location: { uri } };
+      }
+      WorkspaceSymbol3.create = create;
+    })(WorkspaceSymbol2 || (WorkspaceSymbol2 = {}));
+    (function(DocumentSymbol3) {
+      function create(name, detail, kind, range, selectionRange, children) {
+        const result = {
+          name,
+          detail,
+          kind,
+          range,
+          selectionRange
+        };
+        if (children !== void 0) {
+          result.children = children;
+        }
+        return result;
+      }
+      DocumentSymbol3.create = create;
+      function is(value) {
+        const candidate = value;
+        return candidate && Is2.string(candidate.name) && Is2.number(candidate.kind) && Range2.is(candidate.range) && Range2.is(candidate.selectionRange) && (candidate.detail === void 0 || Is2.string(candidate.detail)) && (candidate.deprecated === void 0 || Is2.boolean(candidate.deprecated)) && (candidate.children === void 0 || Array.isArray(candidate.children)) && (candidate.tags === void 0 || Array.isArray(candidate.tags));
+      }
+      DocumentSymbol3.is = is;
+    })(DocumentSymbol2 || (DocumentSymbol2 = {}));
+    (function(CodeActionKind3) {
+      CodeActionKind3.Empty = "";
+      CodeActionKind3.QuickFix = "quickfix";
+      CodeActionKind3.Refactor = "refactor";
+      CodeActionKind3.RefactorExtract = "refactor.extract";
+      CodeActionKind3.RefactorInline = "refactor.inline";
+      CodeActionKind3.RefactorMove = "refactor.move";
+      CodeActionKind3.RefactorRewrite = "refactor.rewrite";
+      CodeActionKind3.Source = "source";
+      CodeActionKind3.SourceOrganizeImports = "source.organizeImports";
+      CodeActionKind3.SourceFixAll = "source.fixAll";
+      CodeActionKind3.Notebook = "notebook";
+    })(CodeActionKind2 || (CodeActionKind2 = {}));
+    (function(CodeActionTriggerKind3) {
+      CodeActionTriggerKind3.Invoked = 1;
+      CodeActionTriggerKind3.Automatic = 2;
+    })(CodeActionTriggerKind2 || (CodeActionTriggerKind2 = {}));
+    (function(CodeActionContext3) {
+      function create(diagnostics, only, triggerKind) {
+        const result = { diagnostics };
+        if (only !== void 0 && only !== null) {
+          result.only = only;
+        }
+        if (triggerKind !== void 0 && triggerKind !== null) {
+          result.triggerKind = triggerKind;
+        }
+        return result;
+      }
+      CodeActionContext3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.defined(candidate) && Is2.typedArray(candidate.diagnostics, Diagnostic2.is) && (candidate.only === void 0 || Is2.typedArray(candidate.only, Is2.string)) && (candidate.triggerKind === void 0 || candidate.triggerKind === CodeActionTriggerKind2.Invoked || candidate.triggerKind === CodeActionTriggerKind2.Automatic);
+      }
+      CodeActionContext3.is = is;
+    })(CodeActionContext2 || (CodeActionContext2 = {}));
+    (function(CodeActionTag2) {
+      CodeActionTag2.LLMGenerated = 1;
+      function is(value) {
+        return Is2.defined(value) && value === CodeActionTag2.LLMGenerated;
+      }
+      CodeActionTag2.is = is;
+    })(CodeActionTag || (CodeActionTag = {}));
+    (function(CodeAction3) {
+      function create(title, kindOrCommandOrEdit, kind) {
+        const result = { title };
+        let checkKind = true;
+        if (typeof kindOrCommandOrEdit === "string") {
+          checkKind = false;
+          result.kind = kindOrCommandOrEdit;
+        } else if (Command2.is(kindOrCommandOrEdit)) {
+          result.command = kindOrCommandOrEdit;
+        } else {
+          result.edit = kindOrCommandOrEdit;
+        }
+        if (checkKind && kind !== void 0) {
+          result.kind = kind;
+        }
+        return result;
+      }
+      CodeAction3.create = create;
+      function is(value) {
+        const candidate = value;
+        return candidate && Is2.string(candidate.title) && (candidate.diagnostics === void 0 || Is2.typedArray(candidate.diagnostics, Diagnostic2.is)) && (candidate.kind === void 0 || Is2.string(candidate.kind)) && (candidate.edit !== void 0 || candidate.command !== void 0) && (candidate.command === void 0 || Command2.is(candidate.command)) && (candidate.isPreferred === void 0 || Is2.boolean(candidate.isPreferred)) && (candidate.edit === void 0 || WorkspaceEdit2.is(candidate.edit)) && (candidate.tags === void 0 || Is2.typedArray(candidate.tags, CodeActionTag.is));
+      }
+      CodeAction3.is = is;
+    })(CodeAction2 || (CodeAction2 = {}));
+    (function(CodeLens3) {
+      function create(range, data) {
+        const result = { range };
+        if (Is2.defined(data)) {
+          result.data = data;
+        }
+        return result;
+      }
+      CodeLens3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.defined(candidate) && Range2.is(candidate.range) && (Is2.undefined(candidate.command) || Command2.is(candidate.command));
+      }
+      CodeLens3.is = is;
+    })(CodeLens2 || (CodeLens2 = {}));
+    (function(FormattingOptions3) {
+      function create(tabSize, insertSpaces) {
+        return { tabSize, insertSpaces };
+      }
+      FormattingOptions3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.defined(candidate) && Is2.uinteger(candidate.tabSize) && Is2.boolean(candidate.insertSpaces);
+      }
+      FormattingOptions3.is = is;
+    })(FormattingOptions2 || (FormattingOptions2 = {}));
+    (function(DocumentLink3) {
+      function create(range, target, data) {
+        return { range, target, data };
+      }
+      DocumentLink3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.defined(candidate) && Range2.is(candidate.range) && (Is2.undefined(candidate.target) || Is2.string(candidate.target));
+      }
+      DocumentLink3.is = is;
+    })(DocumentLink2 || (DocumentLink2 = {}));
+    (function(SelectionRange3) {
+      function create(range, parent) {
+        return { range, parent };
+      }
+      SelectionRange3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && (candidate.parent === void 0 || SelectionRange3.is(candidate.parent));
+      }
+      SelectionRange3.is = is;
+    })(SelectionRange2 || (SelectionRange2 = {}));
+    (function(SemanticTokenTypes3) {
+      SemanticTokenTypes3["namespace"] = "namespace";
+      SemanticTokenTypes3["type"] = "type";
+      SemanticTokenTypes3["class"] = "class";
+      SemanticTokenTypes3["enum"] = "enum";
+      SemanticTokenTypes3["interface"] = "interface";
+      SemanticTokenTypes3["struct"] = "struct";
+      SemanticTokenTypes3["typeParameter"] = "typeParameter";
+      SemanticTokenTypes3["parameter"] = "parameter";
+      SemanticTokenTypes3["variable"] = "variable";
+      SemanticTokenTypes3["property"] = "property";
+      SemanticTokenTypes3["enumMember"] = "enumMember";
+      SemanticTokenTypes3["event"] = "event";
+      SemanticTokenTypes3["function"] = "function";
+      SemanticTokenTypes3["method"] = "method";
+      SemanticTokenTypes3["macro"] = "macro";
+      SemanticTokenTypes3["keyword"] = "keyword";
+      SemanticTokenTypes3["modifier"] = "modifier";
+      SemanticTokenTypes3["comment"] = "comment";
+      SemanticTokenTypes3["string"] = "string";
+      SemanticTokenTypes3["number"] = "number";
+      SemanticTokenTypes3["regexp"] = "regexp";
+      SemanticTokenTypes3["operator"] = "operator";
+      SemanticTokenTypes3["decorator"] = "decorator";
+      SemanticTokenTypes3["label"] = "label";
+    })(SemanticTokenTypes2 || (SemanticTokenTypes2 = {}));
+    (function(SemanticTokenModifiers3) {
+      SemanticTokenModifiers3["declaration"] = "declaration";
+      SemanticTokenModifiers3["definition"] = "definition";
+      SemanticTokenModifiers3["readonly"] = "readonly";
+      SemanticTokenModifiers3["static"] = "static";
+      SemanticTokenModifiers3["deprecated"] = "deprecated";
+      SemanticTokenModifiers3["abstract"] = "abstract";
+      SemanticTokenModifiers3["async"] = "async";
+      SemanticTokenModifiers3["modification"] = "modification";
+      SemanticTokenModifiers3["documentation"] = "documentation";
+      SemanticTokenModifiers3["defaultLibrary"] = "defaultLibrary";
+    })(SemanticTokenModifiers2 || (SemanticTokenModifiers2 = {}));
+    (function(SemanticTokens3) {
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && (candidate.resultId === void 0 || typeof candidate.resultId === "string") && Array.isArray(candidate.data) && (candidate.data.length === 0 || typeof candidate.data[0] === "number");
+      }
+      SemanticTokens3.is = is;
+    })(SemanticTokens2 || (SemanticTokens2 = {}));
+    (function(InlineValueText3) {
+      function create(range, text) {
+        return { range, text };
+      }
+      InlineValueText3.create = create;
+      function is(value) {
+        const candidate = value;
+        return candidate !== void 0 && candidate !== null && Range2.is(candidate.range) && Is2.string(candidate.text);
+      }
+      InlineValueText3.is = is;
+    })(InlineValueText2 || (InlineValueText2 = {}));
+    (function(InlineValueVariableLookup3) {
+      function create(range, variableName, caseSensitiveLookup) {
+        return { range, variableName, caseSensitiveLookup };
+      }
+      InlineValueVariableLookup3.create = create;
+      function is(value) {
+        const candidate = value;
+        return candidate !== void 0 && candidate !== null && Range2.is(candidate.range) && Is2.boolean(candidate.caseSensitiveLookup) && (Is2.string(candidate.variableName) || candidate.variableName === void 0);
+      }
+      InlineValueVariableLookup3.is = is;
+    })(InlineValueVariableLookup2 || (InlineValueVariableLookup2 = {}));
+    (function(InlineValueEvaluatableExpression3) {
+      function create(range, expression) {
+        return { range, expression };
+      }
+      InlineValueEvaluatableExpression3.create = create;
+      function is(value) {
+        const candidate = value;
+        return candidate !== void 0 && candidate !== null && Range2.is(candidate.range) && (Is2.string(candidate.expression) || candidate.expression === void 0);
+      }
+      InlineValueEvaluatableExpression3.is = is;
+    })(InlineValueEvaluatableExpression2 || (InlineValueEvaluatableExpression2 = {}));
+    (function(InlineValueContext3) {
+      function create(frameId, stoppedLocation) {
+        return { frameId, stoppedLocation };
+      }
+      InlineValueContext3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.defined(candidate) && Range2.is(value.stoppedLocation);
+      }
+      InlineValueContext3.is = is;
+    })(InlineValueContext2 || (InlineValueContext2 = {}));
+    (function(InlayHintKind4) {
+      InlayHintKind4.Type = 1;
+      InlayHintKind4.Parameter = 2;
+      function is(value) {
+        return value === 1 || value === 2;
+      }
+      InlayHintKind4.is = is;
+    })(InlayHintKind3 || (InlayHintKind3 = {}));
+    (function(InlayHintLabelPart3) {
+      function create(value) {
+        return { value };
+      }
+      InlayHintLabelPart3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && (candidate.tooltip === void 0 || Is2.string(candidate.tooltip) || MarkupContent2.is(candidate.tooltip)) && (candidate.location === void 0 || Location2.is(candidate.location)) && (candidate.command === void 0 || Command2.is(candidate.command));
+      }
+      InlayHintLabelPart3.is = is;
+    })(InlayHintLabelPart2 || (InlayHintLabelPart2 = {}));
+    (function(InlayHint3) {
+      function create(position, label, kind) {
+        const result = { position, label };
+        if (kind !== void 0) {
+          result.kind = kind;
+        }
+        return result;
+      }
+      InlayHint3.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && Position2.is(candidate.position) && (Is2.string(candidate.label) || Is2.typedArray(candidate.label, InlayHintLabelPart2.is)) && (candidate.kind === void 0 || InlayHintKind3.is(candidate.kind)) && candidate.textEdits === void 0 || Is2.typedArray(candidate.textEdits, TextEdit2.is) && (candidate.tooltip === void 0 || Is2.string(candidate.tooltip) || MarkupContent2.is(candidate.tooltip)) && (candidate.paddingLeft === void 0 || Is2.boolean(candidate.paddingLeft)) && (candidate.paddingRight === void 0 || Is2.boolean(candidate.paddingRight));
+      }
+      InlayHint3.is = is;
+    })(InlayHint2 || (InlayHint2 = {}));
+    (function(StringValue3) {
+      function createSnippet(value) {
+        return { kind: "snippet", value };
+      }
+      StringValue3.createSnippet = createSnippet;
+      function isSnippet(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && candidate.kind === "snippet" && Is2.string(candidate.value);
+      }
+      StringValue3.isSnippet = isSnippet;
+    })(StringValue2 || (StringValue2 = {}));
+    (function(InlineCompletionItem3) {
+      function create(insertText, filterText, range, command) {
+        return { insertText, filterText, range, command };
+      }
+      InlineCompletionItem3.create = create;
+    })(InlineCompletionItem2 || (InlineCompletionItem2 = {}));
+    (function(InlineCompletionList3) {
+      function create(items) {
+        return { items };
+      }
+      InlineCompletionList3.create = create;
+    })(InlineCompletionList2 || (InlineCompletionList2 = {}));
+    (function(InlineCompletionTriggerKind3) {
+      InlineCompletionTriggerKind3.Invoked = 1;
+      InlineCompletionTriggerKind3.Automatic = 2;
+    })(InlineCompletionTriggerKind2 || (InlineCompletionTriggerKind2 = {}));
+    (function(SelectedCompletionInfo3) {
+      function create(range, text) {
+        return { range, text };
+      }
+      SelectedCompletionInfo3.create = create;
+    })(SelectedCompletionInfo2 || (SelectedCompletionInfo2 = {}));
+    (function(InlineCompletionContext3) {
+      function create(triggerKind, selectedCompletionInfo) {
+        return { triggerKind, selectedCompletionInfo };
+      }
+      InlineCompletionContext3.create = create;
+    })(InlineCompletionContext2 || (InlineCompletionContext2 = {}));
+    (function(WorkspaceFolder3) {
+      function is(value) {
+        const candidate = value;
+        return Is2.objectLiteral(candidate) && URI3.is(candidate.uri) && Is2.string(candidate.name);
+      }
+      WorkspaceFolder3.is = is;
+    })(WorkspaceFolder2 || (WorkspaceFolder2 = {}));
+    (function(TextDocument4) {
+      function create(uri, languageId, version, content) {
+        return new FullTextDocument3(uri, languageId, version, content);
+      }
+      TextDocument4.create = create;
+      function is(value) {
+        const candidate = value;
+        return Is2.defined(candidate) && Is2.string(candidate.uri) && (Is2.undefined(candidate.languageId) || Is2.string(candidate.languageId)) && Is2.uinteger(candidate.lineCount) && Is2.func(candidate.getText) && Is2.func(candidate.positionAt) && Is2.func(candidate.offsetAt) ? true : false;
+      }
+      TextDocument4.is = is;
+      function applyEdits(document, edits) {
+        let text = document.getText();
+        const sortedEdits = mergeSort2(edits, (a2, b) => {
+          const diff = a2.range.start.line - b.range.start.line;
+          if (diff === 0) {
+            return a2.range.start.character - b.range.start.character;
+          }
+          return diff;
+        });
+        let lastModifiedOffset = text.length;
+        for (let i = sortedEdits.length - 1; i >= 0; i--) {
+          const e = sortedEdits[i];
+          const startOffset = document.offsetAt(e.range.start);
+          const endOffset = document.offsetAt(e.range.end);
+          if (endOffset <= lastModifiedOffset) {
+            text = text.substring(0, startOffset) + e.newText + text.substring(endOffset, text.length);
+          } else {
+            throw new Error("Overlapping edit");
+          }
+          lastModifiedOffset = startOffset;
+        }
+        return text;
+      }
+      TextDocument4.applyEdits = applyEdits;
+      function mergeSort2(data, compare) {
+        if (data.length <= 1) {
+          return data;
+        }
+        const p = data.length / 2 | 0;
+        const left = data.slice(0, p);
+        const right = data.slice(p);
+        mergeSort2(left, compare);
+        mergeSort2(right, compare);
+        let leftIdx = 0;
+        let rightIdx = 0;
+        let i = 0;
+        while (leftIdx < left.length && rightIdx < right.length) {
+          const ret = compare(left[leftIdx], right[rightIdx]);
+          if (ret <= 0) {
+            data[i++] = left[leftIdx++];
+          } else {
+            data[i++] = right[rightIdx++];
+          }
+        }
+        while (leftIdx < left.length) {
+          data[i++] = left[leftIdx++];
+        }
+        while (rightIdx < right.length) {
+          data[i++] = right[rightIdx++];
+        }
+        return data;
+      }
+    })(TextDocument3 || (TextDocument3 = {}));
+    FullTextDocument3 = class {
+      constructor(uri, languageId, version, content) {
+        this._uri = uri;
+        this._languageId = languageId;
+        this._version = version;
+        this._content = content;
+        this._lineOffsets = void 0;
+      }
+      get uri() {
+        return this._uri;
+      }
+      get languageId() {
+        return this._languageId;
+      }
+      get version() {
+        return this._version;
+      }
+      getText(range) {
+        if (range) {
+          const start = this.offsetAt(range.start);
+          const end = this.offsetAt(range.end);
+          return this._content.substring(start, end);
+        }
+        return this._content;
+      }
+      update(event, version) {
+        this._content = event.text;
+        this._version = version;
+        this._lineOffsets = void 0;
+      }
+      getLineOffsets() {
+        if (this._lineOffsets === void 0) {
+          const lineOffsets = [];
+          const text = this._content;
+          let isLineStart = true;
+          for (let i = 0; i < text.length; i++) {
+            if (isLineStart) {
+              lineOffsets.push(i);
+              isLineStart = false;
+            }
+            const ch = text.charAt(i);
+            isLineStart = ch === "\r" || ch === "\n";
+            if (ch === "\r" && i + 1 < text.length && text.charAt(i + 1) === "\n") {
+              i++;
+            }
+          }
+          if (isLineStart && text.length > 0) {
+            lineOffsets.push(text.length);
+          }
+          this._lineOffsets = lineOffsets;
+        }
+        return this._lineOffsets;
+      }
+      positionAt(offset) {
+        offset = Math.max(Math.min(offset, this._content.length), 0);
+        const lineOffsets = this.getLineOffsets();
+        let low = 0, high = lineOffsets.length;
+        if (high === 0) {
+          return Position2.create(0, offset);
+        }
+        while (low < high) {
+          const mid = Math.floor((low + high) / 2);
+          if (lineOffsets[mid] > offset) {
+            high = mid;
+          } else {
+            low = mid + 1;
+          }
+        }
+        const line = low - 1;
+        return Position2.create(line, offset - lineOffsets[line]);
+      }
+      offsetAt(position) {
+        const lineOffsets = this.getLineOffsets();
+        if (position.line >= lineOffsets.length) {
+          return this._content.length;
+        } else if (position.line < 0) {
+          return 0;
+        }
+        const lineOffset = lineOffsets[position.line];
+        const nextLineOffset = position.line + 1 < lineOffsets.length ? lineOffsets[position.line + 1] : this._content.length;
+        return Math.max(Math.min(lineOffset + position.character, nextLineOffset), lineOffset);
+      }
+      get lineCount() {
+        return this.getLineOffsets().length;
+      }
+    };
+    (function(Is3) {
+      const toString = Object.prototype.toString;
+      function defined(value) {
+        return typeof value !== "undefined";
+      }
+      Is3.defined = defined;
+      function undefined2(value) {
+        return typeof value === "undefined";
+      }
+      Is3.undefined = undefined2;
+      function boolean(value) {
+        return value === true || value === false;
+      }
+      Is3.boolean = boolean;
+      function string(value) {
+        return toString.call(value) === "[object String]";
+      }
+      Is3.string = string;
+      function number(value) {
+        return toString.call(value) === "[object Number]";
+      }
+      Is3.number = number;
+      function numberRange(value, min, max) {
+        return toString.call(value) === "[object Number]" && min <= value && value <= max;
+      }
+      Is3.numberRange = numberRange;
+      function integer3(value) {
+        return toString.call(value) === "[object Number]" && -2147483648 <= value && value <= 2147483647;
+      }
+      Is3.integer = integer3;
+      function uinteger3(value) {
+        return toString.call(value) === "[object Number]" && 0 <= value && value <= 2147483647;
+      }
+      Is3.uinteger = uinteger3;
+      function func(value) {
+        return toString.call(value) === "[object Function]";
+      }
+      Is3.func = func;
+      function objectLiteral(value) {
+        return value !== null && typeof value === "object";
+      }
+      Is3.objectLiteral = objectLiteral;
+      function typedArray(value, check) {
+        return Array.isArray(value) && value.every(check);
+      }
+      Is3.typedArray = typedArray;
+    })(Is2 || (Is2 = {}));
+  }
+});
+
 // node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.2/node_modules/vscode-html-languageservice/lib/esm/htmlLanguageTypes.js
 var TokenType2, ScannerState, ClientCapabilities2, FileType2;
 var init_htmlLanguageTypes = __esm({
   "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.2/node_modules/vscode-html-languageservice/lib/esm/htmlLanguageTypes.js"() {
-    init_main();
+    init_main3();
     init_main2();
     (function(TokenType3) {
       TokenType3[TokenType3["StartCommentTag"] = 0] = "StartCommentTag";
@@ -287450,11 +288663,11 @@ var init_htmlLanguageTypes = __esm({
         textDocument: {
           completion: {
             completionItem: {
-              documentationFormat: [MarkupKind.Markdown, MarkupKind.PlainText]
+              documentationFormat: [MarkupKind2.Markdown, MarkupKind2.PlainText]
             }
           },
           hover: {
-            contentFormat: [MarkupKind.Markdown, MarkupKind.PlainText]
+            contentFormat: [MarkupKind2.Markdown, MarkupKind2.PlainText]
           }
         }
       };
@@ -290633,7 +291846,7 @@ function pathToReplaceRange2(valueBeforeCursor, fullValue, range) {
     } else {
       endPos = shiftPosition2(range.end, -1);
     }
-    replaceRange = Range.create(startPos, endPos);
+    replaceRange = Range2.create(startPos, endPos);
   }
   return replaceRange;
 }
@@ -290642,8 +291855,8 @@ function createCompletionItem2(p, isDir, replaceRange) {
     p = p + "/";
     return {
       label: p,
-      kind: CompletionItemKind.Folder,
-      textEdit: TextEdit.replace(replaceRange, p),
+      kind: CompletionItemKind2.Folder,
+      textEdit: TextEdit2.replace(replaceRange, p),
       command: {
         title: "Suggest",
         command: "editor.action.triggerSuggest"
@@ -290652,18 +291865,18 @@ function createCompletionItem2(p, isDir, replaceRange) {
   } else {
     return {
       label: p,
-      kind: CompletionItemKind.File,
-      textEdit: TextEdit.replace(replaceRange, p)
+      kind: CompletionItemKind2.File,
+      textEdit: TextEdit2.replace(replaceRange, p)
     };
   }
 }
 function shiftPosition2(pos, offset) {
-  return Position.create(pos.line, pos.character + offset);
+  return Position2.create(pos.line, pos.character + offset);
 }
 function shiftRange2(range, startOffset, endOffset) {
   const start = shiftPosition2(range.start, startOffset);
   const end = shiftPosition2(range.end, endOffset);
-  return Range.create(start, end);
+  return Range2.create(start, end);
 }
 var PathCompletionParticipant2, CharCode_dot2;
 var init_pathCompletion2 = __esm({
@@ -290874,10 +292087,10 @@ var init_htmlCompletion = __esm({
             provider.provideTags().forEach((tag) => {
               result.items.push({
                 label: tag.name,
-                kind: CompletionItemKind.Property,
+                kind: CompletionItemKind2.Property,
                 documentation: generateDocumentation(tag, void 0, doesSupportMarkdown),
-                textEdit: TextEdit.replace(range, tag.name),
-                insertTextFormat: InsertTextFormat.PlainText
+                textEdit: TextEdit2.replace(range, tag.name),
+                insertTextFormat: InsertTextFormat2.PlainText
               });
             });
           });
@@ -290912,16 +292125,16 @@ var init_htmlCompletion = __esm({
             if (tag && (!curr.closed || curr.endTagStart && curr.endTagStart > offset)) {
               const item = {
                 label: "/" + tag,
-                kind: CompletionItemKind.Property,
+                kind: CompletionItemKind2.Property,
                 filterText: "/" + tag,
-                textEdit: TextEdit.replace(range, "/" + tag + closeTag),
-                insertTextFormat: InsertTextFormat.PlainText
+                textEdit: TextEdit2.replace(range, "/" + tag + closeTag),
+                insertTextFormat: InsertTextFormat2.PlainText
               };
               const startIndent = getLineIndent(curr.start);
               const endIndent = getLineIndent(afterOpenBracket - 1);
               if (startIndent !== null && endIndent !== null && startIndent !== endIndent) {
                 const insertText = startIndent + "</" + tag + closeTag;
-                item.textEdit = TextEdit.replace(getReplaceRange(afterOpenBracket - 1 - endIndent.length), insertText);
+                item.textEdit = TextEdit2.replace(getReplaceRange(afterOpenBracket - 1 - endIndent.length), insertText);
                 item.filterText = endIndent + "</" + tag;
               }
               result.items.push(item);
@@ -290936,11 +292149,11 @@ var init_htmlCompletion = __esm({
             provider.provideTags().forEach((tag) => {
               result.items.push({
                 label: "/" + tag.name,
-                kind: CompletionItemKind.Property,
+                kind: CompletionItemKind2.Property,
                 documentation: generateDocumentation(tag, void 0, doesSupportMarkdown),
                 filterText: "/" + tag.name + closeTag,
-                textEdit: TextEdit.replace(range, "/" + tag.name + closeTag),
-                insertTextFormat: InsertTextFormat.PlainText
+                textEdit: TextEdit2.replace(range, "/" + tag.name + closeTag),
+                insertTextFormat: InsertTextFormat2.PlainText
               });
             });
           });
@@ -290955,10 +292168,10 @@ var init_htmlCompletion = __esm({
             const pos = document.positionAt(tagCloseEnd);
             result.items.push({
               label: "</" + tag + ">",
-              kind: CompletionItemKind.Property,
+              kind: CompletionItemKind2.Property,
               filterText: "</" + tag + ">",
-              textEdit: TextEdit.insert(pos, "$0</" + tag + ">"),
-              insertTextFormat: InsertTextFormat.Snippet
+              textEdit: TextEdit2.insert(pos, "$0</" + tag + ">"),
+              insertTextFormat: InsertTextFormat2.Snippet
             });
           }
           return result;
@@ -291015,10 +292228,10 @@ var init_htmlCompletion = __esm({
               }
               result.items.push({
                 label: attr.name,
-                kind: attr.valueSet === "handler" ? CompletionItemKind.Function : CompletionItemKind.Value,
+                kind: attr.valueSet === "handler" ? CompletionItemKind2.Function : CompletionItemKind2.Value,
                 documentation: generateDocumentation(attr, void 0, doesSupportMarkdown),
-                textEdit: TextEdit.replace(range, codeSnippet),
-                insertTextFormat: InsertTextFormat.Snippet,
+                textEdit: TextEdit2.replace(range, codeSnippet),
+                insertTextFormat: InsertTextFormat2.Snippet,
                 command
               });
             });
@@ -291043,9 +292256,9 @@ var init_htmlCompletion = __esm({
           }
           Object.keys(dataAttributes).forEach((attr) => result.items.push({
             label: attr,
-            kind: CompletionItemKind.Value,
-            textEdit: TextEdit.replace(range, dataAttributes[attr]),
-            insertTextFormat: InsertTextFormat.Snippet
+            kind: CompletionItemKind2.Value,
+            textEdit: TextEdit2.replace(range, dataAttributes[attr]),
+            insertTextFormat: InsertTextFormat2.Snippet
           }));
         }
         function collectAttributeValueSuggestions(valueStart, valueEnd = offset) {
@@ -291084,10 +292297,10 @@ var init_htmlCompletion = __esm({
               result.items.push({
                 label: value.name,
                 filterText: insertText,
-                kind: CompletionItemKind.Unit,
+                kind: CompletionItemKind2.Unit,
                 documentation: generateDocumentation(value, void 0, doesSupportMarkdown),
-                textEdit: TextEdit.replace(range, insertText),
-                insertTextFormat: InsertTextFormat.PlainText
+                textEdit: TextEdit2.replace(range, insertText),
+                insertTextFormat: InsertTextFormat2.PlainText
               });
             });
           });
@@ -291119,16 +292332,16 @@ var init_htmlCompletion = __esm({
             characterStart--;
           }
           if (k >= 0 && text[k] === "&") {
-            const range = Range.create(Position.create(position.line, characterStart - 1), position);
+            const range = Range2.create(Position2.create(position.line, characterStart - 1), position);
             for (const entity in entities) {
               if (endsWith2(entity, ";")) {
                 const label = "&" + entity;
                 result.items.push({
                   label,
-                  kind: CompletionItemKind.Keyword,
+                  kind: CompletionItemKind2.Keyword,
                   documentation: l10n13.t("Character entity representing '{0}'", entities[entity]),
-                  textEdit: TextEdit.replace(range, label),
-                  insertTextFormat: InsertTextFormat.PlainText
+                  textEdit: TextEdit2.replace(range, label),
+                  insertTextFormat: InsertTextFormat2.PlainText
                 });
               }
             }
@@ -291139,10 +292352,10 @@ var init_htmlCompletion = __esm({
           const range = getReplaceRange(replaceStart, replaceEnd);
           result.items.push({
             label: "!DOCTYPE",
-            kind: CompletionItemKind.Property,
+            kind: CompletionItemKind2.Property,
             documentation: "A preamble for an HTML document.",
-            textEdit: TextEdit.replace(range, "!DOCTYPE html>"),
-            insertTextFormat: InsertTextFormat.PlainText
+            textEdit: TextEdit2.replace(range, "!DOCTYPE html>"),
+            insertTextFormat: InsertTextFormat2.PlainText
           });
         }
         let token = scanner.scan();
@@ -291342,7 +292555,7 @@ var init_htmlCompletion = __esm({
             return this.supportsMarkdown;
           }
           const documentationFormat = (_c = (_b = (_a3 = this.lsOptions.clientCapabilities.textDocument) == null ? void 0 : _a3.completion) == null ? void 0 : _b.completionItem) == null ? void 0 : _c.documentationFormat;
-          this.supportsMarkdown = Array.isArray(documentationFormat) && documentationFormat.indexOf(MarkupKind.Markdown) !== -1;
+          this.supportsMarkdown = Array.isArray(documentationFormat) && documentationFormat.indexOf(MarkupKind2.Markdown) !== -1;
         }
         return this.supportsMarkdown;
       }
@@ -291508,9 +292721,9 @@ var init_htmlHover = __esm({
           if (k >= 0 && text[k] === "&") {
             let range = null;
             if (text[n] === ";") {
-              range = Range.create(Position.create(position.line, characterStart), Position.create(position.line, characterEnd + 1));
+              range = Range2.create(Position2.create(position.line, characterStart), Position2.create(position.line, characterEnd + 1));
             } else {
-              range = Range.create(Position.create(position.line, characterStart), Position.create(position.line, characterEnd));
+              range = Range2.create(Position2.create(position.line, characterStart), Position2.create(position.line, characterEnd));
             }
             return range;
           }
@@ -291601,7 +292814,7 @@ var init_htmlHover = __esm({
             return this.supportsMarkdown;
           }
           const contentFormat = (_c = (_b = (_a3 = this.lsOptions.clientCapabilities) == null ? void 0 : _a3.textDocument) == null ? void 0 : _b.hover) == null ? void 0 : _c.contentFormat;
-          this.supportsMarkdown = Array.isArray(contentFormat) && contentFormat.indexOf(MarkupKind.Markdown) !== -1;
+          this.supportsMarkdown = Array.isArray(contentFormat) && contentFormat.indexOf(MarkupKind2.Markdown) !== -1;
         }
         return this.supportsMarkdown;
       }
@@ -294878,7 +296091,7 @@ function format2(document, range, options2) {
     if (extendedEnd === value.length || isEOL3(value, extendedEnd)) {
       endOffset = extendedEnd;
     }
-    range = Range.create(document.positionAt(startOffset), document.positionAt(endOffset));
+    range = Range2.create(document.positionAt(startOffset), document.positionAt(endOffset));
     const firstHalf = value.substring(0, startOffset);
     if (new RegExp(/.*[<][^>]*$/).test(firstHalf)) {
       value = value.substring(startOffset, endOffset);
@@ -294890,11 +296103,11 @@ function format2(document, range, options2) {
     includesEnd = endOffset === value.length;
     value = value.substring(startOffset, endOffset);
     if (startOffset !== 0) {
-      const startOfLineOffset = document.offsetAt(Position.create(range.start.line, 0));
+      const startOfLineOffset = document.offsetAt(Position2.create(range.start.line, 0));
       initialIndentLevel = computeIndentLevel2(document.getText(), startOfLineOffset, options2);
     }
   } else {
-    range = Range.create(Position.create(0, 0), document.positionAt(value.length));
+    range = Range2.create(Position2.create(0, 0), document.positionAt(value.length));
   }
   const htmlOptions = {
     indent_size: tabSize,
@@ -295050,7 +296263,7 @@ function createLink(document, documentContext, attributeValue, startOffset, endO
   }
   const target = validateAndCleanURI(workspaceUrl, document);
   return {
-    range: Range.create(document.positionAt(startOffset), document.positionAt(endOffset)),
+    range: Range2.create(document.positionAt(startOffset), document.positionAt(endOffset)),
     target
   };
 }
@@ -295163,10 +296376,10 @@ function findDocumentHighlights(document, position, htmlDocument) {
   const endTagRange = typeof node.endTagStart === "number" && getTagNameRange(TokenType2.EndTag, document, node.endTagStart);
   if (startTagRange && covers(startTagRange, position) || endTagRange && covers(endTagRange, position)) {
     if (startTagRange) {
-      result.push({ kind: DocumentHighlightKind.Read, range: startTagRange });
+      result.push({ kind: DocumentHighlightKind2.Read, range: startTagRange });
     }
     if (endTagRange) {
-      result.push({ kind: DocumentHighlightKind.Read, range: endTagRange });
+      result.push({ kind: DocumentHighlightKind2.Read, range: endTagRange });
     }
   }
   return result;
@@ -295205,7 +296418,7 @@ function findDocumentSymbols(document, htmlDocument) {
   return symbols;
   function walk(node, parent) {
     var _a3;
-    const symbol = SymbolInformation.create(node.name, node.kind, node.range, document.uri, parent == null ? void 0 : parent.name);
+    const symbol = SymbolInformation2.create(node.name, node.kind, node.range, document.uri, parent == null ? void 0 : parent.name);
     (_a3 = symbol.containerName) != null ? _a3 : symbol.containerName = "";
     symbols.push(symbol);
     if (node.children) {
@@ -295224,8 +296437,8 @@ function findDocumentSymbols2(document, htmlDocument) {
 }
 function provideFileSymbolsInternal(document, node, symbols) {
   const name = nodeToName(node);
-  const range = Range.create(document.positionAt(node.start), document.positionAt(node.end));
-  const symbol = DocumentSymbol.create(name, void 0, SymbolKind.Field, range, range);
+  const range = Range2.create(document.positionAt(node.start), document.positionAt(node.end));
+  const symbol = DocumentSymbol2.create(name, void 0, SymbolKind2.Field, range, range);
   symbols.push(symbol);
   node.children.forEach((child) => {
     var _a3;
@@ -295341,8 +296554,8 @@ function findLinkedEditingRanges(document, position, htmlDocument) {
     node.endTagStart + "</".length <= offset && offset <= node.endTagStart + "</".length + tagLength
   ) {
     return [
-      Range.create(document.positionAt(node.start + "<".length), document.positionAt(node.start + "<".length + tagLength)),
-      Range.create(document.positionAt(node.endTagStart + "</".length), document.positionAt(node.endTagStart + "</".length + tagLength))
+      Range2.create(document.positionAt(node.start + "<".length), document.positionAt(node.start + "<".length + tagLength)),
+      Range2.create(document.positionAt(node.endTagStart + "</".length), document.positionAt(node.endTagStart + "</".length + tagLength))
     ];
   }
   return null;
@@ -295497,14 +296710,14 @@ var init_htmlFolding = __esm({
                     const endLine = startLine;
                     startLine = stackElement.startLine;
                     if (endLine > startLine && prevStart !== startLine) {
-                      addRange({ startLine, endLine, kind: FoldingRangeKind.Region });
+                      addRange({ startLine, endLine, kind: FoldingRangeKind2.Region });
                     }
                   }
                 }
               } else {
                 const endLine = document.positionAt(scanner.getTokenOffset() + scanner.getTokenLength()).line;
                 if (startLine < endLine) {
-                  addRange({ startLine, endLine, kind: FoldingRangeKind.Comment });
+                  addRange({ startLine, endLine, kind: FoldingRangeKind2.Comment });
                 }
               }
               break;
@@ -295543,12 +296756,12 @@ var init_htmlSelectionRange = __esm({
         for (let index = applicableRanges.length - 1; index >= 0; index--) {
           const range = applicableRanges[index];
           if (!prev || range[0] !== prev[0] || range[1] !== prev[1]) {
-            current = SelectionRange.create(Range.create(document.positionAt(applicableRanges[index][0]), document.positionAt(applicableRanges[index][1])), current);
+            current = SelectionRange2.create(Range2.create(document.positionAt(applicableRanges[index][0]), document.positionAt(applicableRanges[index][1])), current);
           }
           prev = range;
         }
         if (!current) {
-          current = SelectionRange.create(Range.create(position, position));
+          current = SelectionRange2.create(Range2.create(position, position));
         }
         return current;
       }
@@ -295560,7 +296773,7 @@ var init_htmlSelectionRange = __esm({
           if (currNode.startTagEnd !== currNode.end) {
             return [[currNode.start, currNode.end]];
           }
-          const closeRange = Range.create(document.positionAt(currNode.startTagEnd - 2), document.positionAt(currNode.startTagEnd));
+          const closeRange = Range2.create(document.positionAt(currNode.startTagEnd - 2), document.positionAt(currNode.startTagEnd));
           const closeText = document.getText(closeRange);
           if (closeText === "/>") {
             result.unshift([currNode.start + 1, currNode.startTagEnd - 2]);
@@ -295611,7 +296824,7 @@ var init_htmlSelectionRange = __esm({
         ];
       }
       getAttributeLevelRanges(document, currNode, currOffset) {
-        const currNodeRange = Range.create(document.positionAt(currNode.start), document.positionAt(currNode.end));
+        const currNodeRange = Range2.create(document.positionAt(currNode.start), document.positionAt(currNode.end));
         const currNodeText = document.getText(currNodeRange);
         const relativeOffset = currOffset - currNode.start;
         const scanner = createScanner(currNodeText);
@@ -307643,42 +308856,42 @@ var init_dataManager2 = __esm({
 var htmlLanguageService_exports = {};
 __export(htmlLanguageService_exports, {
   ClientCapabilities: () => ClientCapabilities2,
-  Color: () => Color,
-  ColorInformation: () => ColorInformation,
-  ColorPresentation: () => ColorPresentation,
-  Command: () => Command,
-  CompletionItem: () => CompletionItem,
-  CompletionItemKind: () => CompletionItemKind,
-  CompletionItemTag: () => CompletionItemTag,
-  CompletionList: () => CompletionList,
-  Diagnostic: () => Diagnostic,
-  DocumentHighlight: () => DocumentHighlight,
-  DocumentHighlightKind: () => DocumentHighlightKind,
-  DocumentLink: () => DocumentLink,
-  DocumentSymbol: () => DocumentSymbol,
-  DocumentUri: () => DocumentUri,
+  Color: () => Color2,
+  ColorInformation: () => ColorInformation2,
+  ColorPresentation: () => ColorPresentation2,
+  Command: () => Command2,
+  CompletionItem: () => CompletionItem2,
+  CompletionItemKind: () => CompletionItemKind2,
+  CompletionItemTag: () => CompletionItemTag2,
+  CompletionList: () => CompletionList2,
+  Diagnostic: () => Diagnostic2,
+  DocumentHighlight: () => DocumentHighlight2,
+  DocumentHighlightKind: () => DocumentHighlightKind2,
+  DocumentLink: () => DocumentLink2,
+  DocumentSymbol: () => DocumentSymbol2,
+  DocumentUri: () => DocumentUri2,
   FileType: () => FileType2,
-  FoldingRange: () => FoldingRange,
-  FoldingRangeKind: () => FoldingRangeKind,
-  FormattingOptions: () => FormattingOptions,
-  Hover: () => Hover,
-  InsertReplaceEdit: () => InsertReplaceEdit,
-  InsertTextFormat: () => InsertTextFormat,
-  InsertTextMode: () => InsertTextMode,
-  Location: () => Location,
-  MarkedString: () => MarkedString,
-  MarkupContent: () => MarkupContent,
-  MarkupKind: () => MarkupKind,
-  Position: () => Position,
-  Range: () => Range,
+  FoldingRange: () => FoldingRange2,
+  FoldingRangeKind: () => FoldingRangeKind2,
+  FormattingOptions: () => FormattingOptions2,
+  Hover: () => Hover2,
+  InsertReplaceEdit: () => InsertReplaceEdit2,
+  InsertTextFormat: () => InsertTextFormat2,
+  InsertTextMode: () => InsertTextMode2,
+  Location: () => Location2,
+  MarkedString: () => MarkedString2,
+  MarkupContent: () => MarkupContent2,
+  MarkupKind: () => MarkupKind2,
+  Position: () => Position2,
+  Range: () => Range2,
   ScannerState: () => ScannerState,
-  SelectionRange: () => SelectionRange,
-  SymbolInformation: () => SymbolInformation,
-  SymbolKind: () => SymbolKind,
+  SelectionRange: () => SelectionRange2,
+  SymbolInformation: () => SymbolInformation2,
+  SymbolKind: () => SymbolKind2,
   TextDocument: () => TextDocument2,
-  TextEdit: () => TextEdit,
+  TextEdit: () => TextEdit2,
   TokenType: () => TokenType2,
-  WorkspaceEdit: () => WorkspaceEdit,
+  WorkspaceEdit: () => WorkspaceEdit2,
   getDefaultHTMLDataProvider: () => getDefaultHTMLDataProvider,
   getLanguageService: () => getLanguageService,
   newHTMLDataProvider: () => newHTMLDataProvider
