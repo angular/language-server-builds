@@ -287026,7 +287026,6 @@ var require_completions = __commonJS({
     exports2.onCompletionResolve = onCompletionResolve;
     exports2.readNgCompletionData = readNgCompletionData;
     var lsp = __importStar(require_main4());
-    var ts = __importStar(require("typescript/lib/tsserverlibrary"));
     var vscode_css_languageservice_1 = (init_cssLanguageService(), __toCommonJS(cssLanguageService_exports));
     var vscode_languageserver_textdocument_1 = (init_main2(), __toCommonJS(main_exports));
     var embedded_support_1 = require_embedded_support();
@@ -287057,7 +287056,7 @@ var require_completions = __commonJS({
         if (!sf) {
           return null;
         }
-        const node = getTokenAtPosition(sf, offset);
+        const node = (0, utils_1.getTokenAtPosition)(sf, offset);
         if (!(0, embedded_support_1.isInlineStyleNode)(node)) {
           return null;
         }
@@ -287105,16 +287104,6 @@ var require_completions = __commonJS({
       item.additionalTextEdits = codeActionsDetail.additionalTextEdits;
       item.command = codeActionsDetail.command;
       return item;
-    }
-    function getTokenAtPosition(sourceFile, position) {
-      let current = sourceFile;
-      while (true) {
-        const child = current.getChildren(sourceFile).find((c) => c.getStart(sourceFile) <= position && c.getEnd() > position);
-        if (!child || child.kind === ts.SyntaxKind.EndOfFileToken) {
-          return current;
-        }
-        current = child;
-      }
     }
     var CompletionKind;
     (function(CompletionKind2) {
