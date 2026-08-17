@@ -310402,7 +310402,18 @@ var require_session = __commonJS({
           false
         );
         if (!project || project.projectKind !== ts.server.ProjectKind.Configured) {
-          const { configFileName } = this.projectService.openClientFile(scriptInfo.fileName);
+          let { configFileName } = this.projectService.openClientFile(scriptInfo.fileName);
+          if (configFileName === void 0 && isExternalTemplate(scriptInfo.fileName)) {
+            if (this.loadProjectForExternalTemplate(scriptInfo.fileName)) {
+              ({ configFileName } = this.projectService.openClientFile(scriptInfo.fileName));
+            }
+            if (configFileName === void 0) {
+              const componentProject = this.attachToComponentProject(scriptInfo);
+              if (componentProject) {
+                return componentProject;
+              }
+            }
+          }
           if (!configFileName) {
             this.error(`No config file for ${scriptInfo.fileName}`);
             return null;
@@ -310416,6 +310427,43 @@ var require_session = __commonJS({
         }
         return project;
       }
+      /**
+       * In a composite/solution-style project with references, TypeScript will _not_ open a project
+       * for an HTML file unless the file is explicitly included in the files/includes list. This is
+       * quite unlikely to be the case for HTML files. As a best-effort to fix this, we attempt to open
+       * a TS file with the same name so that its project is loaded. Most of the time, this is going to
+       * be the component file for the external template.
+       * https://github.com/angular/vscode-ng-language-service/issues/2149
+       *
+       * Returns whether the component file was opened, i.e. whether the config lookup for the template
+       * is worth retrying.
+       */
+      loadProjectForExternalTemplate(templatePath) {
+        const maybeComponentTsPath = componentPathForTemplate(templatePath);
+        if (this.projectService.openFiles.has(this.projectService.toPath(maybeComponentTsPath)) || // Non-component HTML files (e.g. `src/index.html`) have no sibling `.ts`; skip the
+        // open/close so we don't walk directory trees looking for a config that can't exist.
+        !this.host.fileExists(maybeComponentTsPath)) {
+          return false;
+        }
+        this.projectService.openClientFile(maybeComponentTsPath);
+        this.projectService.closeClientFile(maybeComponentTsPath);
+        return true;
+      }
+      /**
+       * Attaches an external template to the configured project of its component. Needed because
+       * `openClientFile` does not repeat the config lookup for a file that is already open, so it can
+       * still report no config file even though the component's project has since been loaded.
+       */
+      attachToComponentProject(scriptInfo) {
+        var _a3;
+        const componentProject = (_a3 = this.projectService.getScriptInfo(componentPathForTemplate(scriptInfo.fileName))) === null || _a3 === void 0 ? void 0 : _a3.containingProjects.find(utils_1.isConfiguredProject);
+        if (!componentProject) {
+          return null;
+        }
+        scriptInfo.detachAllProjects();
+        scriptInfo.attachToProject(componentProject);
+        return componentProject;
+      }
       onDidOpenTextDocument(params) {
         var _a3;
         const { uri, languageId, text } = params.textDocument;
@@ -310428,11 +310476,14 @@ var require_session = __commonJS({
         try {
           let result = this.projectService.openClientFile(filePath, text, scriptKind);
           if (result.configFileName === void 0 && languageId === LanguageId.HTML) {
-            const maybeComponentTsPath = filePath.replace(/\.html$/, ".ts");
-            if (!this.projectService.openFiles.has(this.projectService.toPath(maybeComponentTsPath))) {
-              this.projectService.openClientFile(maybeComponentTsPath);
-              this.projectService.closeClientFile(maybeComponentTsPath);
+            if (this.loadProjectForExternalTemplate(filePath)) {
               result = this.projectService.openClientFile(filePath, text, scriptKind);
+            }
+            if (result.configFileName === void 0) {
+              const scriptInfo = this.projectService.getScriptInfo(filePath);
+              if (scriptInfo) {
+                this.attachToComponentProject(scriptInfo);
+              }
             }
           }
           const { configFileName, configFileErrors } = result;
@@ -310601,6 +310652,9 @@ var require_session = __commonJS({
     }
     function isExternalTemplate(path) {
       return !isTypeScriptFile(path);
+    }
+    function componentPathForTemplate(templatePath) {
+      return templatePath.replace(/\.html$/, ".ts");
     }
   }
 });
