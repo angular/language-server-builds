@@ -14516,7 +14516,7 @@ var init_main = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.13/node_modules/vscode-languageserver-textdocument/lib/esm/main.js
+// node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.14/node_modules/vscode-languageserver-textdocument/lib/esm/main.js
 var main_exports = {};
 __export(main_exports, {
   TextDocument: () => TextDocument2
@@ -14582,7 +14582,7 @@ function getWellformedEdit(textEdit) {
 }
 var FullTextDocument2, TextDocument2;
 var init_main2 = __esm({
-  "node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.13/node_modules/vscode-languageserver-textdocument/lib/esm/main.js"() {
+  "node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.14/node_modules/vscode-languageserver-textdocument/lib/esm/main.js"() {
     "use strict";
     FullTextDocument2 = class _FullTextDocument {
       constructor(uri, languageId, version, content) {
