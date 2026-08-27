@@ -1,7 +1,7 @@
 {
   "name": "@angular/language-server",
   "description": "LSP server for Angular Language Service",
-  "version": "22.1.4+sha-11e9949",
+  "version": "22.1.4+sha-6f51be6",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git",
@@ -17,7 +17,7 @@
     "ngserver": "./bin/ngserver"
   },
   "dependencies": {
-    "@angular/language-service": "github:angular/language-service-builds#22.1.4+sha-11e9949",
+    "@angular/language-service": "github:angular/language-service-builds#22.1.4+sha-6f51be6",
     "typescript": "6.0.3"
   },
   "devDependencies": {
@@ -25,7 +25,7 @@
     "vscode-html-languageservice": "5.6.2",
     "vscode-css-languageservice": "6.3.10",
     "vscode-languageserver": "9.0.1",
-    "vscode-languageserver-textdocument": "^1.0.12",
+    "vscode-languageserver-textdocument": "1.0.12",
     "vscode-uri": "3.1.0"
   }
 }
