@@ -287411,10 +287411,10 @@ var require_definitions = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.0/node_modules/vscode-languageserver-types/lib/esm/main.js
+// node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.3/node_modules/vscode-languageserver-types/lib/esm/main.js
 var DocumentUri2, URI2, integer2, uinteger2, Position2, Range2, Location2, LocationLink2, Color2, ColorInformation2, ColorPresentation2, FoldingRangeKind2, FoldingRange2, DiagnosticRelatedInformation2, DiagnosticSeverity2, DiagnosticTag2, CodeDescription2, Diagnostic2, Command2, TextEdit2, ChangeAnnotation2, ChangeAnnotationIdentifier2, AnnotatedTextEdit2, TextDocumentEdit2, CreateFile2, RenameFile2, DeleteFile2, WorkspaceEdit2, SnippetTextEdit, TextDocumentIdentifier2, VersionedTextDocumentIdentifier2, OptionalVersionedTextDocumentIdentifier2, LanguageKind, TextDocumentItem2, MarkupKind2, MarkupContent2, CompletionItemKind2, InsertTextFormat2, CompletionItemTag2, InsertReplaceEdit2, InsertTextMode2, ApplyKind, CompletionItemLabelDetails2, CompletionItem2, CompletionList2, MarkedString2, Hover2, ParameterInformation2, SignatureInformation2, DocumentHighlightKind2, DocumentHighlight2, SymbolKind2, SymbolTag2, SymbolInformation2, WorkspaceSymbol2, DocumentSymbol2, CodeActionKind2, CodeActionTriggerKind2, CodeActionContext2, CodeActionTag, CodeAction2, CodeLens2, FormattingOptions2, DocumentLink2, SelectionRange2, SemanticTokenTypes2, SemanticTokenModifiers2, SemanticTokens2, InlineValueText2, InlineValueVariableLookup2, InlineValueEvaluatableExpression2, InlineValueContext2, InlayHintKind3, InlayHintLabelPart2, InlayHint2, StringValue2, InlineCompletionItem2, InlineCompletionList2, InlineCompletionTriggerKind2, SelectedCompletionInfo2, InlineCompletionContext2, WorkspaceFolder2, TextDocument3, FullTextDocument3, Is2;
 var init_main3 = __esm({
-  "node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.0/node_modules/vscode-languageserver-types/lib/esm/main.js"() {
+  "node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.3/node_modules/vscode-languageserver-types/lib/esm/main.js"() {
     "use strict";
     (function(DocumentUri3) {
       function is(value) {
