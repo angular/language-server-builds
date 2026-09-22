@@ -286708,6 +286708,14 @@ var require_embedded_support = __commonJS({
       }).join("\n");
       for (const region of inlineTemplateNodes) {
         content = content.slice(0, region.getStart(sf) + 1) + documentText.slice(region.getStart(sf) + 1, region.getEnd() - 1) + content.slice(region.getEnd() - 1);
+        if (ts.isTemplateExpression(region)) {
+          let substitutionStart = region.head.end - 2;
+          for (const span of region.templateSpans) {
+            const substitutionEnd = span.literal.getStart(sf) + 1;
+            content = content.slice(0, substitutionStart) + documentText.slice(substitutionStart, substitutionEnd).replace(/[^\n]/g, " ") + content.slice(substitutionEnd);
+            substitutionStart = span.literal.end - 2;
+          }
+        }
       }
       return content;
     }
@@ -286739,7 +286747,7 @@ var require_embedded_support = __commonJS({
       return assignment !== null && getClassDeclFromDecoratorProp(assignment) !== null;
     }
     function isInlineTemplateNode(node) {
-      return ts.isStringLiteralLike(node) ? isAssignmentToPropertyWithName(node, "template") : false;
+      return ts.isStringLiteralLike(node) || ts.isTemplateExpression(node) ? isAssignmentToPropertyWithName(node, "template") : false;
     }
     function getPropertyAssignmentFromValue(value, key) {
       const propAssignment = value.parent;
