@@ -5355,20 +5355,20 @@ var require_main2 = __commonJS({
         WorkspaceFolder4.is = is;
       })(WorkspaceFolder3 || (exports3.WorkspaceFolder = WorkspaceFolder3 = {}));
       exports3.EOL = ["\n", "\r\n", "\r"];
-      var TextDocument4;
-      (function(TextDocument5) {
+      var TextDocument5;
+      (function(TextDocument6) {
         function create(uri, languageId, version, content) {
-          return new FullTextDocument4(uri, languageId, version, content);
+          return new FullTextDocument5(uri, languageId, version, content);
         }
-        TextDocument5.create = create;
+        TextDocument6.create = create;
         function is(value) {
           var candidate = value;
           return Is3.defined(candidate) && Is3.string(candidate.uri) && (Is3.undefined(candidate.languageId) || Is3.string(candidate.languageId)) && Is3.uinteger(candidate.lineCount) && Is3.func(candidate.getText) && Is3.func(candidate.positionAt) && Is3.func(candidate.offsetAt) ? true : false;
         }
-        TextDocument5.is = is;
+        TextDocument6.is = is;
         function applyEdits(document, edits) {
           var text = document.getText();
-          var sortedEdits = mergeSort2(edits, function(a3, b2) {
+          var sortedEdits = mergeSort3(edits, function(a3, b2) {
             var diff = a3.range.start.line - b2.range.start.line;
             if (diff === 0) {
               return a3.range.start.character - b2.range.start.character;
@@ -5389,16 +5389,16 @@ var require_main2 = __commonJS({
           }
           return text;
         }
-        TextDocument5.applyEdits = applyEdits;
-        function mergeSort2(data, compare) {
+        TextDocument6.applyEdits = applyEdits;
+        function mergeSort3(data, compare) {
           if (data.length <= 1) {
             return data;
           }
           var p2 = data.length / 2 | 0;
           var left = data.slice(0, p2);
           var right = data.slice(p2);
-          mergeSort2(left, compare);
-          mergeSort2(right, compare);
+          mergeSort3(left, compare);
+          mergeSort3(right, compare);
           var leftIdx = 0;
           var rightIdx = 0;
           var i2 = 0;
@@ -5418,39 +5418,39 @@ var require_main2 = __commonJS({
           }
           return data;
         }
-      })(TextDocument4 || (exports3.TextDocument = TextDocument4 = {}));
-      var FullTextDocument4 = (
+      })(TextDocument5 || (exports3.TextDocument = TextDocument5 = {}));
+      var FullTextDocument5 = (
         /** @class */
         function() {
-          function FullTextDocument5(uri, languageId, version, content) {
+          function FullTextDocument6(uri, languageId, version, content) {
             this._uri = uri;
             this._languageId = languageId;
             this._version = version;
             this._content = content;
             this._lineOffsets = void 0;
           }
-          Object.defineProperty(FullTextDocument5.prototype, "uri", {
+          Object.defineProperty(FullTextDocument6.prototype, "uri", {
             get: function() {
               return this._uri;
             },
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(FullTextDocument5.prototype, "languageId", {
+          Object.defineProperty(FullTextDocument6.prototype, "languageId", {
             get: function() {
               return this._languageId;
             },
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(FullTextDocument5.prototype, "version", {
+          Object.defineProperty(FullTextDocument6.prototype, "version", {
             get: function() {
               return this._version;
             },
             enumerable: false,
             configurable: true
           });
-          FullTextDocument5.prototype.getText = function(range) {
+          FullTextDocument6.prototype.getText = function(range) {
             if (range) {
               var start = this.offsetAt(range.start);
               var end = this.offsetAt(range.end);
@@ -5458,12 +5458,12 @@ var require_main2 = __commonJS({
             }
             return this._content;
           };
-          FullTextDocument5.prototype.update = function(event, version) {
+          FullTextDocument6.prototype.update = function(event, version) {
             this._content = event.text;
             this._version = version;
             this._lineOffsets = void 0;
           };
-          FullTextDocument5.prototype.getLineOffsets = function() {
+          FullTextDocument6.prototype.getLineOffsets = function() {
             if (this._lineOffsets === void 0) {
               var lineOffsets = [];
               var text = this._content;
@@ -5486,7 +5486,7 @@ var require_main2 = __commonJS({
             }
             return this._lineOffsets;
           };
-          FullTextDocument5.prototype.positionAt = function(offset) {
+          FullTextDocument6.prototype.positionAt = function(offset) {
             offset = Math.max(Math.min(offset, this._content.length), 0);
             var lineOffsets = this.getLineOffsets();
             var low = 0, high = lineOffsets.length;
@@ -5504,7 +5504,7 @@ var require_main2 = __commonJS({
             var line = low - 1;
             return Position3.create(line, offset - lineOffsets[line]);
           };
-          FullTextDocument5.prototype.offsetAt = function(position) {
+          FullTextDocument6.prototype.offsetAt = function(position) {
             var lineOffsets = this.getLineOffsets();
             if (position.line >= lineOffsets.length) {
               return this._content.length;
@@ -5515,14 +5515,14 @@ var require_main2 = __commonJS({
             var nextLineOffset = position.line + 1 < lineOffsets.length ? lineOffsets[position.line + 1] : this._content.length;
             return Math.max(Math.min(lineOffset + position.character, nextLineOffset), lineOffset);
           };
-          Object.defineProperty(FullTextDocument5.prototype, "lineCount", {
+          Object.defineProperty(FullTextDocument6.prototype, "lineCount", {
             get: function() {
               return this.getLineOffsets().length;
             },
             enumerable: false,
             configurable: true
           });
-          return FullTextDocument5;
+          return FullTextDocument6;
         }()
       );
       var Is3;
@@ -14317,19 +14317,19 @@ var init_main = __esm({
       }
       WorkspaceFolder3.is = is;
     })(WorkspaceFolder || (WorkspaceFolder = {}));
-    (function(TextDocument4) {
+    (function(TextDocument5) {
       function create(uri, languageId, version, content) {
         return new FullTextDocument(uri, languageId, version, content);
       }
-      TextDocument4.create = create;
+      TextDocument5.create = create;
       function is(value) {
         let candidate = value;
         return Is.defined(candidate) && Is.string(candidate.uri) && (Is.undefined(candidate.languageId) || Is.string(candidate.languageId)) && Is.uinteger(candidate.lineCount) && Is.func(candidate.getText) && Is.func(candidate.positionAt) && Is.func(candidate.offsetAt) ? true : false;
       }
-      TextDocument4.is = is;
+      TextDocument5.is = is;
       function applyEdits(document, edits) {
         let text = document.getText();
-        let sortedEdits = mergeSort2(edits, (a3, b2) => {
+        let sortedEdits = mergeSort3(edits, (a3, b2) => {
           let diff = a3.range.start.line - b2.range.start.line;
           if (diff === 0) {
             return a3.range.start.character - b2.range.start.character;
@@ -14350,16 +14350,16 @@ var init_main = __esm({
         }
         return text;
       }
-      TextDocument4.applyEdits = applyEdits;
-      function mergeSort2(data, compare) {
+      TextDocument5.applyEdits = applyEdits;
+      function mergeSort3(data, compare) {
         if (data.length <= 1) {
           return data;
         }
         const p2 = data.length / 2 | 0;
         const left = data.slice(0, p2);
         const right = data.slice(p2);
-        mergeSort2(left, compare);
-        mergeSort2(right, compare);
+        mergeSort3(left, compare);
+        mergeSort3(right, compare);
         let leftIdx = 0;
         let rightIdx = 0;
         let i2 = 0;
@@ -14516,11 +14516,7 @@ var init_main = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.14/node_modules/vscode-languageserver-textdocument/lib/esm/main.js
-var main_exports = {};
-__export(main_exports, {
-  TextDocument: () => TextDocument2
-});
+// node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.15/node_modules/vscode-languageserver-textdocument/lib/esm/main.js
 function mergeSort(data, compare) {
   if (data.length <= 1) {
     return data;
@@ -14582,7 +14578,7 @@ function getWellformedEdit(textEdit) {
 }
 var FullTextDocument2, TextDocument2;
 var init_main2 = __esm({
-  "node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.14/node_modules/vscode-languageserver-textdocument/lib/esm/main.js"() {
+  "node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.15/node_modules/vscode-languageserver-textdocument/lib/esm/main.js"() {
     "use strict";
     FullTextDocument2 = class _FullTextDocument {
       constructor(uri, languageId, version, content) {
@@ -14728,11 +14724,11 @@ var init_main2 = __esm({
         return candidate !== void 0 && candidate !== null && typeof candidate.text === "string" && candidate.range === void 0 && candidate.rangeLength === void 0;
       }
     };
-    (function(TextDocument4) {
+    (function(TextDocument5) {
       function create(uri, languageId, version, content) {
         return new FullTextDocument2(uri, languageId, version, content);
       }
-      TextDocument4.create = create;
+      TextDocument5.create = create;
       function update(document, changes, version) {
         if (document instanceof FullTextDocument2) {
           document.update(changes, version);
@@ -14741,7 +14737,7 @@ var init_main2 = __esm({
           throw new Error("TextDocument.update: document must be created by TextDocument.create");
         }
       }
-      TextDocument4.update = update;
+      TextDocument5.update = update;
       function applyEdits(document, edits) {
         const text = document.getText();
         const sortedEdits = mergeSort(edits.map(getWellformedEdit), (a3, b2) => {
@@ -14768,7 +14764,7 @@ var init_main2 = __esm({
         spans.push(text.substr(lastModifiedOffset));
         return spans.join("");
       }
-      TextDocument4.applyEdits = applyEdits;
+      TextDocument5.applyEdits = applyEdits;
     })(TextDocument2 || (TextDocument2 = {}));
   }
 });
@@ -70800,6 +70796,263 @@ var init_cssLanguageService = __esm({
     init_webCustomData();
     init_cssLanguageTypes();
     defaultLanguageServiceOptions = {};
+  }
+});
+
+// node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.14/node_modules/vscode-languageserver-textdocument/lib/esm/main.js
+var main_exports = {};
+__export(main_exports, {
+  TextDocument: () => TextDocument3
+});
+function mergeSort2(data, compare) {
+  if (data.length <= 1) {
+    return data;
+  }
+  const p2 = data.length / 2 | 0;
+  const left = data.slice(0, p2);
+  const right = data.slice(p2);
+  mergeSort2(left, compare);
+  mergeSort2(right, compare);
+  let leftIdx = 0;
+  let rightIdx = 0;
+  let i2 = 0;
+  while (leftIdx < left.length && rightIdx < right.length) {
+    const ret = compare(left[leftIdx], right[rightIdx]);
+    if (ret <= 0) {
+      data[i2++] = left[leftIdx++];
+    } else {
+      data[i2++] = right[rightIdx++];
+    }
+  }
+  while (leftIdx < left.length) {
+    data[i2++] = left[leftIdx++];
+  }
+  while (rightIdx < right.length) {
+    data[i2++] = right[rightIdx++];
+  }
+  return data;
+}
+function computeLineOffsets2(text, isAtLineStart, textOffset = 0) {
+  const result = isAtLineStart ? [textOffset] : [];
+  for (let i2 = 0; i2 < text.length; i2++) {
+    const ch = text.charCodeAt(i2);
+    if (isEOL3(ch)) {
+      if (ch === 13 && i2 + 1 < text.length && text.charCodeAt(i2 + 1) === 10) {
+        i2++;
+      }
+      result.push(textOffset + i2 + 1);
+    }
+  }
+  return result;
+}
+function isEOL3(char) {
+  return char === 13 || char === 10;
+}
+function getWellformedRange2(range) {
+  const start = range.start;
+  const end = range.end;
+  if (start.line > end.line || start.line === end.line && start.character > end.character) {
+    return { start: end, end: start };
+  }
+  return range;
+}
+function getWellformedEdit2(textEdit) {
+  const range = getWellformedRange2(textEdit.range);
+  if (range !== textEdit.range) {
+    return { newText: textEdit.newText, range };
+  }
+  return textEdit;
+}
+var FullTextDocument3, TextDocument3;
+var init_main3 = __esm({
+  "node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.14/node_modules/vscode-languageserver-textdocument/lib/esm/main.js"() {
+    "use strict";
+    FullTextDocument3 = class _FullTextDocument {
+      constructor(uri, languageId, version, content) {
+        this._uri = uri;
+        this._languageId = languageId;
+        this._version = version;
+        this._content = content;
+        this._lineOffsets = void 0;
+      }
+      get uri() {
+        return this._uri;
+      }
+      get languageId() {
+        return this._languageId;
+      }
+      get version() {
+        return this._version;
+      }
+      getText(range) {
+        if (range) {
+          const start = this.offsetAt(range.start);
+          const end = this.offsetAt(range.end);
+          return this._content.substring(start, end);
+        }
+        return this._content;
+      }
+      update(changes, version) {
+        for (const change of changes) {
+          if (_FullTextDocument.isIncremental(change)) {
+            const range = getWellformedRange2(change.range);
+            const startOffset = this.offsetAt(range.start);
+            const endOffset = this.offsetAt(range.end);
+            this._content = this._content.substring(0, startOffset) + change.text + this._content.substring(endOffset, this._content.length);
+            const startLine = Math.max(range.start.line, 0);
+            const endLine = Math.max(range.end.line, 0);
+            let lineOffsets = this._lineOffsets;
+            const addedLineOffsets = computeLineOffsets2(change.text, false, startOffset);
+            if (endLine - startLine === addedLineOffsets.length) {
+              for (let i2 = 0, len = addedLineOffsets.length; i2 < len; i2++) {
+                lineOffsets[i2 + startLine + 1] = addedLineOffsets[i2];
+              }
+            } else {
+              if (addedLineOffsets.length < 1e4) {
+                lineOffsets.splice(startLine + 1, endLine - startLine, ...addedLineOffsets);
+              } else {
+                this._lineOffsets = lineOffsets = lineOffsets.slice(0, startLine + 1).concat(addedLineOffsets, lineOffsets.slice(endLine + 1));
+              }
+            }
+            const diff = change.text.length - (endOffset - startOffset);
+            if (diff !== 0) {
+              for (let i2 = startLine + 1 + addedLineOffsets.length, len = lineOffsets.length; i2 < len; i2++) {
+                lineOffsets[i2] = lineOffsets[i2] + diff;
+              }
+            }
+          } else if (_FullTextDocument.isFull(change)) {
+            this._content = change.text;
+            this._lineOffsets = void 0;
+          } else {
+            throw new Error("Unknown change event received");
+          }
+        }
+        this._version = version;
+      }
+      getLineOffsets() {
+        if (this._lineOffsets === void 0) {
+          this._lineOffsets = computeLineOffsets2(this._content, true);
+        }
+        return this._lineOffsets;
+      }
+      positionAt(offset) {
+        offset = Math.max(Math.min(offset, this._content.length), 0);
+        const lineOffsets = this.getLineOffsets();
+        let low = 0, high = lineOffsets.length;
+        if (high === 0) {
+          return { line: 0, character: offset };
+        }
+        while (low < high) {
+          const mid = Math.floor((low + high) / 2);
+          if (lineOffsets[mid] > offset) {
+            high = mid;
+          } else {
+            low = mid + 1;
+          }
+        }
+        const line = low - 1;
+        offset = this.ensureBeforeEOL(offset, lineOffsets[line]);
+        return { line, character: offset - lineOffsets[line] };
+      }
+      offsetAt(position) {
+        const lineOffsets = this.getLineOffsets();
+        if (position.line >= lineOffsets.length) {
+          return this._content.length;
+        } else if (position.line < 0) {
+          return 0;
+        }
+        const lineOffset = lineOffsets[position.line];
+        if (position.character <= 0) {
+          return lineOffset;
+        }
+        const nextLineOffset = position.line + 1 < lineOffsets.length ? lineOffsets[position.line + 1] : this._content.length;
+        const offset = Math.min(lineOffset + position.character, nextLineOffset);
+        return this.ensureBeforeEOL(offset, lineOffset);
+      }
+      getLineRange(line) {
+        const lineOffsets = this.getLineOffsets();
+        if (line >= lineOffsets.length) {
+          const lastLine = lineOffsets.length - 1;
+          return { start: { line: lastLine, character: 0 }, end: { line: lastLine, character: this._content.length - lineOffsets[lastLine] } };
+        } else if (line < 0) {
+          return { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } };
+        }
+        const startOffset = lineOffsets[line];
+        const nextLineOffset = line + 1 < lineOffsets.length ? lineOffsets[line + 1] : this._content.length;
+        const endOffset = this.ensureBeforeEOL(nextLineOffset, startOffset);
+        return { start: { line, character: 0 }, end: { line, character: endOffset - startOffset } };
+      }
+      getEOLCharacters(line) {
+        const lineOffsets = this.getLineOffsets();
+        if (line >= lineOffsets.length) {
+          return "";
+        } else if (line < 0) {
+          return "";
+        }
+        const nextLineOffset = line + 1 < lineOffsets.length ? lineOffsets[line + 1] : this._content.length;
+        const eolOffset = this.ensureBeforeEOL(nextLineOffset, lineOffsets[line]);
+        return this._content.substring(eolOffset, nextLineOffset);
+      }
+      ensureBeforeEOL(offset, lineOffset) {
+        while (offset > lineOffset && isEOL3(this._content.charCodeAt(offset - 1))) {
+          offset--;
+        }
+        return offset;
+      }
+      get lineCount() {
+        return this.getLineOffsets().length;
+      }
+      static isIncremental(event) {
+        const candidate = event;
+        return candidate !== void 0 && candidate !== null && typeof candidate.text === "string" && candidate.range !== void 0 && (candidate.rangeLength === void 0 || typeof candidate.rangeLength === "number");
+      }
+      static isFull(event) {
+        const candidate = event;
+        return candidate !== void 0 && candidate !== null && typeof candidate.text === "string" && candidate.range === void 0 && candidate.rangeLength === void 0;
+      }
+    };
+    (function(TextDocument5) {
+      function create(uri, languageId, version, content) {
+        return new FullTextDocument3(uri, languageId, version, content);
+      }
+      TextDocument5.create = create;
+      function update(document, changes, version) {
+        if (document instanceof FullTextDocument3) {
+          document.update(changes, version);
+          return document;
+        } else {
+          throw new Error("TextDocument.update: document must be created by TextDocument.create");
+        }
+      }
+      TextDocument5.update = update;
+      function applyEdits(document, edits) {
+        const text = document.getText();
+        const sortedEdits = mergeSort2(edits.map(getWellformedEdit2), (a3, b2) => {
+          const diff = a3.range.start.line - b2.range.start.line;
+          if (diff === 0) {
+            return a3.range.start.character - b2.range.start.character;
+          }
+          return diff;
+        });
+        let lastModifiedOffset = 0;
+        const spans = [];
+        for (const e2 of sortedEdits) {
+          const startOffset = document.offsetAt(e2.range.start);
+          if (startOffset < lastModifiedOffset) {
+            throw new Error("Overlapping edit");
+          } else if (startOffset > lastModifiedOffset) {
+            spans.push(text.substring(lastModifiedOffset, startOffset));
+          }
+          if (e2.newText.length) {
+            spans.push(e2.newText);
+          }
+          lastModifiedOffset = document.offsetAt(e2.range.end);
+        }
+        spans.push(text.substr(lastModifiedOffset));
+        return spans.join("");
+      }
+      TextDocument5.applyEdits = applyEdits;
+    })(TextDocument3 || (TextDocument3 = {}));
   }
 });
 
@@ -287055,7 +287308,7 @@ var require_completions = __commonJS({
     exports2.readNgCompletionData = readNgCompletionData;
     var lsp = __importStar(require_main4());
     var vscode_css_languageservice_1 = (init_cssLanguageService(), __toCommonJS(cssLanguageService_exports));
-    var vscode_languageserver_textdocument_1 = (init_main2(), __toCommonJS(main_exports));
+    var vscode_languageserver_textdocument_1 = (init_main3(), __toCommonJS(main_exports));
     var embedded_support_1 = require_embedded_support();
     var utils_1 = require_utils();
     var text_render_1 = require_text_render();
@@ -287419,10 +287672,10 @@ var require_definitions = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.3/node_modules/vscode-languageserver-types/lib/esm/main.js
-var DocumentUri2, URI2, integer2, uinteger2, Position2, Range2, Location2, LocationLink2, Color2, ColorInformation2, ColorPresentation2, FoldingRangeKind2, FoldingRange2, DiagnosticRelatedInformation2, DiagnosticSeverity2, DiagnosticTag2, CodeDescription2, Diagnostic2, Command2, TextEdit2, ChangeAnnotation2, ChangeAnnotationIdentifier2, AnnotatedTextEdit2, TextDocumentEdit2, CreateFile2, RenameFile2, DeleteFile2, WorkspaceEdit2, SnippetTextEdit, TextDocumentIdentifier2, VersionedTextDocumentIdentifier2, OptionalVersionedTextDocumentIdentifier2, LanguageKind, TextDocumentItem2, MarkupKind2, MarkupContent2, CompletionItemKind2, InsertTextFormat2, CompletionItemTag2, InsertReplaceEdit2, InsertTextMode2, ApplyKind, CompletionItemLabelDetails2, CompletionItem2, CompletionList2, MarkedString2, Hover2, ParameterInformation2, SignatureInformation2, DocumentHighlightKind2, DocumentHighlight2, SymbolKind2, SymbolTag2, SymbolInformation2, WorkspaceSymbol2, DocumentSymbol2, CodeActionKind2, CodeActionTriggerKind2, CodeActionContext2, CodeActionTag, CodeAction2, CodeLens2, FormattingOptions2, DocumentLink2, SelectionRange2, SemanticTokenTypes2, SemanticTokenModifiers2, SemanticTokens2, InlineValueText2, InlineValueVariableLookup2, InlineValueEvaluatableExpression2, InlineValueContext2, InlayHintKind3, InlayHintLabelPart2, InlayHint2, StringValue2, InlineCompletionItem2, InlineCompletionList2, InlineCompletionTriggerKind2, SelectedCompletionInfo2, InlineCompletionContext2, WorkspaceFolder2, TextDocument3, FullTextDocument3, Is2;
-var init_main3 = __esm({
-  "node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.3/node_modules/vscode-languageserver-types/lib/esm/main.js"() {
+// node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.4/node_modules/vscode-languageserver-types/lib/esm/main.js
+var DocumentUri2, URI2, integer2, uinteger2, Position2, Range2, Location2, LocationLink2, Color2, ColorInformation2, ColorPresentation2, FoldingRangeKind2, FoldingRange2, DiagnosticRelatedInformation2, DiagnosticSeverity2, DiagnosticTag2, CodeDescription2, Diagnostic2, Command2, TextEdit2, ChangeAnnotation2, ChangeAnnotationIdentifier2, AnnotatedTextEdit2, TextDocumentEdit2, CreateFile2, RenameFile2, DeleteFile2, WorkspaceEdit2, SnippetTextEdit, TextDocumentIdentifier2, VersionedTextDocumentIdentifier2, OptionalVersionedTextDocumentIdentifier2, LanguageKind, TextDocumentItem2, MarkupKind2, MarkupContent2, CompletionItemKind2, InsertTextFormat2, CompletionItemTag2, InsertReplaceEdit2, InsertTextMode2, ApplyKind, CompletionItemLabelDetails2, CompletionItem2, CompletionList2, MarkedString2, Hover2, ParameterInformation2, SignatureInformation2, DocumentHighlightKind2, DocumentHighlight2, SymbolKind2, SymbolTag2, SymbolInformation2, WorkspaceSymbol2, DocumentSymbol2, CodeActionKind2, CodeActionTriggerKind2, CodeActionContext2, CodeActionTag, CodeAction2, CodeLens2, FormattingOptions2, DocumentLink2, SelectionRange2, SemanticTokenTypes2, SemanticTokenModifiers2, SemanticTokens2, InlineValueText2, InlineValueVariableLookup2, InlineValueEvaluatableExpression2, InlineValueContext2, InlayHintKind3, InlayHintLabelPart2, InlayHint2, StringValue2, InlineCompletionItem2, InlineCompletionList2, InlineCompletionTriggerKind2, SelectedCompletionInfo2, InlineCompletionContext2, WorkspaceFolder2, TextDocument4, FullTextDocument4, Is2;
+var init_main4 = __esm({
+  "node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.4/node_modules/vscode-languageserver-types/lib/esm/main.js"() {
     "use strict";
     (function(DocumentUri3) {
       function is(value) {
@@ -288433,19 +288686,19 @@ var init_main3 = __esm({
       }
       WorkspaceFolder3.is = is;
     })(WorkspaceFolder2 || (WorkspaceFolder2 = {}));
-    (function(TextDocument4) {
+    (function(TextDocument5) {
       function create(uri, languageId, version, content) {
-        return new FullTextDocument3(uri, languageId, version, content);
+        return new FullTextDocument4(uri, languageId, version, content);
       }
-      TextDocument4.create = create;
+      TextDocument5.create = create;
       function is(value) {
         const candidate = value;
         return Is2.defined(candidate) && Is2.string(candidate.uri) && (Is2.undefined(candidate.languageId) || Is2.string(candidate.languageId)) && Is2.uinteger(candidate.lineCount) && Is2.func(candidate.getText) && Is2.func(candidate.positionAt) && Is2.func(candidate.offsetAt) ? true : false;
       }
-      TextDocument4.is = is;
+      TextDocument5.is = is;
       function applyEdits(document, edits) {
         let text = document.getText();
-        const sortedEdits = mergeSort2(edits, (a3, b2) => {
+        const sortedEdits = mergeSort3(edits, (a3, b2) => {
           const diff = a3.range.start.line - b2.range.start.line;
           if (diff === 0) {
             return a3.range.start.character - b2.range.start.character;
@@ -288466,16 +288719,16 @@ var init_main3 = __esm({
         }
         return text;
       }
-      TextDocument4.applyEdits = applyEdits;
-      function mergeSort2(data, compare) {
+      TextDocument5.applyEdits = applyEdits;
+      function mergeSort3(data, compare) {
         if (data.length <= 1) {
           return data;
         }
         const p2 = data.length / 2 | 0;
         const left = data.slice(0, p2);
         const right = data.slice(p2);
-        mergeSort2(left, compare);
-        mergeSort2(right, compare);
+        mergeSort3(left, compare);
+        mergeSort3(right, compare);
         let leftIdx = 0;
         let rightIdx = 0;
         let i2 = 0;
@@ -288495,8 +288748,8 @@ var init_main3 = __esm({
         }
         return data;
       }
-    })(TextDocument3 || (TextDocument3 = {}));
-    FullTextDocument3 = class {
+    })(TextDocument4 || (TextDocument4 = {}));
+    FullTextDocument4 = class {
       constructor(uri, languageId, version, content) {
         this._uri = uri;
         this._languageId = languageId;
@@ -288636,7 +288889,7 @@ var init_main3 = __esm({
 var TokenType2, ScannerState, ClientCapabilities2, FileType2;
 var init_htmlLanguageTypes = __esm({
   "node_modules/.aspect_rules_js/vscode-html-languageservice@5.6.2/node_modules/vscode-html-languageservice/lib/esm/htmlLanguageTypes.js"() {
-    init_main3();
+    init_main4();
     init_main2();
     (function(TokenType3) {
       TokenType3[TokenType3["StartCommentTag"] = 0] = "StartCommentTag";
@@ -296093,7 +296346,7 @@ function format2(document, range, options2) {
     while (extendedStart > 0 && isWhitespace2(value, extendedStart - 1)) {
       extendedStart--;
     }
-    if (extendedStart === 0 || isEOL3(value, extendedStart - 1)) {
+    if (extendedStart === 0 || isEOL4(value, extendedStart - 1)) {
       startOffset = extendedStart;
     } else {
       if (extendedStart < startOffset) {
@@ -296105,7 +296358,7 @@ function format2(document, range, options2) {
     while (extendedEnd < value.length && isWhitespace2(value, extendedEnd)) {
       extendedEnd++;
     }
-    if (extendedEnd === value.length || isEOL3(value, extendedEnd)) {
+    if (extendedEnd === value.length || isEOL4(value, extendedEnd)) {
       endOffset = extendedEnd;
     }
     range = Range2.create(document.positionAt(startOffset), document.positionAt(endOffset));
@@ -296208,7 +296461,7 @@ function computeIndentLevel2(content, offset, options2) {
   }
   return Math.floor(nChars / tabSize);
 }
-function isEOL3(text, offset) {
+function isEOL4(text, offset) {
   return "\r\n".indexOf(text.charAt(offset)) !== -1;
 }
 function isWhitespace2(text, offset) {
@@ -309027,7 +309280,7 @@ var require_folding = __commonJS({
     var lsp = __importStar(require_main4());
     var vscode_html_languageservice_1 = (init_htmlLanguageService(), __toCommonJS(htmlLanguageService_exports));
     var vscode_css_languageservice_1 = (init_cssLanguageService(), __toCommonJS(cssLanguageService_exports));
-    var vscode_languageserver_textdocument_1 = (init_main2(), __toCommonJS(main_exports));
+    var vscode_languageserver_textdocument_1 = (init_main3(), __toCommonJS(main_exports));
     var embedded_support_1 = require_embedded_support();
     var utils_1 = require_utils();
     var htmlLS = (0, vscode_html_languageservice_1.getLanguageService)();
@@ -309075,7 +309328,7 @@ var require_hover = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.onHover = onHover;
     var vscode_css_languageservice_1 = (init_cssLanguageService(), __toCommonJS(cssLanguageService_exports));
-    var vscode_languageserver_textdocument_1 = (init_main2(), __toCommonJS(main_exports));
+    var vscode_languageserver_textdocument_1 = (init_main3(), __toCommonJS(main_exports));
     var embedded_support_1 = require_embedded_support();
     var utils_1 = require_utils();
     var text_render_1 = require_text_render();
