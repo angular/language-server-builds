@@ -309068,6 +309068,39 @@ var require_folding = __commonJS({
   }
 });
 
+// vscode-ng-language-service/server/src/handlers/selection_range.js
+var require_selection_range = __commonJS({
+  "vscode-ng-language-service/server/src/handlers/selection_range.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.onSelectionRanges = onSelectionRanges;
+    var utils_1 = require_utils();
+    function onSelectionRanges(session, params) {
+      const lsInfo = session.getLSAndScriptInfo(params.textDocument);
+      if (lsInfo === null) {
+        return null;
+      }
+      const { scriptInfo, languageService } = lsInfo;
+      const results = [];
+      for (const position of params.positions) {
+        const offset = (0, utils_1.lspPositionToTsPosition)(scriptInfo, position);
+        const selectionRange = languageService.getTemplateSelectionRange(scriptInfo.fileName, offset);
+        if (selectionRange === void 0) {
+          return null;
+        }
+        results.push(tsSelectionRangeToLsp(selectionRange, scriptInfo));
+      }
+      return results.length > 0 ? results : null;
+    }
+    function tsSelectionRangeToLsp(selectionRange, scriptInfo) {
+      return {
+        range: (0, utils_1.tsTextSpanToLspRange)(scriptInfo, selectionRange.textSpan),
+        parent: selectionRange.parent !== void 0 ? tsSelectionRangeToLsp(selectionRange.parent, scriptInfo) : void 0
+      };
+    }
+  }
+});
+
 // vscode-ng-language-service/server/src/handlers/hover.js
 var require_hover = __commonJS({
   "vscode-ng-language-service/server/src/handlers/hover.js"(exports2) {
@@ -309191,6 +309224,7 @@ var require_initialization = __commonJS({
         capabilities: {
           foldingRangeProvider: true,
           documentSymbolProvider: true,
+          selectionRangeProvider: true,
           codeLensProvider: { resolveProvider: true },
           textDocumentSync: lsp.TextDocumentSyncKind.Incremental,
           completionProvider: {
@@ -310063,6 +310097,7 @@ var require_session = __commonJS({
     var completions_1 = require_completions();
     var definitions_1 = require_definitions();
     var folding_1 = require_folding();
+    var selection_range_1 = require_selection_range();
     var hover_1 = require_hover();
     var initialization_1 = require_initialization();
     var linked_editing_range_1 = require_linked_editing_range();
@@ -310214,6 +310249,7 @@ var require_session = __commonJS({
         conn.onPrepareRename((p2) => (0, rename_1.onPrepareRename)(this, p2));
         conn.onHover((p2) => (0, hover_1.onHover)(this, p2));
         conn.onFoldingRanges((p2) => (0, folding_1.onFoldingRanges)(this, p2));
+        conn.onSelectionRanges((p2) => (0, selection_range_1.onSelectionRanges)(this, p2));
         conn.languages.onLinkedEditingRange((p2) => (0, linked_editing_range_1.onLinkedEditingRange)(this, p2));
         conn.onDocumentSymbol((p2) => __async(this, null, function* () {
           return yield (0, document_symbols_1.onDocumentSymbol)(this, p2);
