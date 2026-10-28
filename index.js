@@ -287419,10 +287419,10 @@ var require_definitions = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.4/node_modules/vscode-languageserver-types/lib/esm/main.js
+// node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.5/node_modules/vscode-languageserver-types/lib/esm/main.js
 var DocumentUri2, URI2, integer2, uinteger2, Position2, Range2, Location2, LocationLink2, Color2, ColorInformation2, ColorPresentation2, FoldingRangeKind2, FoldingRange2, DiagnosticRelatedInformation2, DiagnosticSeverity2, DiagnosticTag2, CodeDescription2, Diagnostic2, Command2, TextEdit2, ChangeAnnotation2, ChangeAnnotationIdentifier2, AnnotatedTextEdit2, TextDocumentEdit2, CreateFile2, RenameFile2, DeleteFile2, WorkspaceEdit2, SnippetTextEdit, TextDocumentIdentifier2, VersionedTextDocumentIdentifier2, OptionalVersionedTextDocumentIdentifier2, LanguageKind, TextDocumentItem2, MarkupKind2, MarkupContent2, CompletionItemKind2, InsertTextFormat2, CompletionItemTag2, InsertReplaceEdit2, InsertTextMode2, ApplyKind, CompletionItemLabelDetails2, CompletionItem2, CompletionList2, MarkedString2, Hover2, ParameterInformation2, SignatureInformation2, DocumentHighlightKind2, DocumentHighlight2, SymbolKind2, SymbolTag2, SymbolInformation2, WorkspaceSymbol2, DocumentSymbol2, CodeActionKind2, CodeActionTriggerKind2, CodeActionContext2, CodeActionTag, CodeAction2, CodeLens2, FormattingOptions2, DocumentLink2, SelectionRange2, SemanticTokenTypes2, SemanticTokenModifiers2, SemanticTokens2, InlineValueText2, InlineValueVariableLookup2, InlineValueEvaluatableExpression2, InlineValueContext2, InlayHintKind3, InlayHintLabelPart2, InlayHint2, StringValue2, InlineCompletionItem2, InlineCompletionList2, InlineCompletionTriggerKind2, SelectedCompletionInfo2, InlineCompletionContext2, WorkspaceFolder2, TextDocument3, FullTextDocument3, Is2;
 var init_main3 = __esm({
-  "node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.4/node_modules/vscode-languageserver-types/lib/esm/main.js"() {
+  "node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.5/node_modules/vscode-languageserver-types/lib/esm/main.js"() {
     "use strict";
     (function(DocumentUri3) {
       function is(value) {
@@ -287549,7 +287549,7 @@ var init_main3 = __esm({
       ColorPresentation3.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && Is2.string(candidate.label) && (Is2.undefined(candidate.textEdit) || TextEdit2.is(candidate)) && (Is2.undefined(candidate.additionalTextEdits) || Is2.typedArray(candidate.additionalTextEdits, TextEdit2.is));
+        return Is2.objectLiteral(candidate) && Is2.string(candidate.label) && (Is2.undefined(candidate.textEdit) || TextEdit2.is(candidate.textEdit)) && (Is2.undefined(candidate.additionalTextEdits) || Is2.typedArray(candidate.additionalTextEdits, TextEdit2.is));
       }
       ColorPresentation3.is = is;
     })(ColorPresentation2 || (ColorPresentation2 = {}));
@@ -287581,7 +287581,7 @@ var init_main3 = __esm({
       FoldingRange3.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.objectLiteral(candidate) && Is2.uinteger(candidate.startLine) && Is2.uinteger(candidate.startLine) && (Is2.undefined(candidate.startCharacter) || Is2.uinteger(candidate.startCharacter)) && (Is2.undefined(candidate.endCharacter) || Is2.uinteger(candidate.endCharacter)) && (Is2.undefined(candidate.kind) || Is2.string(candidate.kind));
+        return Is2.objectLiteral(candidate) && Is2.uinteger(candidate.startLine) && Is2.uinteger(candidate.endLine) && (Is2.undefined(candidate.startCharacter) || Is2.uinteger(candidate.startCharacter)) && (Is2.undefined(candidate.endCharacter) || Is2.uinteger(candidate.endCharacter)) && (Is2.undefined(candidate.kind) || Is2.string(candidate.kind));
       }
       FoldingRange3.is = is;
     })(FoldingRange2 || (FoldingRange2 = {}));
