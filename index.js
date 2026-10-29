@@ -14516,7 +14516,7 @@ var init_main = __esm({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.15/node_modules/vscode-languageserver-textdocument/lib/esm/main.js
+// node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.16/node_modules/vscode-languageserver-textdocument/lib/esm/main.js
 var main_exports = {};
 __export(main_exports, {
   TextDocument: () => TextDocument2
@@ -14582,7 +14582,7 @@ function getWellformedEdit(textEdit) {
 }
 var FullTextDocument2, TextDocument2;
 var init_main2 = __esm({
-  "node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.15/node_modules/vscode-languageserver-textdocument/lib/esm/main.js"() {
+  "node_modules/.aspect_rules_js/vscode-languageserver-textdocument@1.0.16/node_modules/vscode-languageserver-textdocument/lib/esm/main.js"() {
     "use strict";
     FullTextDocument2 = class _FullTextDocument {
       constructor(uri, languageId, version, content) {
@@ -14616,6 +14616,13 @@ var init_main2 = __esm({
             const startOffset = this.offsetAt(range.start);
             const endOffset = this.offsetAt(range.end);
             this._content = this._content.substring(0, startOffset) + change.text + this._content.substring(endOffset, this._content.length);
+            const insertedEndOffset = startOffset + change.text.length;
+            const crlfAtStart = this._content.charCodeAt(startOffset - 1) === 13 && this._content.charCodeAt(startOffset) === 10;
+            const crlfAtEnd = this._content.charCodeAt(insertedEndOffset - 1) === 13 && this._content.charCodeAt(insertedEndOffset) === 10;
+            if (crlfAtStart || crlfAtEnd) {
+              this._lineOffsets = void 0;
+              continue;
+            }
             const startLine = Math.max(range.start.line, 0);
             const endLine = Math.max(range.end.line, 0);
             let lineOffsets = this._lineOffsets;
