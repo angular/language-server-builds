@@ -287426,10 +287426,10 @@ var require_definitions = __commonJS({
   }
 });
 
-// node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.5/node_modules/vscode-languageserver-types/lib/esm/main.js
+// node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.6/node_modules/vscode-languageserver-types/lib/esm/main.js
 var DocumentUri2, URI2, integer2, uinteger2, Position2, Range2, Location2, LocationLink2, Color2, ColorInformation2, ColorPresentation2, FoldingRangeKind2, FoldingRange2, DiagnosticRelatedInformation2, DiagnosticSeverity2, DiagnosticTag2, CodeDescription2, Diagnostic2, Command2, TextEdit2, ChangeAnnotation2, ChangeAnnotationIdentifier2, AnnotatedTextEdit2, TextDocumentEdit2, CreateFile2, RenameFile2, DeleteFile2, WorkspaceEdit2, SnippetTextEdit, TextDocumentIdentifier2, VersionedTextDocumentIdentifier2, OptionalVersionedTextDocumentIdentifier2, LanguageKind, TextDocumentItem2, MarkupKind2, MarkupContent2, CompletionItemKind2, InsertTextFormat2, CompletionItemTag2, InsertReplaceEdit2, InsertTextMode2, ApplyKind, CompletionItemLabelDetails2, CompletionItem2, CompletionList2, MarkedString2, Hover2, ParameterInformation2, SignatureInformation2, DocumentHighlightKind2, DocumentHighlight2, SymbolKind2, SymbolTag2, SymbolInformation2, WorkspaceSymbol2, DocumentSymbol2, CodeActionKind2, CodeActionTriggerKind2, CodeActionContext2, CodeActionTag, CodeAction2, CodeLens2, FormattingOptions2, DocumentLink2, SelectionRange2, SemanticTokenTypes2, SemanticTokenModifiers2, SemanticTokens2, InlineValueText2, InlineValueVariableLookup2, InlineValueEvaluatableExpression2, InlineValueContext2, InlayHintKind3, InlayHintLabelPart2, InlayHint2, StringValue2, InlineCompletionItem2, InlineCompletionList2, InlineCompletionTriggerKind2, SelectedCompletionInfo2, InlineCompletionContext2, WorkspaceFolder2, TextDocument3, FullTextDocument3, Is2;
 var init_main3 = __esm({
-  "node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.5/node_modules/vscode-languageserver-types/lib/esm/main.js"() {
+  "node_modules/.aspect_rules_js/vscode-languageserver-types@3.18.6/node_modules/vscode-languageserver-types/lib/esm/main.js"() {
     "use strict";
     (function(DocumentUri3) {
       function is(value) {
@@ -287602,7 +287602,7 @@ var init_main3 = __esm({
       DiagnosticRelatedInformation3.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.defined(candidate) && Location2.is(candidate.location) && Is2.string(candidate.message);
+        return Is2.objectLiteral(candidate) && Location2.is(candidate.location) && Is2.string(candidate.message);
       }
       DiagnosticRelatedInformation3.is = is;
     })(DiagnosticRelatedInformation2 || (DiagnosticRelatedInformation2 = {}));
@@ -287644,7 +287644,7 @@ var init_main3 = __esm({
       function is(value) {
         var _a3;
         const candidate = value;
-        return Is2.defined(candidate) && Range2.is(candidate.range) && (Is2.string(candidate.message) || MarkupContent2.is(candidate.message)) && (Is2.number(candidate.severity) || Is2.undefined(candidate.severity)) && (Is2.integer(candidate.code) || Is2.string(candidate.code) || Is2.undefined(candidate.code)) && (Is2.undefined(candidate.codeDescription) || Is2.string((_a3 = candidate.codeDescription) === null || _a3 === void 0 ? void 0 : _a3.href)) && (Is2.string(candidate.source) || Is2.undefined(candidate.source)) && (Is2.undefined(candidate.relatedInformation) || Is2.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation2.is));
+        return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && (Is2.string(candidate.message) || MarkupContent2.is(candidate.message)) && (Is2.number(candidate.severity) || Is2.undefined(candidate.severity)) && (Is2.integer(candidate.code) || Is2.string(candidate.code) || Is2.undefined(candidate.code)) && (Is2.undefined(candidate.codeDescription) || Is2.string((_a3 = candidate.codeDescription) === null || _a3 === void 0 ? void 0 : _a3.href)) && (Is2.string(candidate.source) || Is2.undefined(candidate.source)) && (Is2.undefined(candidate.relatedInformation) || Is2.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation2.is));
       }
       Diagnostic3.is = is;
       function is3_17(value) {
@@ -287673,7 +287673,7 @@ var init_main3 = __esm({
       Command3.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.defined(candidate) && Is2.string(candidate.title) && (candidate.tooltip === void 0 || Is2.string(candidate.tooltip)) && Is2.string(candidate.command);
+        return Is2.objectLiteral(candidate) && Is2.string(candidate.title) && (candidate.tooltip === void 0 || Is2.string(candidate.tooltip)) && Is2.string(candidate.command);
       }
       Command3.is = is;
     })(Command2 || (Command2 = {}));
@@ -287747,7 +287747,7 @@ var init_main3 = __esm({
       TextDocumentEdit3.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.defined(candidate) && OptionalVersionedTextDocumentIdentifier2.is(candidate.textDocument) && Array.isArray(candidate.edits);
+        return Is2.objectLiteral(candidate) && OptionalVersionedTextDocumentIdentifier2.is(candidate.textDocument) && Array.isArray(candidate.edits);
       }
       TextDocumentEdit3.is = is;
     })(TextDocumentEdit2 || (TextDocumentEdit2 = {}));
@@ -287842,7 +287842,7 @@ var init_main3 = __esm({
       TextDocumentIdentifier3.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.defined(candidate) && Is2.string(candidate.uri);
+        return Is2.objectLiteral(candidate) && Is2.string(candidate.uri);
       }
       TextDocumentIdentifier3.is = is;
     })(TextDocumentIdentifier2 || (TextDocumentIdentifier2 = {}));
@@ -287853,7 +287853,7 @@ var init_main3 = __esm({
       VersionedTextDocumentIdentifier3.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.defined(candidate) && Is2.string(candidate.uri) && Is2.integer(candidate.version);
+        return Is2.objectLiteral(candidate) && Is2.string(candidate.uri) && Is2.integer(candidate.version);
       }
       VersionedTextDocumentIdentifier3.is = is;
     })(VersionedTextDocumentIdentifier2 || (VersionedTextDocumentIdentifier2 = {}));
@@ -287864,7 +287864,7 @@ var init_main3 = __esm({
       OptionalVersionedTextDocumentIdentifier3.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.defined(candidate) && Is2.string(candidate.uri) && (candidate.version === null || Is2.integer(candidate.version));
+        return Is2.objectLiteral(candidate) && Is2.string(candidate.uri) && (candidate.version === null || Is2.integer(candidate.version));
       }
       OptionalVersionedTextDocumentIdentifier3.is = is;
     })(OptionalVersionedTextDocumentIdentifier2 || (OptionalVersionedTextDocumentIdentifier2 = {}));
@@ -287939,7 +287939,7 @@ var init_main3 = __esm({
       TextDocumentItem3.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.defined(candidate) && Is2.string(candidate.uri) && Is2.string(candidate.languageId) && Is2.integer(candidate.version) && Is2.string(candidate.text);
+        return Is2.objectLiteral(candidate) && Is2.string(candidate.uri) && Is2.string(candidate.languageId) && Is2.integer(candidate.version) && Is2.string(candidate.text);
       }
       TextDocumentItem3.is = is;
     })(TextDocumentItem2 || (TextDocumentItem2 = {}));
@@ -288188,7 +288188,7 @@ var init_main3 = __esm({
       CodeActionContext3.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.defined(candidate) && Is2.typedArray(candidate.diagnostics, Diagnostic2.is) && (candidate.only === void 0 || Is2.typedArray(candidate.only, Is2.string)) && (candidate.triggerKind === void 0 || candidate.triggerKind === CodeActionTriggerKind2.Invoked || candidate.triggerKind === CodeActionTriggerKind2.Automatic);
+        return Is2.objectLiteral(candidate) && Is2.typedArray(candidate.diagnostics, Diagnostic2.is) && (candidate.only === void 0 || Is2.typedArray(candidate.only, Is2.string)) && (candidate.triggerKind === void 0 || candidate.triggerKind === CodeActionTriggerKind2.Invoked || candidate.triggerKind === CodeActionTriggerKind2.Automatic);
       }
       CodeActionContext3.is = is;
     })(CodeActionContext2 || (CodeActionContext2 = {}));
@@ -288234,7 +288234,7 @@ var init_main3 = __esm({
       CodeLens3.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.defined(candidate) && Range2.is(candidate.range) && (Is2.undefined(candidate.command) || Command2.is(candidate.command));
+        return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && (Is2.undefined(candidate.command) || Command2.is(candidate.command));
       }
       CodeLens3.is = is;
     })(CodeLens2 || (CodeLens2 = {}));
@@ -288245,7 +288245,7 @@ var init_main3 = __esm({
       FormattingOptions3.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.defined(candidate) && Is2.uinteger(candidate.tabSize) && Is2.boolean(candidate.insertSpaces);
+        return Is2.objectLiteral(candidate) && Is2.uinteger(candidate.tabSize) && Is2.boolean(candidate.insertSpaces);
       }
       FormattingOptions3.is = is;
     })(FormattingOptions2 || (FormattingOptions2 = {}));
@@ -288256,7 +288256,7 @@ var init_main3 = __esm({
       DocumentLink3.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.defined(candidate) && Range2.is(candidate.range) && (Is2.undefined(candidate.target) || Is2.string(candidate.target));
+        return Is2.objectLiteral(candidate) && Range2.is(candidate.range) && (Is2.undefined(candidate.target) || Is2.string(candidate.target));
       }
       DocumentLink3.is = is;
     })(DocumentLink2 || (DocumentLink2 = {}));
@@ -288356,7 +288356,7 @@ var init_main3 = __esm({
       InlineValueContext3.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.defined(candidate) && Range2.is(value.stoppedLocation);
+        return Is2.objectLiteral(candidate) && Range2.is(value.stoppedLocation);
       }
       InlineValueContext3.is = is;
     })(InlineValueContext2 || (InlineValueContext2 = {}));
@@ -288447,7 +288447,7 @@ var init_main3 = __esm({
       TextDocument4.create = create;
       function is(value) {
         const candidate = value;
-        return Is2.defined(candidate) && Is2.string(candidate.uri) && (Is2.undefined(candidate.languageId) || Is2.string(candidate.languageId)) && Is2.uinteger(candidate.lineCount) && Is2.func(candidate.getText) && Is2.func(candidate.positionAt) && Is2.func(candidate.offsetAt) ? true : false;
+        return Is2.objectLiteral(candidate) && Is2.string(candidate.uri) && (Is2.undefined(candidate.languageId) || Is2.string(candidate.languageId)) && Is2.uinteger(candidate.lineCount) && Is2.func(candidate.getText) && Is2.func(candidate.positionAt) && Is2.func(candidate.offsetAt) ? true : false;
       }
       TextDocument4.is = is;
       function applyEdits(document, edits) {
